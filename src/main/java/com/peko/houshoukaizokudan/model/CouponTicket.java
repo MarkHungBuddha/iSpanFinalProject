@@ -8,6 +8,8 @@ import org.hibernate.proxy.HibernateProxy;
 import java.math.BigDecimal;
 import java.util.Objects;
 
+
+//測試測試
 @Getter
 @Setter
 @ToString
