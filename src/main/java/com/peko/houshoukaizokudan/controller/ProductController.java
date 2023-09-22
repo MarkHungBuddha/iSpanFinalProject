@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -82,6 +83,19 @@ public class ProductController {
 		return "background/showUpload";
 	}
 
+	@DeleteMapping("/back/delete")
+	public String deleteProduct(@RequestParam("id") Integer id) {
+		pbService.deleteById(id);
+		return "redirect:/background/showUpload";
+	}
 	
+	
+	@GetMapping("/back/edit")
+	public String editPage(@RequestParam("id") Integer id,Model model) {
+		
+		ProductBasic  pb5= pbService.findById(id);
+		model.addAttribute("product",pb5);
+		return "background/showUpload";
+	}
 	
 }
