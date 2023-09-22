@@ -20,10 +20,11 @@ public class ProductBasic {
     @Column(name = "productid", nullable = false)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sellermemberid")
-    @ToString.Exclude
-    private Member sellermemberid;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "sellermemberid")
+//    @ToString.Exclude
+    @Column(name="sellermemberid")
+    private Integer sellermemberid;
 
     @Nationalized
     @Column(name = "productname", nullable = false, length = 1000)
@@ -62,4 +63,5 @@ public class ProductBasic {
     public final int hashCode() {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
+    
 }
