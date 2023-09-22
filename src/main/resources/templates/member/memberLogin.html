@@ -12,7 +12,7 @@
        <div class="card">
 			<div class="card-header">請輸入帳號密碼</div>
 			<div class="card-body">
-				<form th:action="@{/member/memberlogin}" method="post">
+				<form th:action="@{/member/memberLogin}" method="post">
 				<div class="input-group">
 				  <label for="username" class="form-label">帳號</label>
 				   <input class="form-control" name="username" id="username" required />
@@ -20,7 +20,7 @@
 				<br>
 				<div class="input-group">
 				   <label for="password" class="form-label">密碼</label>
-				   <input class="form-control" name="password" id="password" type="password" required />
+				   <input class="form-control" name="passwdbcrypt" id="password" type="password" required />
 				</div>
 				
 				<br>

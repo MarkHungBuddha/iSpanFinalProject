@@ -73,15 +73,15 @@ public class MemberController {
 		return "member/memberLogin";
 	}
 	
-	@GetMapping("/member/memberlogin")
+	@GetMapping("/member/memberLogin")
 	public String userLoginPage() {
-		return "users/loginPage";
+		return "member/memberLogin";
 	}
 	
-	@PostMapping("/member/memberlogin")
+	@PostMapping("/member/memberLogin")
 	public String checkUserLogin(
 			@RequestParam("username") String username, 
-			@RequestParam("password") String password,
+			@RequestParam("passwdbcrypt") String password,
 			HttpSession httpsession,
 			Model model) {
 		Member result = userUservice.checkLogin(username, password);
