@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+<head>
+<meta charset="UTF-8">
+<title>搜索圖片</title>
+</head>
+<body>	
+	<div th:replace="~{layout/navbar}"></div>
+	<div class="container">
+		<h1>搜索圖片</h1>
+		<div class="card">
+			<div class="card-header">圖片名稱</div>
+			<div class="card-body">
+				<form th:action="@{/image/imageFind}" th:method="post">
+					<div class="input-group">
+						<label for="imagepath" class="form-label">選擇</label> 
+						<input class="form-control" name="imagepath" id="imagepath" required />
+					</div>
+					<br>
+					<button class="btn btn-outline-primary" type="submit">提交</button>
+				</form>
+			</div>
+		</div>
+		
+		<div class="card">
+			<div class="card-header"></div>
+			<div class="card-body">
+			
+			<table>
+			
+			
+				<tr th:each="images : ${images}">
+					<img th:src="'https://imgur.com/' + ${images.imagepath} +'.jpg'" class="card-header" alt="產品圖片">
+					<td th:text="${images.id}"></td>
+					<td th:text="${images.productid}"></td>
+				</tr>
+				
+				
+				
+			</table>
+		</div>
+	</div>
+	<div th:unless="${images}">
+		<p>找不到圖片。</p>
+	</div>
+	
+	</div>
+</body>
+</html>
