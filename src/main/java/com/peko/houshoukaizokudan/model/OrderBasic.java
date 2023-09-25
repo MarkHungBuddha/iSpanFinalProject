@@ -72,7 +72,7 @@ public class OrderBasic {
     private String returnurl;
 
     @Column(name = "checkmacvalue")
-    private Character checkmacvalue;
+    private Integer checkmacvalue;
 
     @Column(name = "encrypttype")
     private Integer encrypttype;
