@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+<head>
+<meta charset="UTF-8">
+<title>註冊頁面</title>
+<style>
+.form-input {
+	width: 100%;
+}
+</style>
+</head>
+<body>
+	<div th:replace="~{layout/navbar}"></div>
+	<div class="container">
+
+		<h1>註冊 Page</h1>
+
+		<div class="card">
+			<div class="card-header">請輸入新帳號</div>
+			<div class="card-body">
+				<form th:action="@{/member/post}" method="post">
+					<div class="input-group">
+						<label for="username" class="form-label">帳號 ：</label> <input
+							class="form-control form-input" name="username" id="username"
+							required />
+					</div>
+					<br>
+					<div class="input-group">
+						<label for="password" class="form-label">密碼 ：</label> <input
+							class="form-control form-input" name="passwdbcrypt" id="password"
+							type="password" required /> <small class="text-muted">請使用至少包含大、小寫字母和數字的密碼</small>
+					</div>
+
+					<br>
+					<!-- 
+					<div class="input-group">
+						<label for="username" class="form-label">會員類別：</label> <input
+							class="form-control form-input" name="membertypeid" id="username"
+							 />
+					</div>				
+					<br>
+					 -->
+					<div class="input-group">
+						<label for="avatar" class="form-label">頭貼：</label> <input
+							class="form-control form-input" name="memberimgpath" id="avatar"
+							type="file" accept="image/*" required />
+					</div>
+					<br>
+					<div class="input-group">
+						<label for="username" class="form-label">名字 ：</label> <input
+							class="form-control form-input" name="firstname" id="username"
+							required />
+					</div>
+					<br>
+					<div class="input-group">
+						<label for="username" class="form-label">姓 ：</label> <input
+							class="form-control form-input" name="lastname" id="username"
+							required />
+					</div>
+					<br>
+					<div class="input-group">
+						<label for="username" class="form-label">性別 ：</label> <input
+							class="form-control form-input" name="gender" id="username"
+							required />
+					</div>
+					<br>
+					<div class="input-group">
+						<label for="birthdate" class="form-label">生日：</label> <input
+							class="form-control form-input" name="birthdate" id="birthdate"
+							type="date" required />
+					</div>
+					<br>
+					<div class="input-group">
+						<label for="username" class="form-label">電話號碼：</label> <input
+							class="form-control form-input" name="phone" id="username"
+							required />
+					</div>
+					<br>
+					<div class="input-group">
+						<label for="email" class="form-label">Email：</label> <input
+							class="form-control form-input" name="email" id="email"
+							type="email" required />
+					</div>
+					<br>
+					<div class="input-group">
+						<label for="username" class="form-label">註冊日期：</label> <input
+							class="form-control form-input" name="membercreationdate"
+							id="date" type="date" required />
+					</div>
+					<br>
+					<div class="input-group">
+						<label for="username" class="form-label">國家 ：</label> <input
+							class="form-control form-input" name="country" id="username"
+							required />
+					</div>
+					<br>
+					<div class="input-group">
+						<label for="username" class="form-label">城市 ：</label> <input
+							class="form-control form-input" name="city" id="username"
+							required />
+					</div>
+					<br>
+					<div class="input-group">
+						<label for="username" class="form-label">地區 ：</label> <input
+							class="form-control form-input" name="region" id="username"
+							required />
+					</div>
+					<br>
+					<div class="input-group">
+						<label for="username" class="form-label">街道 ：</label> <input
+							class="form-control form-input" name="street" id="username"
+							required />
+					</div>
+					<br>
+					<div class="input-group">
+						<label for="username" class="form-label">郵遞區號：</label> <input
+							class="form-control form-input" name="postalcode" id="username"
+							required />
+					</div>
+					<br>
+					<button class="btn btn-outline-primary">送出</button>
+				</form>
+			</div>
+		</div>
+		<div th:text="${errorMsg} ? ${errorMsg}"></div>
+		<div th:text="${okMsg} ? ${okMsg}"></div>
+
+	</div>
+	<script>
+		function validateForm() {
+			var password = document.getElementById("passwdbcrypt").value;
+			// 添加密码强度检查逻辑
+			if (!/(?=.*\d)(?=.*[a-z])(?=.*[A-Z])/.test(password)) {
+				alert("密碼強度不足，請使用至少包含大、小寫字母和數字的密碼。");
+				return false;
+			}
+			return true;
+		}
+	</script>
+</body>
+</html>

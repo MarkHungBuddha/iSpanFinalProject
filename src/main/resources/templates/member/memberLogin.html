@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+<head>
+<meta charset="UTF-8">
+<title>Login Page</title>
+</head>
+<body>
+<div th:replace="~{layout/navbar}"></div>
+	<div class="container">
+       <h1>Login Page</h1>
+       
+       <div class="card">
+			<div class="card-header">請輸入帳號密碼</div>
+			<div class="card-body">
+				<form th:action="@{/member/memberLogin}" method="post">
+				<div class="input-group">
+				  <label for="username" class="form-label">帳號</label>
+				   <input class="form-control" name="username" id="username" required />
+				</div>
+				<br>
+				<div class="input-group">
+				   <label for="password" class="form-label">密碼</label>
+				   <input class="form-control" name="passwdbcrypt" id="password" type="password" required />
+				</div>
+				
+				<br>
+				<button class="btn btn-outline-primary">送出</button>
+				</form>
+			</div>
+		</div>
+		<div th:text="${session.loginUser} ? 'HI 安安' + ${session.loginUser.username}"></div>
+        <div th:text="${loginFail} ? ${loginFail}"></div>
+    </div>
+</body>
+</html>
