@@ -7,10 +7,7 @@ import org.hibernate.proxy.HibernateProxy;
 
 import java.math.BigDecimal;
 import java.util.Objects;
-
-@Getter
-@Setter
-@ToString
+@Data
 @RequiredArgsConstructor
 @Entity
 @Table(name = "ProductBasicData")

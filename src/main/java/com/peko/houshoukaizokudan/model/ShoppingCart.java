@@ -46,4 +46,18 @@ public class ShoppingCart {
     public final int hashCode() {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
+
+	public void addProduct1(ProductBasic product) {
+		
+	}
+
+	public void updateProductQuantity(ProductBasic product, int quantity2) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void addProduct(ProductBasic product) {
+		// TODO Auto-generated method stub
+		
+	}
 }
