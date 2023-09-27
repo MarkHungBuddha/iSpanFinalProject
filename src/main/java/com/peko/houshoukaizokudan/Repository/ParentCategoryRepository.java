@@ -1,4 +1,4 @@
-package com.peko.houshoukaizokudan.model;
+package com.peko.houshoukaizokudan.Repository;
 
 import com.peko.houshoukaizokudan.model.ParentCategoryData;
 import org.springframework.data.jpa.repository.JpaRepository;

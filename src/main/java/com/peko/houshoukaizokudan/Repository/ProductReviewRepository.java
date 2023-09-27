@@ -1,4 +1,4 @@
-package com.peko.houshoukaizokudan.model;
+package com.peko.houshoukaizokudan.Repository;
 
 import com.peko.houshoukaizokudan.model.ProductReviewData;
 import org.springframework.data.jpa.repository.JpaRepository;

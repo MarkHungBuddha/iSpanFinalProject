@@ -1,6 +1,6 @@
 package com.peko.houshoukaizokudan.service;
 
-import com.peko.houshoukaizokudan.model.ProductCategoryRepository;
+import com.peko.houshoukaizokudan.Repository.ProductCategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
