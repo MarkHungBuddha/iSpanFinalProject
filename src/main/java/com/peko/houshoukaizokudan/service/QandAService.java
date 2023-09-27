@@ -1,7 +1,7 @@
 package com.peko.houshoukaizokudan.service;
 
 
-import com.peko.houshoukaizokudan.model.QandARepository;
+import com.peko.houshoukaizokudan.model.test.QandARepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

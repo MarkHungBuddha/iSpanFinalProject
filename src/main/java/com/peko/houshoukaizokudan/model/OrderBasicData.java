@@ -3,31 +3,31 @@ package com.peko.houshoukaizokudan.model;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Nationalized;
-import org.hibernate.proxy.HibernateProxy;
 
-import java.util.Objects;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 @ToString
-@RequiredArgsConstructor
 @Entity
-@Table(name = "OrderBasicData")
-public class OrderBasic {
+@Table(name = "OrderBasicData", schema = "dbo")
+public class OrderBasicData {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "orderid", nullable = false)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "sellerid")
-    @ToString.Exclude
-    private Member sellerid;
+    private MemberData seller; // 對應到 sellerid
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "memberid")
-    @ToString.Exclude
-    private Member memberid;
+    private MemberData buyer; // 對應到 memberid
 
     @Nationalized
     @Column(name = "merchanttradedate", length = 20)
@@ -71,8 +71,9 @@ public class OrderBasic {
     @Column(name = "returnurl", length = 200)
     private String returnurl;
 
-    @Column(name = "checkmacvalue")
-    private Character checkmacvalue;
+    @Nationalized
+    @Column(name = "checkmacvalue", length = 200)
+    private String checkmacvalue;
 
     @Column(name = "encrypttype")
     private Integer encrypttype;
@@ -93,19 +94,7 @@ public class OrderBasic {
     @Column(name = "needextrapaidinfo", length = 1)
     private String needextrapaidinfo;
 
-    @Override
-    public final boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null) return false;
-        Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
-        Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
-        if (thisEffectiveClass != oEffectiveClass) return false;
-        OrderBasic that = (OrderBasic) o;
-        return getId() != null && Objects.equals(getId(), that.getId());
-    }
+    @OneToMany(mappedBy = "orderid")
+    private Set<com.peko.houshoukaizokudan.model.OrderDetailData > orderDetailData = new LinkedHashSet<>();
 
-    @Override
-    public final int hashCode() {
-        return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
-    }
 }
