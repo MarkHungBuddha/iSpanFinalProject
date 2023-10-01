@@ -8,9 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.peko.houshoukaizokudan.model.Member;
-
 import com.peko.houshoukaizokudan.model.MemberType;
-
 import com.peko.houshoukaizokudan.service.MemberService;
 
 import jakarta.servlet.http.HttpSession;
@@ -30,9 +28,7 @@ public class MemberController {
 	public String postRegister(
 			@RequestParam("username") String username,
 			@RequestParam("passwdbcrypt") String password,
-
-			@RequestParam("membertypeid") Integer membertypeid,
-
+//			@RequestParam("membertypeid") MemberType membertypeid,
 			@RequestParam("memberimgpath") String memberimgpath,
 			@RequestParam("firstname") String firstname,
 			@RequestParam("lastname") String lastname,
@@ -63,13 +59,8 @@ public class MemberController {
 			u1.setGender(gender);
 			u1.setLastname(lastname);
 			u1.setMembercreationdate(membercreationdate);
-
 			u1.setMemberimgpath("1");
 //			u1.setMembertypeid(membertypeid);
-
-			u1.setMemberimgpath(memberimgpath);
-		
-
 			u1.setPhone(phone);
 			u1.setPostalcode(postalcode);
 			u1.setRegion(region);

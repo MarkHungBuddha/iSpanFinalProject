@@ -17,12 +17,10 @@ public class OrderBasicService {
 	@Autowired
 	private OrderBasicRepository orderRepo;
 
-
 	public List<OrderBasic> findOrderBasicDataBymemberid(Member buyer) {
 //		Integer Member= buyer.getId();
 		
 		List<OrderBasic> orders =orderRepo.findOrderBasicBybuyer(buyer);
-
 		
 		if(orders.isEmpty()) {
 			return null;
