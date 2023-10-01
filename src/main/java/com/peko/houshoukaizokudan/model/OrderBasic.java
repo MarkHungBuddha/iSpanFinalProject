@@ -24,7 +24,7 @@ public class OrderBasic {
 
     @ManyToOne
     @JoinColumn(name = "sellerid")
-    private Member c; // 對應到 sellerid
+    private Member seller; // 對應到 sellerid
 
     @ManyToOne
     @JoinColumn(name = "memberid")
