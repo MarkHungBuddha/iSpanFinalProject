@@ -15,12 +15,16 @@
 			<input th:object="${session.loginUser}" type="hidden" />
 
 			<button class="btn btn-outline-primary" type="submit">我的訂單</button>
+
 			
 		</form>
 		
 		<div th:text="${session.loginUser} ? 'HI 安安' + ${session.loginUser.username}"></div>
 		<div th:text="${session.loginUser} ? '你的ID:' + ${session.loginUser.id}"></div>
         <div th:text="${loginFail} ? ${loginFail}"></div>
+
+	
+
 
 	</div>
 
@@ -46,8 +50,11 @@
 					<tbody>
 						<tr th:each="order : ${orders}">
 							<td th:text="${order.id}"></td>
+
 							<td th:text="${order.seller.username}"></td>
 							<td th:text="${order.buyer.username}"></td>
+							<td th:text="${order.sellerid}"></td>
+							<td th:text="${order.memberid}"></td>
 							<td th:text="${order.merchanttradedate}"></td>
 							<td th:text="${order.choosepayment}"></td>
 							<td th:text="${order.totalamount}"></td>

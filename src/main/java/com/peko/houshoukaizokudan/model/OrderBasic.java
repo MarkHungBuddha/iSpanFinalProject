@@ -72,9 +72,11 @@ public class OrderBasic {
     @Column(name = "returnurl", length = 200)
     private String returnurl;
 
+
     @Nationalized
     @Column(name = "checkmacvalue", length = 200)
     private String checkmacvalue;
+
 
     @Column(name = "encrypttype")
     private Integer encrypttype;

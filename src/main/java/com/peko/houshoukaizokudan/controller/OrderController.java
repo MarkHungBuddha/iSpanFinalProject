@@ -36,7 +36,9 @@ public class OrderController {
 	        return "order/showOrders";
 	    } else {
 	        // 如果会话中没有登录用户信息，可以重定向到登录页面或采取其他操作
-	        return "order/showOrders";
+
+	        return "order/showOrders"; // 例如，重定向到登录页面
+
 	    }
 	}
 
