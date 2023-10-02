@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.peko.houshoukaizokudan.model.Member;
 import com.peko.houshoukaizokudan.model.ProductBasic;
 import com.peko.houshoukaizokudan.model.ProductCategory;
 import com.peko.houshoukaizokudan.service.ProductBasicService;
@@ -44,9 +45,10 @@ public class ProductController {
 			) {
 		ProductCategory pc1=new ProductCategory();
 		pc1.setId(categoryid);
+		
 
 		ProductBasic pb1=new ProductBasic();
-		pb1.setSellermemberid(101);
+		pb1.setSellermemberid();
 		pb1.setProductname(productname);
 		pb1.setPrice(price);
 		pb1.setSpecialprice(specialprice);
