@@ -3,6 +3,7 @@ package com.peko.houshoukaizokudan.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,6 +33,20 @@ public class ProductController {
         model.addAttribute("products", products);
         return "product/productFindPage"; 
     }
+    
+    @GetMapping("/product/page")
+	public String findProductByPage(@RequestParam(name="p", defaultValue = "1") Integer pageNumber, Model model){
+    	Page<ProductBasic> Page = prdService.findProductByPage(pageNumber);
+    	
+    	model.addAttribute("Page" ,Page);
+
+    	return "product/productFindPages";
+	}
+ 
+    
+   
+ 
+ 
     
     
 }

@@ -3,11 +3,14 @@ package com.peko.houshoukaizokudan.model;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface ProductBasicRepository extends JpaRepository<ProductBasic, Integer> {
 	
-	//模糊搜尋產品名稱
 	
-	List<ProductBasic> findProductBasicDataByproductnameLike(String name);
+	List<ProductBasic> findProductBasicDataByproductnameLike(String productname);
 
+//	//抓最新的
+//	public ProductBasic findFirstByOrderIdDesc();
 }
