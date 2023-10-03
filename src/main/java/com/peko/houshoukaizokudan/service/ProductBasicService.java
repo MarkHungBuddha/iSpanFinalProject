@@ -19,10 +19,10 @@ public class ProductBasicService {
 		pbRepo.save(pb);
 	}
 
-	public List<ProductBasic> findBySellerMemberId(Integer sellermemberid) {
-		List<ProductBasic> pbList = pbRepo.findBySellermemberid(sellermemberid);
-		return pbList;
-	}
+//	public List<ProductBasic> findBySellerMemberId(Integer sellermemberid) {
+//		List<ProductBasic> pbList = pbRepo.findBySellermemberid(sellermemberid);
+//		return pbList;
+//	}
 
 	public void deleteById(Integer id) {
 		pbRepo.deleteById(id);

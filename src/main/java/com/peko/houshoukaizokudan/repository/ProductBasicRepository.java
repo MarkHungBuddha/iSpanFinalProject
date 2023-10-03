@@ -11,5 +11,5 @@ import com.peko.houshoukaizokudan.model.ProductBasic;
 
 public interface ProductBasicRepository extends JpaRepository<ProductBasic, Integer>{
 
-	List<ProductBasic> findBySellermemberid(Integer sellermemberid);
+//	List<ProductBasic> findBySellermemberid(Integer sellermemberid);
 	}
