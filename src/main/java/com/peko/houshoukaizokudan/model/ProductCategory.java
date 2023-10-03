@@ -15,7 +15,7 @@ import java.util.Set;
 @ToString
 @Entity
 @Table(name = "ProductCategoryData", schema = "dbo")
-public class ProductCategoryData {
+public class ProductCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "categoryid", nullable = false)
@@ -26,9 +26,9 @@ public class ProductCategoryData {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parentid")
-    private com.peko.houshoukaizokudan.model.ParentCategoryData parentid;
+    private ParentCategory parentid;
 
     @OneToMany(mappedBy = "categoryid")
-    private List<ProductBasicData> productBasicData ;
+    private List<ProductBasic> productBasic ;
 
 }

@@ -1,7 +1,7 @@
 package com.peko.houshoukaizokudan.model;
 
-import com.peko.houshoukaizokudan.model.MemberData;
-import com.peko.houshoukaizokudan.model.ProductBasicData;
+import com.peko.houshoukaizokudan.model.Member;
+import com.peko.houshoukaizokudan.model.ProductBasic;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Nationalized;
@@ -14,8 +14,8 @@ import java.util.Objects;
 @ToString
 @RequiredArgsConstructor
 @Entity
-@Table(name = "QandAData")
-public class QandAData {
+@Table(name = "QandAData" , schema = "dbo")
+public class QandA {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "productquestionid", nullable = false)
@@ -24,17 +24,17 @@ public class QandAData {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "productid")
     @ToString.Exclude
-    private ProductBasicData productid;
+    private ProductBasic productid;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sellermemberid")
     @ToString.Exclude
-    private MemberData sellerMember;
+    private Member sellerMember;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "buyermemberid")
     @ToString.Exclude
-    private MemberData buyerMember;
+    private Member buyerMember;
 
     @Nationalized
     @Column(name = "question", length = 400)

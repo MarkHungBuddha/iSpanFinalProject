@@ -10,22 +10,22 @@ import lombok.*;
 @Setter
 @ToString
 @Entity
-@Table(name = "ShoppingCartData", schema = "dbo")
-public class ShoppingCartData {
+@Table(name = "UserCouponData", schema = "dbo")
+public class UserCoupon {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "transactionid", nullable = false)
+    @Column(name = "usercouponid", nullable = false)
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "memberid")
-    private MemberData memberid;
+    private Member memberid;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "productid")
-    private ProductBasicData productid;
+    @JoinColumn(name = "couponid")
+    private CouponTicket couponid;
 
-    @Column(name = "quantity")
-    private Integer quantity;
+    @Column(name = "used", nullable = false, length = 1)
+    private String used;
 
 }

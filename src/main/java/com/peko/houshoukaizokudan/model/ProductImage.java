@@ -11,7 +11,7 @@ import lombok.*;
 @ToString
 @Entity
 @Table(name = "ProductImageData", schema = "dbo")
-public class ProductImageData {
+public class ProductImage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "imageid", nullable = false)
@@ -19,7 +19,7 @@ public class ProductImageData {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "productid")
-    private ProductBasicData productid;
+    private ProductBasic productid;
 
     @Column(name = "imagepath", nullable = false, length = 200)
     private String imagepath;

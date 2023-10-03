@@ -16,7 +16,7 @@ import java.util.Set;
 @ToString
 @Entity
 @Table(name = "MemberData", schema = "dbo")
-public class MemberData {
+public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "memberid", nullable = false)
@@ -24,7 +24,7 @@ public class MemberData {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "membertypeid")
-    private com.peko.houshoukaizokudan.model.MemberTypeData membertypeid;
+    private MemberType membertypeid;
 
     @Nationalized
     @Column(name = "memberimgpath", nullable = false, length = 200)
@@ -78,30 +78,30 @@ public class MemberData {
     private String postalcode;
 
     @OneToMany(mappedBy = "sellermemberid")
-    private List<ProductBasicData> productBasicData ;
+    private List<ProductBasic> productBasic ;
 
     @OneToMany(mappedBy = "memberid")
-    private List<ProductReviewData> productReviewData ;
+    private List<ProductReview> productReview ;
 
     @OneToMany(mappedBy = "memberid")
-    private List<ShoppingCartData> shoppingCartData ;
+    private List<ShoppingCart> shoppingCart ;
 
     @OneToMany(mappedBy = "memberid")
-    private List<UserCouponData> userCouponData ;
+    private List<UserCoupon> userCoupon ;
 
     @OneToMany(mappedBy = "memberid")
-    private List<WishlistData> wishlistData ;
+    private List<Wishlist> wishlist ;
 
     @OneToMany(mappedBy = "seller")
-    private List<OrderBasicData> soldOrders;
+    private List<OrderBasic> soldOrders;
 
     @OneToMany(mappedBy = "buyer")
-    private List<OrderBasicData> boughtOrders;
+    private List<OrderBasic> boughtOrders;
 
     @OneToMany(mappedBy = "sellerMember")
-    private List<QandAData> askedQuestions;
+    private List<QandA> askedQuestions;
 
     @OneToMany(mappedBy = "buyerMember")
-    private List<QandAData> receivedQuestions;
+    private List<QandA> receivedQuestions;
 
 }

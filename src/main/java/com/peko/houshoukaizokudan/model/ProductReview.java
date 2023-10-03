@@ -12,7 +12,7 @@ import org.hibernate.annotations.Nationalized;
 @ToString
 @Entity
 @Table(name = "ProductReviewData", schema = "dbo")
-public class ProductReviewData {
+public class ProductReview {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "reviewid", nullable = false)
@@ -20,11 +20,11 @@ public class ProductReviewData {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "productid")
-    private ProductBasicData productid;
+    private ProductBasic productid;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "memberid")
-    private MemberData memberid;
+    private Member memberid;
 
     @Column(name = "rating")
     private Integer rating;

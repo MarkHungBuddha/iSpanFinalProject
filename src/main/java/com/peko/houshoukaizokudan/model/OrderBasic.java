@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.Nationalized;
 
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 @Builder
@@ -15,7 +16,7 @@ import java.util.Set;
 @ToString
 @Entity
 @Table(name = "OrderBasicData", schema = "dbo")
-public class OrderBasicData {
+public class OrderBasic {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "orderid", nullable = false)
@@ -23,11 +24,11 @@ public class OrderBasicData {
 
     @ManyToOne
     @JoinColumn(name = "sellerid")
-    private MemberData seller; // 對應到 sellerid
+    private Member seller; // 對應到 sellerid
 
     @ManyToOne
     @JoinColumn(name = "memberid")
-    private MemberData buyer; // 對應到 memberid
+    private Member buyer; // 對應到 memberid
 
     @Nationalized
     @Column(name = "merchanttradedate", length = 20)
@@ -95,6 +96,6 @@ public class OrderBasicData {
     private String needextrapaidinfo;
 
     @OneToMany(mappedBy = "orderid")
-    private Set<com.peko.houshoukaizokudan.model.OrderDetailData > orderDetailData = new LinkedHashSet<>();
+    private List<OrderDetail > orderDetail;
 
 }

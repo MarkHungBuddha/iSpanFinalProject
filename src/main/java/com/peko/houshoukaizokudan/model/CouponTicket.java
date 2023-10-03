@@ -6,6 +6,7 @@ import org.hibernate.annotations.Nationalized;
 
 import java.math.BigDecimal;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 @Builder
@@ -16,7 +17,7 @@ import java.util.Set;
 @ToString
 @Entity
 @Table(name = "CouponTicketData", schema = "dbo")
-public class CouponTicketData {
+public class CouponTicket {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "coupon_id", nullable = false)
@@ -42,6 +43,6 @@ public class CouponTicketData {
     private Integer discountAmount;
 
     @OneToMany(mappedBy = "couponid")
-    private Set<com.peko.houshoukaizokudan.model.UserCouponData> userCouponData = new LinkedHashSet<>();
+    private List<UserCoupon> userCoupon;
 
 }

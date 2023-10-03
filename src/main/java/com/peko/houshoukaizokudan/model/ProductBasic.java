@@ -17,7 +17,7 @@ import java.util.Set;
 @ToString
 @Entity
 @Table(name = "ProductBasicData", schema = "dbo")
-public class ProductBasicData {
+public class ProductBasic {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "productid", nullable = false)
@@ -25,7 +25,7 @@ public class ProductBasicData {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sellermemberid")
-    private com.peko.houshoukaizokudan.model.MemberData sellermemberid;
+    private Member sellermemberid;
 
     @Nationalized
     @Column(name = "productname", nullable = false, length = 1000)
@@ -39,7 +39,7 @@ public class ProductBasicData {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "categoryid")
-    private com.peko.houshoukaizokudan.model.ProductCategoryData categoryid;
+    private ProductCategory categoryid;
 
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
@@ -49,21 +49,21 @@ public class ProductBasicData {
     private String description;
 
     @OneToMany(mappedBy = "productid")
-    private List<OrderDetailData> orderDetailData;
+    private List<OrderDetail> orderDetail;
 
     @OneToMany(mappedBy = "productid")
-    private List<ProductImageData> productImageData;
+    private List<ProductImage> productImage;
 
     @OneToMany(mappedBy = "productid")
-    private List<ProductReviewData> productReviewData ;
+    private List<ProductReview> productReview ;
 
     @OneToMany(mappedBy = "productid")
-    private List<QandAData> qandAData ;
+    private List<QandA> qandA ;
 
     @OneToMany(mappedBy = "productid")
-    private List<ShoppingCartData> shoppingCartData ;
+    private List<ShoppingCart> shoppingCart ;
 
     @OneToMany(mappedBy = "productid")
-    private List<WishlistData> wishlistData ;
+    private List<Wishlist> wishlist ;
 
 }

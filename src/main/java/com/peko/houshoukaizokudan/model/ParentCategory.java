@@ -15,7 +15,7 @@ import java.util.Set;
 @ToString
 @Entity
 @Table(name = "ParentCategoryData", schema = "dbo")
-public class ParentCategoryData {
+public class ParentCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "parentid", nullable = false)
@@ -25,6 +25,6 @@ public class ParentCategoryData {
     private String parentname;
 
     @OneToMany(mappedBy = "parentid")
-    private List<ProductCategoryData> productCategoryData ;
+    private List<ProductCategory> productCategory ;
 
 }

@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 @ToString
 @Entity
 @Table(name = "OrderDetailData", schema = "dbo")
-public class OrderDetailData {
+public class OrderDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "orderdetailid", nullable = false)
@@ -21,11 +21,11 @@ public class OrderDetailData {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "orderid")
-    private com.peko.houshoukaizokudan.model.OrderBasicData orderid;
+    private OrderBasic orderid;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "productid")
-    private com.peko.houshoukaizokudan.model.ProductBasicData productid;
+    private ProductBasic productid;
 
     @Column(name = "quantity")
     private Integer quantity;
@@ -35,6 +35,6 @@ public class OrderDetailData {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "statusid")
-    private com.peko.houshoukaizokudan.model.OrderStatusData statusid;
+    private OrderStatus statusid;
 
 }

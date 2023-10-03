@@ -15,7 +15,7 @@ import java.util.Set;
 @ToString
 @Entity
 @Table(name = "OrderStatusData", schema = "dbo")
-public class OrderStatusData {
+public class OrderStatus {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "statusid", nullable = false)
@@ -25,6 +25,6 @@ public class OrderStatusData {
     private String statusname;
 
     @OneToMany(mappedBy = "statusid")
-    private List<OrderDetailData> orderDetailData ;
+    private List<OrderDetail> orderDetail ;
 
 }

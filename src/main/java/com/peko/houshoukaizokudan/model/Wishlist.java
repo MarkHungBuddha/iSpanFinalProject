@@ -11,7 +11,7 @@ import lombok.*;
 @ToString
 @Entity
 @Table(name = "WishlistData", schema = "dbo")
-public class WishlistData {
+public class Wishlist {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "wishlistid", nullable = false)
@@ -19,10 +19,10 @@ public class WishlistData {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "memberid")
-    private MemberData memberid;
+    private Member memberid;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "productid")
-    private ProductBasicData productid;
+    private ProductBasic productid;
 
 }

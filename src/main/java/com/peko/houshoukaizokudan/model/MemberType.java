@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.Nationalized;
 
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 @Builder
@@ -15,7 +16,7 @@ import java.util.Set;
 @ToString
 @Entity
 @Table(name = "MemberTypeData", schema = "dbo")
-public class MemberTypeData {
+public class MemberType {
     @Id
     @Column(name = "membertypeid", nullable = false)
     private Integer id;
@@ -29,6 +30,6 @@ public class MemberTypeData {
     private String memberTypeDescription;
 
     @OneToMany(mappedBy = "membertypeid")
-    private Set<com.peko.houshoukaizokudan.model.MemberDatum> memberData = new LinkedHashSet<>();
+    private List<Member> member;
 
 }
