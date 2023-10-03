@@ -5,7 +5,7 @@ import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.util.Objects;
-
+@Data
 @Getter
 @Setter
 @ToString
