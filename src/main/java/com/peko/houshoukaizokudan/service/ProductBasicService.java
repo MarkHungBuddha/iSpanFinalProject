@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.peko.houshoukaizokudan.model.ProductBasic;
-import com.peko.houshoukaizokudan.model.ProductBasicRepository;
+import com.peko.houshoukaizokudan.repository.ProductBasicRepository;
 
 @Service
 public class ProductBasicService {

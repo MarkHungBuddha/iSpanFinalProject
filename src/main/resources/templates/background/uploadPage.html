@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+<head>
+<meta charset="UTF-8">
+<title>Upload</title>
+</head>
+<body>
+<div th:replace="~{layout/navbar}"></div>
+	<div class="container">
+<div class="card">
+			<div class="card-header">商品</div>
+			<br>
+			<div class="card-body">
+				<form th:action="@{/back/add}" method="post"
+					enctype="multipart/form-data">
+
+					<div class="input-group">
+						<label for="productname" class="form-label">商品名稱</label> <input
+							class="form-control" name="productname" id="productname" required />
+					</div>
+					<br>
+					<div class="input-group">
+						<label for="price" class="form-label">價錢</label> <input
+							class="form-control" name="price" id="price" required />
+					</div>
+					<br>
+					<div class="input-group">
+						<label for="specialprice" class="form-label">特價</label> <input
+							class="form-control" name="specialprice" id="specialprice" required />
+					</div>
+					<br>
+					<div class="input-group">
+						<label for="categoryid" class="form-label">分類</label> <input
+							class="form-control" name="categoryid" id="categoryid" required />
+					</div>
+					<br>
+					<div class="input-group">
+						<label for="quantity" class="form-label">數量</label> <input
+							class="form-control" name="quantity" id="quantity" required />
+					</div>
+					<br>
+					<div class="input-group">
+					<label for="description" class="form-label">商品介紹</label>
+						<textarea class="form-control" name="description" id="description" required></textarea>
+					</div>
+					<br>
+<!--
+					<div class="input-group">
+						<label for="file" class="form-label">圖片</label> <input
+							class="form-control" name="file" id="file" type="file" required
+							multiple />
+					</div>
+					<br>
+-->
+					<button class="btn btn-outline-primary">送出</button>
+				</form>
+			</div>
+			<div th:text="${errorMsg} ? ${errorMsg}"></div>
+		</div>
+
+
+	</div>
+</body>
+</html>
