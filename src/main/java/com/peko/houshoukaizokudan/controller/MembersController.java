@@ -90,19 +90,21 @@ public class MembersController {
 	@PostMapping("/member/login")
 	public String checkUserLogin(
 			@RequestParam("username") String username,
-			@RequestParam("password") String password,
+			@RequestParam("passwdbcrypt") String passwdbcrypt,
 			HttpSession httpSession,
 			Model model) {
 		
-		Member result = mService.checkLogin(username, password);
+		Member result = mService.checkLogin(username, passwdbcrypt);
 		
 		if(result != null) {
 			System.out.println("登入成功");
 			httpSession.setAttribute("loginUser", result);
+			System.out.println("OK");
 		}else {
 			System.out.println("登入失敗");
 			model.addAttribute("loginFail","帳號密碼錯誤");
+			System.out.println("NOK");
 		}
-		return"member/loginPage";
+		return"member/loginOK";
 	}
 }

@@ -33,11 +33,11 @@ public class MemberService {
 		}
 	}
 
-	public Member checkLogin(String username, String inputpwd) {
+	public Member checkLogin(String username, String passwdbcrypt) {
 		Member dbUser = mRepo.findByUsername(username);
 
 		if (dbUser != null) {
-			if (pwdEncoder.matches(inputpwd, dbUser.getPasswdbcrypt())) {
+			if (pwdEncoder.matches(passwdbcrypt, dbUser.getPasswdbcrypt())) {
 				return dbUser;
 			}
 		}
