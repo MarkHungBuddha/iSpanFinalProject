@@ -15,7 +15,7 @@ import java.util.Set;
 @Setter
 @ToString
 @Entity
-@Table(name = "MemberType", schema = "dbo")
+@Table(name = "MemberTypeData", schema = "dbo")
 public class MemberType {
     @Id
     @Column(name = "membertypeid", nullable = false)

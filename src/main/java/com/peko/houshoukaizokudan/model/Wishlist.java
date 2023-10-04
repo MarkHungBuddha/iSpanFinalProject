@@ -10,7 +10,7 @@ import lombok.*;
 @Setter
 @ToString
 @Entity
-@Table(name = "Wishlist", schema = "dbo")
+@Table(name = "WishlistData", schema = "dbo")
 public class Wishlist {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

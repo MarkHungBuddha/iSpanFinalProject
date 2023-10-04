@@ -16,7 +16,7 @@ import java.util.Set;
 @Setter
 @ToString
 @Entity
-@Table(name = "CouponTicket", schema = "dbo")
+@Table(name = "CouponTicketData", schema = "dbo")
 public class CouponTicket {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

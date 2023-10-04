@@ -10,7 +10,7 @@ import lombok.*;
 @Setter
 @ToString
 @Entity
-@Table(name = "UserCoupon", schema = "dbo")
+@Table(name = "UserCouponData", schema = "dbo")
 public class UserCoupon {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

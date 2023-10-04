@@ -27,7 +27,7 @@ public class MemberController {
 	public String postRegister(
 			@RequestParam("username") String username,
 			@RequestParam("passwdbcrypt") String password,
-			@RequestParam("membertypeid") Integer membertypeid,
+			@RequestParam("membertypeid") com.peko.houshoukaizokudan.model.MemberType membertypeid,
 			@RequestParam("memberimgpath") String memberimgpath,
 			@RequestParam("firstname") String firstname,
 			@RequestParam("lastname") String lastname,

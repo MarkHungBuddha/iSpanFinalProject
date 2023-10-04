@@ -11,7 +11,7 @@ import org.hibernate.annotations.Nationalized;
 @Setter
 @ToString
 @Entity
-@Table(name = "ProductReview", schema = "dbo")
+@Table(name = "ProductReviewData", schema = "dbo")
 public class ProductReview {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -14,7 +14,7 @@ import java.util.Objects;
 @ToString
 @RequiredArgsConstructor
 @Entity
-@Table(name = "QandA")
+@Table(name = "QandAData")
 public class QandA {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

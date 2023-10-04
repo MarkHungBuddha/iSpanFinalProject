@@ -14,7 +14,7 @@ import java.util.Set;
 @Setter
 @ToString
 @Entity
-@Table(name = "ParentCategory", schema = "dbo")
+@Table(name = "ParentCategoryData", schema = "dbo")
 public class ParentCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
