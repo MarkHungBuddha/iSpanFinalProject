@@ -3,17 +3,20 @@ package com.peko.houshoukaizokudan.model;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Nationalized;
-import org.hibernate.proxy.HibernateProxy;
 
 import java.math.BigDecimal;
-import java.util.Objects;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 @ToString
-@RequiredArgsConstructor
 @Entity
-@Table(name = "ProductBasicData")
+@Table(name = "ProductBasic", schema = "dbo")
 public class ProductBasic {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,8 +25,7 @@ public class ProductBasic {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sellermemberid")
-    @ToString.Exclude
-    private Member sellermemberid;
+    private com.peko.houshoukaizokudan.model.Member sellermemberid;
 
     @Nationalized
     @Column(name = "productname", nullable = false, length = 1000)
@@ -37,8 +39,7 @@ public class ProductBasic {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "categoryid")
-    @ToString.Exclude
-    private ProductCategory categoryid;
+    private com.peko.houshoukaizokudan.model.ProductCategory categoryid;
 
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
@@ -47,19 +48,22 @@ public class ProductBasic {
     @Column(name = "description", length = 4000)
     private String description;
 
-    @Override
-    public final boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null) return false;
-        Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
-        Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
-        if (thisEffectiveClass != oEffectiveClass) return false;
-        ProductBasic that = (ProductBasic) o;
-        return getId() != null && Objects.equals(getId(), that.getId());
-    }
+    @OneToMany(mappedBy = "productid")
+    private List<OrderDetail> orderDetail;
 
-    @Override
-    public final int hashCode() {
-        return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
-    }
+    @OneToMany(mappedBy = "productid")
+    private List<ProductImage> productImage;
+
+    @OneToMany(mappedBy = "productid")
+    private List<ProductReview> productReview ;
+
+    @OneToMany(mappedBy = "productid")
+    private List<QandA> qandA ;
+
+    @OneToMany(mappedBy = "productid")
+    private List<ShoppingCart> shoppingCart ;
+
+    @OneToMany(mappedBy = "productid")
+    private List<Wishlist> wishlist ;
+
 }
