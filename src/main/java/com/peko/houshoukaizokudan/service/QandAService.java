@@ -10,4 +10,5 @@ public class QandAService {
 
     @Autowired
     private QandARepository qandARepository;
+    //adfdfffefw
 }
