@@ -5,8 +5,18 @@ import lombok.*;
 import org.hibernate.annotations.Nationalized;
 import org.hibernate.proxy.HibernateProxy;
 
+<<<<<<< Updated upstream
 import java.util.Objects;
 @Data
+=======
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+>>>>>>> Stashed changes
 @Getter
 @Setter
 @ToString
@@ -19,8 +29,17 @@ public class Member {
     @Column(name = "memberid", nullable = false)
     private Integer id;
 
+<<<<<<< Updated upstream
     @Column(name = "membertypeid")
     private Integer membertypeid;
+=======
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "membertypeid")
+    private com.peko.houshoukaizokudan.model.MemberType membertypeid;
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
 
     @Nationalized
     @Column(name = "memberimgpath", nullable = false, length = 200)
