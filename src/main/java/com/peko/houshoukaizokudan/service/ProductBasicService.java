@@ -98,6 +98,11 @@ public class ProductBasicService {
     }
 
 
+
+	
+	@Autowired
+	private ProductBasicRepository prdRepo;
+	
 	
 	public List<ProductBasic> findProductBasicDataByproductname(String productname) {	
 	
@@ -125,5 +130,9 @@ public class ProductBasicService {
 //	public ProductBasic findLastest() {
 //		return prdRepo.findFirstByOrderIdDesc();
 //	}
+	// 	return 	products;
+		
+	// };
+	
 
 }

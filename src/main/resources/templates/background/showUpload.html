@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+<head>
+<meta charset="UTF-8">
+<title>show upload</title>
+</head>
+<body>
+	<div th:replace="~{layout/navbar}"></div>
+	<div class="container">
+		<h1>顯示上傳</h1>
+		
+		
+		<th:block th:each="product : ${list}">
+			<div class="card">
+				<div class="card-header">
+					-----------
+				</div>
+				<div class="card-body">
+					<span th:text="${product} ? ${product.id}"></span>
+					<br>
+					<span th:text="${product} ? ${product.sellermemberid}"></span>
+					<br>
+					<span th:text="${product} ? ${product.productname}"></span>
+					<br>
+					<span th:text="${product} ? ${product.price}"></span>
+					<br>
+					<span th:text="${product} ? ${product.specialprice}"></span>
+					<br>
+					<span th:text="${product} ? ${product.categoryid}"></span>
+					<br>
+					<span th:text="${product} ? ${product.quantity}"></span>
+					<br>
+					<span th:text="${product} ? ${product.description}"></span>
+					
+				
+				<div class="edit-place" style="display:flex">
+				<form th:action="@{/back/edit}">
+				<input type="hidden" name="id" th:value="${product.id}" />
+				<input type="submit" class="btn btn-outline-danger btn-sm" value="編輯"/>
+				</form>
+
+				<form th:action="@{/back/delete}" method="post">
+				<input type="hidden" name="id" th:value="${product.id}" />
+				<input type="hidden" name="_method" th:value="delete" />
+				<input type="submit" class="btn btn-outline-danger btn-sm" value="刪除"/>
+				</form>
+				
+				</div>					
+			</div>
+			</div>
+
+		</th:block>
+		
+
+		
+	</div>
+
+
+
+</body>
+</html>

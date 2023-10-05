@@ -27,7 +27,7 @@ public class ProductController {
 	}
     
     @PostMapping("/product/productFind")
-    public String productFind(@RequestParam("productname") String productname, Model model) {
+    public String productFind(@RequestParam("productName") String productname, Model model) {
         List<ProductBasic> products = prdService.findProductBasicDataByproductname(productname);
         
         model.addAttribute("products", products);

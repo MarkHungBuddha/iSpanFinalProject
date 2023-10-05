@@ -33,12 +33,14 @@
 
 <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 <title>黑豆</title>
+<title>首頁</title>
 <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet" />
 </head>
 <body>
 	<nav class="navbar navbar-expand-lg bg-light">
 		<div class="container-fluid">
 			<a class="navbar-brand" th:href="@{/}">黑豆</a>
+			<a class="navbar-brand" th:href="@{/}">MyApp</a>
 			<button class="navbar-toggler" type="button"
 				data-bs-toggle="collapse" data-bs-target="#navbarNav"
 				aria-controls="navbarNav" aria-expanded="false"
@@ -59,9 +61,28 @@
         			</li>
         			
 
+					<li class="nav-item"><a class="nav-link active"
+						aria-current="page" th:href="@{/}">Home</a></li>
+
+					<li class="nav-item"><a class="nav-link"
+						th:href="@{/member/register}">註冊</a></li>
+					<li class="nav-item"><a class="nav-link"
+						th:href="@{/member/login}">登入</a></li>
+
+
+					<li class="nav-item"><a class="nav-link"
+						th:href="@{/product/productFind}">商品查詢</a></li>
+
+					<li class="nav-item"><a class="nav-link"
+						th:href="@{/orders/orderBase}">訂單查詢</a></li>
+
+					<li class="nav-item"><a class="nav-link disabled">Disabled</a>
+					</li>
 				</ul>
 			</div>
 		</div>
 	</nav>
+
+	<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>

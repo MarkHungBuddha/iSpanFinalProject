@@ -6,6 +6,13 @@ import org.springframework.stereotype.Service;
 
 import com.peko.houshoukaizokudan.model.Member;
 import com.peko.houshoukaizokudan.model.MemberRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.peko.houshoukaizokudan.model.Member;
+import com.peko.houshoukaizokudan.repository.MemberRepository;
 
 @Service
 public class MemberService {
@@ -46,4 +53,14 @@ public class MemberService {
 		return null;
 	}
 
+
+
+
+	public Member findById(Integer id) {
+		return mRepo.findById(id)
+	            .orElseThrow(() -> new RuntimeException("MemberType not found for id: " + id));
+		
+	}
+
 }
+
