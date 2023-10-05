@@ -3,24 +3,28 @@ package com.peko.houshoukaizokudan.model;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Nationalized;
-import org.hibernate.proxy.HibernateProxy;
 
-import java.util.Objects;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 @ToString
-@RequiredArgsConstructor
 @Entity
-@Table(name = "MemberData")
+@Table(name = "MemberData", schema = "dbo")
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "memberid", nullable = false)
     private Integer id;
 
-    @Column(name = "membertypeid")
-    private Integer membertypeid;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "membertypeid")
+    private com.peko.houshoukaizokudan.model.MemberType membertypeid;
 
     @Nationalized
     @Column(name = "memberimgpath", nullable = false, length = 200)
@@ -73,19 +77,31 @@ public class Member {
     @Column(name = "postalcode", length = 20)
     private String postalcode;
 
-    @Override
-    public final boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null) return false;
-        Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
-        Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
-        if (thisEffectiveClass != oEffectiveClass) return false;
-        Member member = (Member) o;
-        return getId() != null && Objects.equals(getId(), member.getId());
-    }
+    @OneToMany(mappedBy = "sellermemberid")
+    private List<ProductBasic> productBasic ;
 
-    @Override
-    public final int hashCode() {
-        return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
-    }
+    @OneToMany(mappedBy = "memberid")
+    private List<ProductReview> productReview ;
+
+    @OneToMany(mappedBy = "memberid")
+    private List<ShoppingCart> shoppingCart ;
+
+    @OneToMany(mappedBy = "memberid")
+    private List<UserCoupon> userCoupon ;
+
+    @OneToMany(mappedBy = "memberid")
+    private List<Wishlist> wishlist ;
+
+    @OneToMany(mappedBy = "seller")
+    private List<OrderBasic> soldOrders;
+
+    @OneToMany(mappedBy = "buyer")
+    private List<OrderBasic> boughtOrders;
+
+    @OneToMany(mappedBy = "sellerMember")
+    private List<QandA> askedQuestions;
+
+    @OneToMany(mappedBy = "buyerMember")
+    private List<QandA> receivedQuestions;
+
 }
