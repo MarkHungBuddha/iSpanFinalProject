@@ -24,7 +24,7 @@ public class Member {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "membertypeid")
-    private com.peko.houshoukaizokudan.model.MemberType membertypeid;
+    private MemberType membertypeid;
 
     @Nationalized
     @Column(name = "memberimgpath", nullable = false, length = 200)

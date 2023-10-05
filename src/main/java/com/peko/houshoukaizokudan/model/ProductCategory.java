@@ -26,7 +26,7 @@ public class ProductCategory {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parentid")
-    private com.peko.houshoukaizokudan.model.ParentCategory parentid;
+    private ParentCategory parentid;
 
     @OneToMany(mappedBy = "categoryid")
     private List<ProductBasic> productBasic ;

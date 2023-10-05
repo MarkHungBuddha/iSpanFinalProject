@@ -21,11 +21,11 @@ public class OrderDetail {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "orderid")
-    private com.peko.houshoukaizokudan.model.OrderBasic orderid;
+    private OrderBasic orderid;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "productid")
-    private com.peko.houshoukaizokudan.model.ProductBasic productid;
+    private ProductBasic productid;
 
     @Column(name = "quantity")
     private Integer quantity;
@@ -35,6 +35,6 @@ public class OrderDetail {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "statusid")
-    private com.peko.houshoukaizokudan.model.OrderStatus statusid;
+    private OrderStatus statusid;
 
 }

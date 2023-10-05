@@ -25,7 +25,7 @@ public class ProductBasic {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sellermemberid")
-    private com.peko.houshoukaizokudan.model.Member sellermemberid;
+    private Member sellermemberid;
 
     @Nationalized
     @Column(name = "productname", nullable = false, length = 1000)
@@ -39,7 +39,7 @@ public class ProductBasic {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "categoryid")
-    private com.peko.houshoukaizokudan.model.ProductCategory categoryid;
+    private ProductCategory categoryid;
 
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
