@@ -15,7 +15,7 @@ import java.util.Set;
 @Setter
 @ToString
 @Entity
-@Table(name = "OrderBasicData", schema = "dbo")
+@Table(name = "OrderBasic", schema = "dbo")
 public class OrderBasic {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
