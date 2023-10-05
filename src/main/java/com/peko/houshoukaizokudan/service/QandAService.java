@@ -10,5 +10,15 @@ public class QandAService {
 
     @Autowired
     private QandARepository qandARepository;
-    //adfdfffefw
+
+
+    //新增問題
+
+    //編輯問題
+
+    //修改問題
+
+    //列出全部問題
+
+
 }
