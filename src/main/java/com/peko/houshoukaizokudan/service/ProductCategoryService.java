@@ -19,4 +19,16 @@ public class ProductCategoryService {
 
 
 
+
+
+	public ProductCategory findById(Integer id) {
+		Optional<ProductCategory> optioanl = pcRepo.findById(id);
+
+		if (optioanl.isPresent()) {
+			return optioanl.get();
+		}
+
+		return null;
+
+	}
 }

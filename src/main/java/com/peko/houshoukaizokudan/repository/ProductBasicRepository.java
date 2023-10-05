@@ -13,3 +13,6 @@ public interface ProductBasicRepository extends JpaRepository<ProductBasic, Inte
 	List<ProductBasic> findProductBasicDataByproductnameLike(String productname);
 
 }
+
+
+

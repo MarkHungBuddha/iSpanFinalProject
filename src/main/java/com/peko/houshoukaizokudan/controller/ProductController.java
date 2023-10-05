@@ -47,6 +47,58 @@ public class ProductController {
    
  
  
-    
-    
+
+
+	@GetMapping("/back/add")
+	private String addPage(Model model) {
+		return "background/uploadPage";
+	}
+
+	@PostMapping("/back/add")
+	private String uploadPage(@RequestParam String productname, @RequestParam BigDecimal price,
+			@RequestParam BigDecimal specialprice, @RequestParam Integer categoryid, @RequestParam Integer quantity,
+			@RequestParam String description, Model model, HttpServletRequest request
+
+	) {
+		// 获取 HttpSession 对象
+		HttpSession session = request.getSession();
+
+		// 从 HttpSession 中获取存储的用户信息
+		Member loginUser = (Member) session.getAttribute("loginUser");
+
+		if (loginUser != null) {
+			ProductCategory pc1 = new ProductCategory();
+			pc1.setId(categoryid);
+			ProductBasic pb1 = new ProductBasic();
+			pb1.setSellermemberid(loginUser);
+			pb1.setProductname(productname);
+			pb1.setPrice(price);
+			pb1.setSpecialprice(specialprice);
+			pb1.setCategoryid(pc1);
+			pb1.setQuantity(quantity);
+			pb1.setDescription(description);
+
+			pbService.insert(pb1);
+			return "background/uploadPage";
+		} else {
+			return "background/uploadPage";
+		}
+	}
+
+
+
+	@DeleteMapping("/back/delete")
+	public String deleteProduct(@RequestParam("id") Integer id) {
+		pbService.deleteById(id);
+		return "redirect:/background/showUpload";
+	}
+
+	@GetMapping("/back/edit")
+	public String editPage(@RequestParam("id") Integer id, Model model) {
+
+		ProductBasic pb5 = pbService.findById(id);
+		model.addAttribute("product", pb5);
+		return "background/showUpload";
+	}
+
 }
