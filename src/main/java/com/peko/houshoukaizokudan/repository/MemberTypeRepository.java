@@ -1,4 +1,4 @@
-package com.peko.houshoukaizokudan.repository;
+package com.peko.houshoukaizokudan.Repository;
 
 import java.util.Optional;
 

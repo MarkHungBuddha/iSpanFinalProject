@@ -5,7 +5,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.peko.houshoukaizokudan.model.Member;
-import com.peko.houshoukaizokudan.model.MemberRepository;
+import com.peko.houshoukaizokudan.Repository.MemberRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import org.springframework.beans.factory.annotation.Autowired;
