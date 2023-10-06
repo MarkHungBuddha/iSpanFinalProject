@@ -6,8 +6,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class PageController {
 	//回首頁
-	@GetMapping("/")
+	@GetMapping("/index")
 	public String home() {
+		System.out.println("Go To Home");
 		return "index";
 	}
 

@@ -95,7 +95,7 @@ public class OrderBasic {
     @Column(name = "needextrapaidinfo", length = 1)
     private String needextrapaidinfo;
 
-    @OneToMany(mappedBy = "orderid")
-    private List<OrderDetail > orderDetail;
+    @OneToOne(mappedBy = "orderid")
+    private OrderDetail  orderDetail;
 
 }
