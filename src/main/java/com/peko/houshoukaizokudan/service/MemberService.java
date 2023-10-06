@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.peko.houshoukaizokudan.model.Member;
-import com.peko.houshoukaizokudan.repository.MemberRepository;
+import com.peko.houshoukaizokudan.Repository.*;
 
 @Service
 public class MemberService {
@@ -57,7 +57,7 @@ public class MemberService {
 
 
 	public Member findById(Integer id) {
-		return mRepo.findById(id)
+		return usersRepo.findById(id)
 	            .orElseThrow(() -> new RuntimeException("MemberType not found for id: " + id));
 		
 	}
