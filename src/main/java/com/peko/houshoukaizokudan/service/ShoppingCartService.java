@@ -1,5 +1,6 @@
 package com.peko.houshoukaizokudan.service;
 
+import com.peko.houshoukaizokudan.Repository.ShoppingCartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

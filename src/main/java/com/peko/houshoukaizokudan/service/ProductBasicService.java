@@ -20,9 +20,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.peko.houshoukaizokudan.model.ProductBasic;
-import com.peko.houshoukaizokudan.model.ProductBasicRepository;
+import com.peko.houshoukaizokudan.Repository.ProductBasicRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProductBasicService {
@@ -94,7 +95,7 @@ public class ProductBasicService {
 
     //商品like搜尋
     public List<ProductBasic> searchProductsByName(String keyword) {
-        return productBasicRepository.findByProductnameLike(keyword);
+        return productBasicRepository.findProductBasicDataByproductnameLike(keyword);
     }
 
 

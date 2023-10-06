@@ -1,11 +1,17 @@
 package com.peko.houshoukaizokudan.controller;
 
+import java.math.BigDecimal;
 import java.util.List;
 
+import com.peko.houshoukaizokudan.model.Member;
+import com.peko.houshoukaizokudan.model.ProductCategory;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -78,7 +84,7 @@ public class ProductController {
 			pb1.setQuantity(quantity);
 			pb1.setDescription(description);
 
-			pbService.insert(pb1);
+			prdService.insert(pb1);
 			return "background/uploadPage";
 		} else {
 			return "background/uploadPage";
@@ -89,14 +95,14 @@ public class ProductController {
 
 	@DeleteMapping("/back/delete")
 	public String deleteProduct(@RequestParam("id") Integer id) {
-		pbService.deleteById(id);
+		prdService.deleteById(id);
 		return "redirect:/background/showUpload";
 	}
 
 	@GetMapping("/back/edit")
 	public String editPage(@RequestParam("id") Integer id, Model model) {
 
-		ProductBasic pb5 = pbService.findById(id);
+		ProductBasic pb5 = prdService.findById(id);
 		model.addAttribute("product", pb5);
 		return "background/showUpload";
 	}

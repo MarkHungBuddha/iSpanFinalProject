@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import com.peko.houshoukaizokudan.model.Member;
 import com.peko.houshoukaizokudan.model.OrderBasic;
 import com.peko.houshoukaizokudan.model.ProductBasic;
-import com.peko.houshoukaizokudan.repository.OrderBasicRepository;
+import com.peko.houshoukaizokudan.Repository.OrderBasicRepository;
 
 @Service
 public class OrderBasicService {

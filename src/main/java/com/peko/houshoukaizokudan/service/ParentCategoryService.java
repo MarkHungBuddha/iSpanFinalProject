@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 public class ParentCategoryService {
 
     @Autowired
-    private com.peko.houshoukaizokudan.repository.ParentCategoryRepository parentCategoryRepository;
+    private ParentCategoryRepository parentCategoryRepository;
 
     //新增商品母分類
 }
