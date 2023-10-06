@@ -1,12 +1,10 @@
 package com.peko.houshoukaizokudan.controller;
 
-import com.peko.houshoukaizokudan.service.QandAService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 @Controller
-public class QandAController {
+public class WishlistController {
 
-    @Autowired
-    private QandAService qandAService;
+
 }

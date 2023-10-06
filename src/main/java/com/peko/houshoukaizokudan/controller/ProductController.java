@@ -107,4 +107,14 @@ public class ProductController {
 		return "background/showUpload";
 	}
 
+//        findProductByPageLikeProductName
+//        productFindPage
+//        findByCategoryOrderByRating
+//        findProductBasicByID
+//        findProductReviewByID
+//        findProductQandAByIDByPage
+//        增QandA
+//        編輯QandA
+//        刪除QandA
+
 }

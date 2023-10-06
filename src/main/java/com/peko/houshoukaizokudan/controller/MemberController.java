@@ -97,4 +97,8 @@ public class MemberController {
 		return "member/memberLogin";
 	}
 
+	//登出
+
+	//刪除帳號
+
 }
