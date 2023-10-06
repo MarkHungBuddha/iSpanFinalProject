@@ -25,6 +25,6 @@ public class OrderStatus {
     private String statusname;
 
     @OneToMany(mappedBy = "statusid")
-    private List<OrderDetail> orderDetail ;
+    private List<OrderBasic> orderBasics ;
 
 }

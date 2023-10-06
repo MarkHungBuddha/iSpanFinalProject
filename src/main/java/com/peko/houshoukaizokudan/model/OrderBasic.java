@@ -98,4 +98,9 @@ public class OrderBasic {
     @OneToOne(mappedBy = "orderid")
     private OrderDetail  orderDetail;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "statusid")
+    private OrderStatus statusid;
+
+
 }

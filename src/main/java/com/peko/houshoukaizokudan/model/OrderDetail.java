@@ -33,8 +33,5 @@ public class OrderDetail {
     @Column(name = "unitprice", nullable = false, precision = 10, scale = 2)
     private BigDecimal unitprice;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "statusid")
-    private OrderStatus statusid;
 
 }

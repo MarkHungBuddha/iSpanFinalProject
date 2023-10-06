@@ -20,7 +20,7 @@ public class MemberController {
 	
 	@GetMapping("/member/memberRe")
 	public String register() {
-		return "member/memberRe";
+		return "memberRegister";
 	}
 	
 	@PostMapping("/member/post")
