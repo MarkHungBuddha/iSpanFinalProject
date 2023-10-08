@@ -3,6 +3,7 @@ package com.peko.houshoukaizokudan.controller;
 import java.math.BigDecimal;
 import java.util.List;
 
+import com.peko.houshoukaizokudan.DTO.ProductBasicDto;
 import com.peko.houshoukaizokudan.model.Member;
 import com.peko.houshoukaizokudan.model.ProductCategory;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,10 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import com.peko.houshoukaizokudan.model.ProductBasic;
 import com.peko.houshoukaizokudan.service.ProductBasicService;
@@ -48,11 +46,25 @@ public class ProductController {
 
     	return "product/productFindPages";
 	}
- 
-    
-   
- 
- 
+
+
+
+	@GetMapping("product/{id}")
+	public String findProduct(@PathVariable("id") Integer productid, Model model) {
+
+		ProductBasicDto productBasicDto = prdService.findProductInformation(productid);
+
+		// Adding productBasicDto to the model
+		model.addAttribute("product", productBasicDto);
+
+		return "product/productView";
+	}
+
+
+
+
+
+
 
 
 	@GetMapping("/back/add")

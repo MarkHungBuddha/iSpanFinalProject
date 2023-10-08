@@ -1,12 +1,8 @@
 package com.peko.houshoukaizokudan.service;
 
-import com.peko.houshoukaizokudan.Repository.ParentCategoryRepository;
-import com.peko.houshoukaizokudan.Repository.ProductBasicRepository;
-import com.peko.houshoukaizokudan.Repository.ProductCategoryRepository;
-import com.peko.houshoukaizokudan.Repository.ProductImageRepository;
-import com.peko.houshoukaizokudan.model.ProductBasic;
-import com.peko.houshoukaizokudan.model.ProductCategory;
-import com.peko.houshoukaizokudan.model.ProductImage;
+import com.peko.houshoukaizokudan.DTO.ProductBasicDto;
+import com.peko.houshoukaizokudan.Repository.*;
+import com.peko.houshoukaizokudan.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,17 +25,22 @@ import java.util.Optional;
 public class ProductBasicService {
 
     @Autowired
-    private ProductBasicRepository productBasicRepository;
+    private static ProductBasicRepository productBasicRepository;
 
     @Autowired
     private ProductCategoryRepository productCategoryRepository;
 
     @Autowired
-    private ParentCategoryRepository parentCategoryRepository;
+    private QandARepository qandARepository;
+
+    @Autowired
+    private ProductReviewRepository productReviewRepository;
 
     @Autowired
     private ProductImageRepository productImageRepository;
 
+    @Autowired
+    private  ParentCategoryRepository parentCategoryRepository;
     //建立商品
     @Transactional
     public ProductBasic addProductWithImages(ProductBasic productBasic, ProductCategory category, List<ProductImage> images) {
@@ -160,5 +161,38 @@ public class ProductBasicService {
 
 		return null;
 	}
+
+
+
+    public ProductBasicDto findProductInformation(Integer productID) {
+        Optional<ProductBasic> productBasicOptional = productBasicRepository.findById(productID);
+
+        if (!productBasicOptional.isPresent()) {
+            return null; // 或者拋出一個適當的異常，例如 `EntityNotFoundException`
+        }
+
+        ProductBasic productBasic = productBasicOptional.get();
+        Member seller = productBasic.getSellermemberid();
+        ParentCategory parentCategory=parentCategoryRepository.findById(productBasic.getCategoryid().getParentid());
+
+        ProductBasicDto productBasicDto = ProductBasicDto.builder()
+                .id(productID)
+                .sellermemberid(seller)
+                .productname(productBasic.getProductname())
+                .price(productBasic.getPrice())
+                .specialprice(productBasic.getSpecialprice())
+                .categoryid(productBasic.getCategoryid())
+                .quantity(productBasic.getQuantity())
+                .description(productBasic.getDescription())
+                .productImage(productBasic.getProductImage())
+                .productReview(productBasic.getProductReview())
+                .qandA(productBasic.getQandA())
+                .parentCategory(parentCategory)
+                .build()
+                ;
+
+        return productBasicDto;
+    }
+
 
 }

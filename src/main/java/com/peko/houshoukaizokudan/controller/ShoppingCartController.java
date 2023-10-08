@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import com.peko.houshoukaizokudan.model.ProductBasic;
 import com.peko.houshoukaizokudan.model.ShoppingCart;
 import com.peko.houshoukaizokudan.service.ShoppingCartService;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/cart")
