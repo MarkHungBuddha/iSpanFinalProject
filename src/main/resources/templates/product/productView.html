@@ -16,12 +16,27 @@
     <h1>價格: <span th:text="${product.price}"></span></h1>
     <h1>商品分類: <span th:text="${product.categoryid.getCategoryname()}"></span></h1>
     <h1>母商品分類: <span th:text="${product.parentCategory.getParentname()}"></span></h1>
-    <h1>Product Name: <span th:text="${product.name}"></span></h1>
-    <h1>Product Name: <span th:text="${product.name}"></span></h1>
-    <h1>Product Name: <span th:text="${product.name}"></span></h1>
-    <h1>Product Name: <span th:text="${product.name}"></span></h1>
-    <h1>Product Name: <span th:text="${product.name}"></span></h1>
-    <h1>Product Name: <span th:text="${product.name}"></span></h1>
+    <h1>數量: <span th:text="${product.quantity}"></span></h1>
+    <h1>描述: <span th:text="${product.description}"></span></h1>
+    <h1>: <span th:text="${product.name}"></span></h1>
+    <h1>照片: <span th:text="${product.name}">
+        <img src="">
+    </span></h1>
+    <div th:each="review : ${product.ProductReview}">
+        <p th:text="${ProductReview.Member.username}"></p>
+        <p th:text="${ProductReview.Member.rating}"></p>
+        <p th:text="${ProductReview.Member.reviewcontent}"></p>
+        <p th:text="${ProductReview.Member.reviewtime}"></p>
+
+    </div>
+
+    <div th:each="qanda : ${product.QandA}">
+        <p th:text="${QandA.question}"></p>
+        <p th:text="${QandA.sellerMember.getusername()}"></p>
+        <p th:text="${QandA.questiontime}"></p>
+        <p th:text="${QandA.answer}"></p>
+        <p th:text="${QandA.answertime}"></p> 
+    </div>
 
 
 

@@ -56,6 +56,7 @@ public class ProductController {
 
 		// Adding productBasicDto to the model
 		model.addAttribute("product", productBasicDto);
+		System.out.println(productBasicDto.toString());
 
 		return "product/productView";
 	}

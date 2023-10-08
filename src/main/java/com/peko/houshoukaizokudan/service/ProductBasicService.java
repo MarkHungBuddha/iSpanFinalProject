@@ -167,9 +167,9 @@ public class ProductBasicService {
     public ProductBasicDto findProductInformation(Integer productID) {
         Optional<ProductBasic> productBasicOptional = productBasicRepository.findById(productID);
 
-        if (!productBasicOptional.isPresent()) {
-            return null; // 或者拋出一個適當的異常，例如 `EntityNotFoundException`
-        }
+//        if (!productBasicOptional.isPresent()) {
+//            return null; // 或者拋出一個適當的異常，例如 `EntityNotFoundException`
+//        }
 
         ProductBasic productBasic = productBasicOptional.get();
         Member seller = productBasic.getSellermemberid();
@@ -190,6 +190,8 @@ public class ProductBasicService {
                 .parentCategory(parentCategory)
                 .build()
                 ;
+
+        System.out.println(productBasicDto.toString());
 
         return productBasicDto;
     }
