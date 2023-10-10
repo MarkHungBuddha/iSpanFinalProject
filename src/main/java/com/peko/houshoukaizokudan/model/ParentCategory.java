@@ -12,7 +12,6 @@ import java.util.Set;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
 @Entity
 @Table(name = "ParentCategory", schema = "dbo")
 public class ParentCategory {

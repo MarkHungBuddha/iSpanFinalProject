@@ -9,7 +9,6 @@ import org.hibernate.annotations.Nationalized;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
 @Entity
 @Table(name = "ProductReview", schema = "dbo")
 public class ProductReview {
@@ -18,11 +17,11 @@ public class ProductReview {
     @Column(name = "reviewid", nullable = false)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "productid")
     private ProductBasic productid;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "memberid")
     private Member memberid;
 

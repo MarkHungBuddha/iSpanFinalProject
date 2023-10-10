@@ -9,5 +9,4 @@ import java.util.Optional;
 
 public interface ParentCategoryRepository extends JpaRepository<ParentCategory, Integer>{
 
-    ParentCategory findById(ParentCategory parentid);
 }

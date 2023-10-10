@@ -12,7 +12,6 @@ import java.util.Set;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
 @Entity
 @Table(name = "ProductCategory", schema = "dbo")
 public class ProductCategory {
@@ -24,7 +23,7 @@ public class ProductCategory {
     @Column(name = "categoryname", nullable = false, length = 50)
     private String categoryname;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "parentid")
     private ParentCategory parentid;
 

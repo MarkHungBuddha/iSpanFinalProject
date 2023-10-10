@@ -8,7 +8,6 @@ import lombok.*;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
 @Entity
 @Table(name = "ProductImage", schema = "dbo")
 public class ProductImage {
@@ -17,7 +16,7 @@ public class ProductImage {
     @Column(name = "imageid", nullable = false)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "productid")
     private ProductBasic productid;
 

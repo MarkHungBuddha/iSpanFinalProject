@@ -14,7 +14,6 @@ import java.util.Set;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
 @Entity
 @Table(name = "ProductBasic", schema = "dbo")
 public class ProductBasic {
@@ -49,21 +48,21 @@ public class ProductBasic {
     private String description;
 
     @OneToMany(mappedBy = "productid")
-    private List<OrderDetail> orderDetail;
+    private Set<OrderDetail> orderDetail;
 
     @OneToMany(mappedBy = "productid")
-    private List<ProductImage> productImage;
+    private Set<ProductImage> productImage;
 
     @OneToMany(mappedBy = "productid")
-    private List<ProductReview> productReview ;
+    private Set<ProductReview> productReview ;
 
     @OneToMany(mappedBy = "productid")
-    private List<QandA> qandA ;
+    private Set<QandA> qandA ;
 
     @OneToMany(mappedBy = "productid")
-    private List<ShoppingCart> shoppingCart ;
+    private Set<ShoppingCart> shoppingCart ;
 
     @OneToMany(mappedBy = "productid")
-    private List<Wishlist> wishlist ;
+    private Set<Wishlist> wishlist ;
 
 }

@@ -49,19 +49,24 @@ public class ProductController {
 
 
 
-	@GetMapping("product/{id}")
-	public String findProduct(@PathVariable("id") Integer productid, Model model) {
+//	@GetMapping("product/{id}")
+//	public String findProduct(@PathVariable("id") Integer productid, Model model) {
+//
+//		ProductBasicDto productBasicDto = prdService.findProductInformation(productid);
+//
+//		// Adding productBasicDto to the model
+//		model.addAttribute("product", productBasicDto);
+////		System.out.println(productBasicDto.toString());
+//
+//		return "product/productView";
+//	}
 
-		ProductBasicDto productBasicDto = prdService.findProductInformation(productid);
-
-		// Adding productBasicDto to the model
-		model.addAttribute("product", productBasicDto);
-		System.out.println(productBasicDto.toString());
-
+	@GetMapping("/product/{productId}")
+	public String viewProduct(@PathVariable Integer productId, Model model) {
+		ProductBasicDto productDTO = prdService.getProductDTOById(productId).orElse(null);
+		model.addAttribute("product", productDTO);
 		return "product/productView";
 	}
-
-
 
 
 

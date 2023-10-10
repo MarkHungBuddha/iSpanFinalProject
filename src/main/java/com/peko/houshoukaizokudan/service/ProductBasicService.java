@@ -6,26 +6,23 @@ import com.peko.houshoukaizokudan.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-
 import com.peko.houshoukaizokudan.model.ProductBasic;
 import com.peko.houshoukaizokudan.Repository.ProductBasicRepository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
 public class ProductBasicService {
 
     @Autowired
-    private static ProductBasicRepository productBasicRepository;
+    private ProductBasicRepository productBasicRepository;
 
     @Autowired
     private ProductCategoryRepository productCategoryRepository;
@@ -40,7 +37,9 @@ public class ProductBasicService {
     private ProductImageRepository productImageRepository;
 
     @Autowired
-    private  ParentCategoryRepository parentCategoryRepository;
+    private ParentCategoryRepository parentCategoryRepository;
+
+
     //建立商品
     @Transactional
     public ProductBasic addProductWithImages(ProductBasic productBasic, ProductCategory category, List<ProductImage> images) {
@@ -63,9 +62,9 @@ public class ProductBasicService {
     //編輯商品
 
     @Transactional
-    public ProductBasic editProduct(ProductBasic productBasic,ProductCategory category, List<ProductImage> images) {
+    public ProductBasic editProduct(ProductBasic productBasic, ProductCategory category, List<ProductImage> images) {
         if (productBasicRepository.existsById(productBasic.getId())) {
-             productBasicRepository.save(productBasic);
+            productBasicRepository.save(productBasic);
 
             // Link product to its category
             category.setProductBasic(List.of(productBasic));
@@ -89,112 +88,111 @@ public class ProductBasicService {
         productBasicRepository.deleteById(productId);
     }
 
+    @Transactional
     //列出全部商品
     public List<ProductBasic> listAllProducts() {
         return productBasicRepository.findAll();
     }
 
+    @Transactional
     //商品like搜尋
     public List<ProductBasic> searchProductsByName(String keyword) {
         return productBasicRepository.findProductBasicDataByproductnameLike(keyword);
     }
 
 
+    @Transactional
+    public List<ProductBasic> findProductBasicDataByproductname(String productname) {
 
-	
-	@Autowired
-	private ProductBasicRepository prdRepo;
-	
-	
-	public List<ProductBasic> findProductBasicDataByproductname(String productname) {	
-	
-		
-		List<ProductBasic> products =prdRepo.findProductBasicDataByproductnameLike("%"+productname+"%");
-		
-		if(products.isEmpty()) {
-			return null; 
-		}
-		return 	products;		
-	};
-	
-	
 
-	
-	
-	//頁碼  //1頁2筆
+        List<ProductBasic> products = productBasicRepository.findProductBasicDataByproductnameLike("%" + productname + "%");
 
-	public Page<ProductBasic> findProductByPage(Integer pageNumber){
-		Pageable pgb= PageRequest.of(pageNumber-1, 3,Sort.Direction.ASC, "id");
-		Page<ProductBasic> page = prdRepo.findAll(pgb);
-		return page;
-	}
-	
+        if (products.isEmpty()) {
+            return null;
+        }
+        return products;
+    }
+
+    @Transactional
+    public Optional<ProductBasicDto> getProductDTOById(Integer productId) {
+//        Optional<ProductBasic> productOptional = productBasicRepository.findById(productId);
+        Optional<ProductBasic> productOptional = productBasicRepository.findByIdWithRelationships(productId);
+
+        if (!productOptional.isPresent()) {
+            return Optional.empty();
+        }
+
+        ProductBasic productBasic = productOptional.get();
+        ProductBasicDto productDTO = new ProductBasicDto();
+
+        // Map entity to DTO
+        productDTO.setProductId(productBasic.getId());
+        productDTO.setProductName(productBasic.getProductname());
+        productDTO.setPrice(productBasic.getPrice());
+        productDTO.setSpecialPrice(productBasic.getSpecialprice());
+        productDTO.setDescription(productBasic.getDescription());
+        productDTO.setQuantity(productBasic.getQuantity());
+        productDTO.setCategoryName(productBasic.getCategoryid().getCategoryname());
+        productDTO.setParentCategoryName(productBasic.getCategoryid().getParentid().getParentname());
+        productDTO.setSellerUsername(productBasic.getSellermemberid().getUsername());
+        productDTO.setImages(productBasic.getProductImage());
+        productDTO.setReviews(productBasic.getProductReview());
+        productDTO.setQandAs(productBasic.getQandA());
+
+        return Optional.of(productDTO);
+    }
+
+
+
+
+    //頁碼  //1頁2筆
+    @Transactional
+    public Page<ProductBasic> findProductByPage(Integer pageNumber) {
+        Pageable pgb = PageRequest.of(pageNumber - 1, 3, Sort.Direction.ASC, "id");
+        Page<ProductBasic> page = productBasicRepository.findAll(pgb);
+        return page;
+    }
+
 //	public ProductBasic findLastest() {
 //		return prdRepo.findFirstByOrderIdDesc();
 //	}
-	// 	return 	products;
-		
-	// };
-	
-	@Autowired
-	private ProductBasicRepository pbRepo;
+    // 	return 	products;
 
-	public void insert(ProductBasic pb) {
-		pbRepo.save(pb);
-	}
+    // };
 
-//	public List<ProductBasic> findBySellerMemberId(Integer sellermemberid) {
+    @Transactional
+    public void insert(ProductBasic pb) {
+        productBasicRepository.save(pb);
+    }
+
+    //	public List<ProductBasic> findBySellerMemberId(Integer sellermemberid) {
 //		List<ProductBasic> pbList = pbRepo.findBySellermemberid(sellermemberid);
 //		return pbList;
 //	}
-
-	public void deleteById(Integer id) {
-		pbRepo.deleteById(id);
-	}
-
-	public ProductBasic findById(Integer id) {
-		Optional<ProductBasic> optioanl = pbRepo.findById(id);
-
-		if (optioanl.isPresent()) {
-			return optioanl.get();
-		}
-
-		return null;
-	}
-
-
-
-    public ProductBasicDto findProductInformation(Integer productID) {
-        Optional<ProductBasic> productBasicOptional = productBasicRepository.findById(productID);
-
-//        if (!productBasicOptional.isPresent()) {
-//            return null; // 或者拋出一個適當的異常，例如 `EntityNotFoundException`
-//        }
-
-        ProductBasic productBasic = productBasicOptional.get();
-        Member seller = productBasic.getSellermemberid();
-        ParentCategory parentCategory=parentCategoryRepository.findById(productBasic.getCategoryid().getParentid());
-
-        ProductBasicDto productBasicDto = ProductBasicDto.builder()
-                .id(productID)
-                .sellermemberid(seller)
-                .productname(productBasic.getProductname())
-                .price(productBasic.getPrice())
-                .specialprice(productBasic.getSpecialprice())
-                .categoryid(productBasic.getCategoryid())
-                .quantity(productBasic.getQuantity())
-                .description(productBasic.getDescription())
-                .productImage(productBasic.getProductImage())
-                .productReview(productBasic.getProductReview())
-                .qandA(productBasic.getQandA())
-                .parentCategory(parentCategory)
-                .build()
-                ;
-
-        System.out.println(productBasicDto.toString());
-
-        return productBasicDto;
+    @Transactional
+    public void deleteById(Integer id) {
+        productBasicRepository.deleteById(id);
     }
+
+    public ProductBasic findById(Integer id) {
+        Optional<ProductBasic> optioanl = productBasicRepository.findById(id);
+
+        if (optioanl.isPresent()) {
+            return optioanl.get();
+        }
+
+        return null;
+    }
+
+//
+//
+//
+//    public Optional<ProductBasicDto> getProductDTOById(Integer productId) {
+//        // Logic to fetch and assemble data into ProductDTO
+//        return Optional.empty(); // Placeholder, you'll need to implement the actual logic
+//    }
+
+
 
 
 }

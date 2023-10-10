@@ -6,28 +6,26 @@ import lombok.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 
-/**
- * DTO for {@link com.peko.houshoukaizokudan.model.ProductBasic}
- */
-@Value
-@Setter
+@Data
 @Getter
-@Builder
-@ToString
-public class ProductBasicDto implements Serializable {
-    Integer id;
-    Member sellermemberid;
-    String productname;
-    BigDecimal price;
-    BigDecimal specialprice;
-    ProductCategory categoryid;
-    ParentCategory parentCategory;
-    Integer quantity;
-    String description;
-    List<ProductImage> productImage;
-    List<ProductReview> productReview;
-    List<QandA> qandA;
-
-
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class ProductBasicDto {
+    private Integer ProductId;
+    private String productName;
+    private BigDecimal price;
+    private BigDecimal specialPrice;
+    private String description;
+    private Integer quantity;
+    private String sellerUsername;
+    private String sellerFirstName;
+    private String sellerLastName;
+    private Set<ProductImage> images;
+    private Set<QandA> qandAs;
+    private Set<ProductReview> reviews;
+    private String categoryName;
+    private String parentCategoryName;
 }

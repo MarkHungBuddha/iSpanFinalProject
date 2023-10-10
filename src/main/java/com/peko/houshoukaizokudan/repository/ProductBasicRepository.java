@@ -1,10 +1,16 @@
 package com.peko.houshoukaizokudan.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.peko.houshoukaizokudan.model.ProductBasic;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
 
 public interface ProductBasicRepository extends JpaRepository<ProductBasic, Integer> {
 	
@@ -12,6 +18,24 @@ public interface ProductBasicRepository extends JpaRepository<ProductBasic, Inte
 	
 	List<ProductBasic> findProductBasicDataByproductnameLike(String productname);
 
+	@Query("SELECT p FROM ProductBasic p JOIN FETCH p.sellermemberid WHERE p.id = :id")
+	Optional<ProductBasic> findByIdWithSeller(@Param("id") Integer id);
+
+
+	@Query("SELECT p FROM ProductBasic p JOIN FETCH p.productImage JOIN FETCH p.qandA JOIN FETCH p.productReview WHERE p.id = :id")
+	Optional<ProductBasic> findByIdWithRelationships(@Param("id") Integer id);
+
+
+//	@EntityGraph(attributePaths = {
+//			"sellermemberid",
+//			"productImage",
+//			"productReview",
+//			"qandA",
+//			"categoryid",  // This loads the ProductCategory
+//			"categoryid.parentid"  // This loads the ParentCategory associated with the ProductCategory
+//			// 你可以繼續添加其他需要的屬性
+//	})
+//	Optional<ProductBasic> findByIdWithSeller(Integer id);
 
 
 }

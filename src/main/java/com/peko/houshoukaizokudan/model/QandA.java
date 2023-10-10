@@ -11,7 +11,6 @@ import java.util.Objects;
 
 @Getter
 @Setter
-@ToString
 @RequiredArgsConstructor
 @Entity
 @Table(name = "QandA")
@@ -21,17 +20,17 @@ public class QandA {
     @Column(name = "productquestionid", nullable = false)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "productid")
     @ToString.Exclude
     private ProductBasic productid;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "sellermemberid")
     @ToString.Exclude
     private Member sellerMember;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "buyermemberid")
     @ToString.Exclude
     private Member buyerMember;
