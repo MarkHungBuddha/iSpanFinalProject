@@ -10,9 +10,9 @@ import com.peko.houshoukaizokudan.model.ShoppingCart;
 @Service
 public class ShoppingCartService {
 
-    private final ShoppingCartRepository shoppingCartRepository;
-
     @Autowired
+    private  ShoppingCartRepository shoppingCartRepository;
+
     public ShoppingCartService(ShoppingCartRepository shoppingCartRepository) {
         this.shoppingCartRepository = shoppingCartRepository;
     }

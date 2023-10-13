@@ -78,30 +78,30 @@ public class Member {
     private String postalcode;
 
     @OneToMany(mappedBy = "sellermemberid")
-    private List<ProductBasic> productBasic ;
+    private Set<ProductBasic> productBasic ;
 
     @OneToMany(mappedBy = "memberid")
-    private List<ProductReview> productReview ;
+    private Set<ProductReview> productReview ;
 
     @OneToMany(mappedBy = "memberid")
-    private List<ShoppingCart> shoppingCart ;
+    private Set<ShoppingCart> shoppingCart ;
 
     @OneToMany(mappedBy = "memberid")
-    private List<UserCoupon> userCoupon ;
+    private Set<UserCoupon> userCoupon ;
 
     @OneToMany(mappedBy = "memberid")
-    private List<Wishlist> wishlist ;
+    private Set<Wishlist> wishlist ;
 
     @OneToMany(mappedBy = "seller")
-    private List<OrderBasic> soldOrders;
+    private Set<OrderBasic> soldOrders;
 
     @OneToMany(mappedBy = "buyer")
-    private List<OrderBasic> boughtOrders;
+    private Set<OrderBasic> boughtOrders;
 
     @OneToMany(mappedBy = "sellerMember")
-    private List<QandA> askedQuestions;
+    private Set<QandA> askedQuestions;
 
     @OneToMany(mappedBy = "buyerMember")
-    private List<QandA> receivedQuestions;
+    private Set<QandA> receivedQuestions;
 
 }

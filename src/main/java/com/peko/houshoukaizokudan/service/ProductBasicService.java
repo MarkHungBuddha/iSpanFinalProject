@@ -17,6 +17,7 @@ import com.peko.houshoukaizokudan.model.ProductBasic;
 import com.peko.houshoukaizokudan.Repository.ProductBasicRepository;
 
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class ProductBasicService {
@@ -47,7 +48,7 @@ public class ProductBasicService {
         ProductBasic savedProduct = productBasicRepository.save(productBasic);
 
         // Link product to its category
-        category.setProductBasic(List.of(savedProduct));
+        category.setProductBasic(Set.of(savedProduct));
         productCategoryRepository.save(category);
 
         // Save the product images
@@ -67,7 +68,7 @@ public class ProductBasicService {
             productBasicRepository.save(productBasic);
 
             // Link product to its category
-            category.setProductBasic(List.of(productBasic));
+            category.setProductBasic(Set.of(productBasic));
             productCategoryRepository.save(category);
 
             // Save the product images

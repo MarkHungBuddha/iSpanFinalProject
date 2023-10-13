@@ -30,6 +30,6 @@ public class MemberType {
     private String memberTypeDescription;
 
     @OneToMany(mappedBy = "membertypeid")
-    private List<Member> member;
+    private Set<Member> member;
 
 }

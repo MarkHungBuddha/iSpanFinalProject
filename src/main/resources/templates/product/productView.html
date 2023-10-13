@@ -109,6 +109,14 @@
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
+    <div class="product-images mb-4">
+        <h2>Images</h2>
+        <div class="row">
+            <div th:each="image : ${product.images}" class="col-md-3 mb-2">
+                <img class="img-fluid" th:src="|https://i.imgur.com/${image.imagepath}.jpg|" />
+            </div>
+        </div>
+    </div>
 
 <div class="container my-4">
 
@@ -123,14 +131,6 @@
         <p><strong>Parent Category:</strong> <span th:text="${product.parentCategoryName}"></span></p>
     </div>
 
-    <div class="product-images mb-4">
-        <h2>Images</h2>
-        <div class="row">
-            <div th:each="image : ${product.images}" class="col-md-3 mb-2">
-                <img class="img-fluid" th:src="|https://i.imgur.com/${image.imagepath}.jpg|" />
-            </div>
-        </div>
-    </div>
 
     <div class="product-qa mb-4">
         <h2>Questions and Answers</h2>

@@ -26,16 +26,7 @@ public interface ProductBasicRepository extends JpaRepository<ProductBasic, Inte
 	Optional<ProductBasic> findByIdWithRelationships(@Param("id") Integer id);
 
 
-//	@EntityGraph(attributePaths = {
-//			"sellermemberid",
-//			"productImage",
-//			"productReview",
-//			"qandA",
-//			"categoryid",  // This loads the ProductCategory
-//			"categoryid.parentid"  // This loads the ParentCategory associated with the ProductCategory
-//			// 你可以繼續添加其他需要的屬性
-//	})
-//	Optional<ProductBasic> findByIdWithSeller(Integer id);
+
 
 
 }

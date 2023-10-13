@@ -24,6 +24,6 @@ public class ParentCategory {
     private String parentname;
 
     @OneToMany(mappedBy = "parentid")
-    private List<ProductCategory> productCategory ;
+    private Set<ProductCategory> productCategory ;
 
 }

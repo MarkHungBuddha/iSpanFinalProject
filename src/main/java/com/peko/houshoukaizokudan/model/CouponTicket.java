@@ -43,6 +43,6 @@ public class CouponTicket {
     private Integer discountAmount;
 
     @OneToMany(mappedBy = "couponid")
-    private List<UserCoupon> userCoupon;
+    private Set<UserCoupon> userCoupon;
 
 }

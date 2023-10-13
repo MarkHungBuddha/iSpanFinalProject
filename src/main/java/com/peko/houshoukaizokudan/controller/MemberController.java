@@ -1,5 +1,6 @@
 package com.peko.houshoukaizokudan.controller;
 
+import com.peko.houshoukaizokudan.model.MemberType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,7 +28,7 @@ public class MemberController {
 	public String postRegister(
 			@RequestParam("username") String username,
 			@RequestParam("passwdbcrypt") String password,
-			@RequestParam("membertypeid") com.peko.houshoukaizokudan.model.MemberType membertypeid,
+			@RequestParam("membertypeid") MemberType membertypeid,
 			@RequestParam("memberimgpath") String memberimgpath,
 			@RequestParam("firstname") String firstname,
 			@RequestParam("lastname") String lastname,
@@ -41,6 +42,7 @@ public class MemberController {
 			@RequestParam("region") String region,
 			@RequestParam("street") String street,
 			@RequestParam("postalcode") String postalcode,
+
 			Model model) {
 		boolean isExist = userUservice.checkIfUsernameExist(username);
 		
@@ -51,6 +53,7 @@ public class MemberController {
 			u1.setUsername(username);
 			u1.setPasswdbcrypt(password);
 			u1.setBirthdate(birthdate);
+			u1.setMembertypeid(membertypeid);
 			u1.setCity(city);
 			u1.setCountry(country);
 			u1.setEmail(email);

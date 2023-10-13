@@ -28,6 +28,6 @@ public class ProductCategory {
     private ParentCategory parentid;
 
     @OneToMany(mappedBy = "categoryid")
-    private List<ProductBasic> productBasic ;
+    private Set<ProductBasic> productBasic ;
 
 }
