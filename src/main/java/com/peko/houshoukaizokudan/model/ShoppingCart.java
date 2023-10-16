@@ -28,4 +28,12 @@ public class ShoppingCart {
     @Column(name = "quantity")
     private Integer quantity;
 
+    @Column(name = "price")
+    private Integer price;
+    
+    @Column(name = "totalPrice")
+    private Integer totalPrice;
+    
+    @Column(name = "name")
+    private String name;
 }

@@ -19,7 +19,6 @@ public class ShoppingCartService {
 
     // 新增商品進購物車
     public void addProductToCart(ProductBasic product) {
-        // 在這裡，您可以執行業務邏輯，例如檢查庫存、計算價格等
 
         // 創建購物車項目
         ShoppingCart cartItem = new ShoppingCart();
@@ -32,7 +31,6 @@ public class ShoppingCartService {
 
     // 更新購物車
     public void updateCart(ShoppingCart cartItem) {
-        // 在這裡，您可以執行業務邏輯，例如檢查庫存、計算價格等
 
         // 更新購物車項目
         shoppingCartRepository.save(cartItem);
