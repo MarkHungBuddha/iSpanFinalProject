@@ -16,12 +16,16 @@ import org.springframework.web.bind.annotation.*;
 
 import com.peko.houshoukaizokudan.model.ProductBasic;
 import com.peko.houshoukaizokudan.service.ProductBasicService;
+import com.peko.houshoukaizokudan.service.ProductCategoryService;
 
 @Controller
 public class ProductController {
 
     @Autowired
     private ProductBasicService prdService;
+    
+    @Autowired
+    private ProductCategoryService pcService;
     
     
 	//跳頁
@@ -91,8 +95,7 @@ public class ProductController {
 		Member loginUser = (Member) session.getAttribute("loginUser");
 
 		if (loginUser != null) {
-			ProductCategory pc1 = new ProductCategory();
-			pc1.setId(categoryid);
+			ProductCategory pc1 = pcService.findById(categoryid);
 			ProductBasic pb1 = new ProductBasic();
 			pb1.setSellermemberid(loginUser);
 			pb1.setProductname(productname);
