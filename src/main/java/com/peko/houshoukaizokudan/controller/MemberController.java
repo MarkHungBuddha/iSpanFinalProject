@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.peko.houshoukaizokudan.model.Member;
 import com.peko.houshoukaizokudan.service.MemberService;
+import com.peko.houshoukaizokudan.service.MemberTypeService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -18,17 +19,19 @@ public class MemberController {
 	
 	@Autowired
 	private MemberService userUservice;
+	@Autowired
+	private MemberTypeService mtService;
 	
-	@GetMapping("/member/memberRe")
+	@GetMapping("/member/register")
 	public String register() {
-		return "memberRegister";
+		return "member/memberRegister";
 	}
 	
 	@PostMapping("/member/post")
 	public String postRegister(
 			@RequestParam("username") String username,
 			@RequestParam("passwdbcrypt") String password,
-			@RequestParam("membertypeid") MemberType membertypeid,
+			@RequestParam("membertypeid") Integer membertypeid,
 			@RequestParam("memberimgpath") String memberimgpath,
 			@RequestParam("firstname") String firstname,
 			@RequestParam("lastname") String lastname,
@@ -49,11 +52,12 @@ public class MemberController {
 		if(isExist) {
 			model.addAttribute("errorMsg", "此帳號已存在，請用別的");
 		}else {
-			Member u1 = new Member();
+			Member u1=new Member();
+			MemberType memberType = mtService.findById(membertypeid);
 			u1.setUsername(username);
 			u1.setPasswdbcrypt(password);
 			u1.setBirthdate(birthdate);
-			u1.setMembertypeid(membertypeid);
+			u1.setMembertypeid(memberType);
 			u1.setCity(city);
 			u1.setCountry(country);
 			u1.setEmail(email);
@@ -62,7 +66,6 @@ public class MemberController {
 			u1.setLastname(lastname);
 			u1.setMembercreationdate(membercreationdate);
 			u1.setMemberimgpath(memberimgpath);
-			u1.setMembertypeid(membertypeid);
 			u1.setPhone(phone);
 			u1.setPostalcode(postalcode);
 			u1.setRegion(region);
@@ -76,12 +79,12 @@ public class MemberController {
 		return "member/memberLogin";
 	}
 	
-	@GetMapping("/member/memberLogin")
+	@GetMapping("/member/login")
 	public String userLoginPage() {
 		return "member/memberLogin";
 	}
 	
-	@PostMapping("/member/memberLogin")
+	@PostMapping("/member/login")
 	public String checkUserLogin(
 			@RequestParam("username") String username, 
 			@RequestParam("passwdbcrypt") String password,
@@ -97,7 +100,7 @@ public class MemberController {
 			model.addAttribute("loginFail", "帳號密碼錯誤");
 		}
 		
-		return "member/memberLogin";
+		return "member/loginOK";
 	}
 
 	//登出
