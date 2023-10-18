@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.peko.houshoukaizokudan.DTO.ProductBasicDto;
 import com.peko.houshoukaizokudan.model.Member;
+import com.peko.houshoukaizokudan.model.OrderBasic;
 import com.peko.houshoukaizokudan.model.ProductCategory;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -21,49 +22,11 @@ import com.peko.houshoukaizokudan.service.ProductCategoryService;
 @Controller
 public class ProductController {
 
-    @Autowired
-    private ProductBasicService prdService;
-    
-    @Autowired
-    private ProductCategoryService pcService;
-    
-    
-	//跳頁
-	@GetMapping("/product/productFind")
-	public String productFindPage() {
-		return "product/productFindPage";
-	}
-    
-    @PostMapping("/product/productFind")
-    public String productFind(@RequestParam("productName") String productname, Model model) {
-        List<ProductBasic> products = prdService.findProductBasicDataByproductname(productname);
-        
-        model.addAttribute("products", products);
-        return "product/productFindPage"; 
-    }
-    
-    @GetMapping("/product/page")
-	public String findProductByPage(@RequestParam(name="p", defaultValue = "1") Integer pageNumber, Model model){
-    	Page<ProductBasic> Page = prdService.findProductByPage(pageNumber);
-    	
-    	model.addAttribute("Page" ,Page);
+	@Autowired
+	private ProductBasicService prdService;
 
-    	return "product/productFindPages";
-	}
-
-
-
-//	@GetMapping("product/{id}")
-//	public String findProduct(@PathVariable("id") Integer productid, Model model) {
-//
-//		ProductBasicDto productBasicDto = prdService.findProductInformation(productid);
-//
-//		// Adding productBasicDto to the model
-//		model.addAttribute("product", productBasicDto);
-////		System.out.println(productBasicDto.toString());
-//
-//		return "product/productView";
-//	}
+	@Autowired
+	private ProductCategoryService pcService;
 
 	@GetMapping("/product/{productId}")
 	public String viewProduct(@PathVariable Integer productId, Model model) {
@@ -71,11 +34,6 @@ public class ProductController {
 		model.addAttribute("product", productDTO);
 		return "product/productView";
 	}
-
-
-
-
-
 
 	@GetMapping("/back/add")
 	private String addPage(Model model) {
@@ -112,7 +70,30 @@ public class ProductController {
 		}
 	}
 
+	@GetMapping("/back/show")
+	public String showPage(Model model, HttpSession session) {
+		Member loginUser = (Member) session.getAttribute("loginUser");
 
+		if (loginUser != null) {
+			List<ProductBasic> list = prdService.findAllProductBasic(loginUser);
+			model.addAttribute("List", list);
+	        System.out.println("Size of list: " + list.size());
+	        for (ProductBasic product : list) {
+	            System.out.println("Seller Member ID: " + product.getSellermemberid().getId());
+	            System.out.println("Product Name: " + product.getProductname());
+	            System.out.println("Price: " + product.getPrice());
+	            System.out.println("Special Price: " + product.getSpecialprice());
+	            System.out.println("Category ID: " + product.getCategoryid().getId());
+	            System.out.println("Quantity: " + product.getQuantity());
+	            System.out.println("Description: " + product.getDescription());
+	            System.out.println("-------------------");
+	        }
+			return "background/showUpload";
+		} else {
+			// 如果会话中没有登录用户信息，可以重定向到登录页面或采取其他操作
+			return "background/showUpload";
+		}
+	}
 
 	@DeleteMapping("/back/delete")
 	public String deleteProduct(@RequestParam("id") Integer id) {
@@ -125,7 +106,7 @@ public class ProductController {
 
 		ProductBasic pb5 = prdService.findById(id);
 		model.addAttribute("product", pb5);
-		return "background/showUpload";
+		return "product/productView";
 	}
 
 //        findProductByPageLikeProductName

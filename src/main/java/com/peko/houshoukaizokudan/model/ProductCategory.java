@@ -30,4 +30,9 @@ public class ProductCategory {
     @OneToMany(mappedBy = "categoryid")
     private Set<ProductBasic> productBasic ;
 
+	public void setProductBasic(Set<ProductBasic> of) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

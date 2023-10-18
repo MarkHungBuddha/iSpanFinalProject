@@ -9,6 +9,12 @@
 	<div class="container">
 		<h1>顯示上傳</h1>
 		
+		<div
+				th:text="${session.loginUser} ? 'HI 安安' + ${session.loginUser.username}"></div>
+			<div
+				th:text="${session.loginUser} ? '你的ID:' + ${session.loginUser.id}"></div>
+			<div th:text="${loginFail} ? ${loginFail}"></div>
+		
 		
 		<th:block th:each="product : ${list}">
 			<div class="card">
@@ -16,34 +22,25 @@
 					-----------
 				</div>
 				<div class="card-body">
-					<span th:text="${product} ? ${product.id}"></span>
+				<!-- 
+					<span th:text="${product.productid}"></span>
+				 -->
 					<br>
-					<span th:text="${product} ? ${product.sellermemberid}"></span>
+					<span th:text="${product.sellermemberid.id}"></span>
 					<br>
-					<span th:text="${product} ? ${product.productname}"></span>
+					<span th:text="${product.productname}"></span>
 					<br>
-					<span th:text="${product} ? ${product.price}"></span>
+					<span th:text="${product.price}"></span>
 					<br>
-					<span th:text="${product} ? ${product.specialprice}"></span>
+					<span th:text="${product.specialprice}"></span>
 					<br>
-					<span th:text="${product} ? ${product.categoryid}"></span>
+					<span th:text="${product.categoryid.id}"></span>
 					<br>
-					<span th:text="${product} ? ${product.quantity}"></span>
+					<span th:text="${product.quantity}"></span>
 					<br>
-					<span th:text="${product} ? ${product.description}"></span>
+					<span th:text="${product.description}"></span>
 					
-				
-				<div class="edit-place" style="display:flex">
-				<form th:action="@{/back/edit}">
-				<input type="hidden" name="id" th:value="${product.id}" />
-				<input type="submit" class="btn btn-outline-danger btn-sm" value="編輯"/>
-				</form>
-
-				<form th:action="@{/back/delete}" method="post">
-				<input type="hidden" name="id" th:value="${product.id}" />
-				<input type="hidden" name="_method" th:value="delete" />
-				<input type="submit" class="btn btn-outline-danger btn-sm" value="刪除"/>
-				</form>
+			
 				
 				</div>					
 			</div>
@@ -53,7 +50,7 @@
 		
 
 		
-	</div>
+
 
 
 
