@@ -19,7 +19,7 @@ public class OrderDetail {
     @Column(name = "orderdetailid", nullable = false)
     private Integer id;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "orderid")
     private OrderBasic orderid;
 

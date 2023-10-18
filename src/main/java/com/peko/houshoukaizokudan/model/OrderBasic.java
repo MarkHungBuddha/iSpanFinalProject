@@ -95,7 +95,7 @@ public class OrderBasic {
     @Column(name = "needextrapaidinfo", length = 1)
     private String needextrapaidinfo;
 
-    @OneToOne(mappedBy = "orderid")
+    @OneToMany(mappedBy = "orderid")
     private OrderDetail  orderDetail;
 
     @ManyToOne(fetch = FetchType.LAZY)
