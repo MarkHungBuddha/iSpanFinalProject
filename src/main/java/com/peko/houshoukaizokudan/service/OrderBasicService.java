@@ -28,4 +28,18 @@ public class OrderBasicService {
 
 		return orders;
 	}
+
+	
+
+	public OrderBasic getOrder(Integer orderId) {
+		OrderBasic orders=orderRepo.findOrderBasicById(orderId);
+		return orders;
+	}
+
+
+
+	public List<OrderBasic> getMemberOrders(Integer memberId) {
+		List<OrderBasic> orders=orderRepo.findOrderBasicBybuyer(memberId);
+		return orders;
+	}
 }
