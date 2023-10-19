@@ -21,7 +21,7 @@ public class ProductBasic {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "productid", nullable = false)
     private Integer id;
-//
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sellermemberid")
     private Member sellermemberid;
@@ -29,7 +29,7 @@ public class ProductBasic {
     @Nationalized
     @Column(name = "productname", nullable = false, length = 1000)
     private String productname;
-//
+
     @Column(name = "price", nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
 
@@ -45,7 +45,7 @@ public class ProductBasic {
 
     @Nationalized
     @Column(name = "description", length = 4000)
-   private String description;
+    private String description;
 
     @OneToMany(mappedBy = "productid")
     private Set<OrderDetail> orderDetail;
@@ -60,11 +60,9 @@ public class ProductBasic {
     private Set<QandA> qandA ;
 
     @OneToMany(mappedBy = "productid")
-   private Set<ShoppingCart> shoppingCart ;
+    private Set<ShoppingCart> shoppingCart ;
 
     @OneToMany(mappedBy = "productid")
     private Set<Wishlist> wishlist ;
-    
-    
-    
+
 }

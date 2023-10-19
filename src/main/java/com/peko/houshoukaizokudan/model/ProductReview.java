@@ -36,5 +36,4 @@ public class ProductReview {
     @Column(name = "reviewtime", length = 50)
     private String reviewtime;
 
-  
 }
