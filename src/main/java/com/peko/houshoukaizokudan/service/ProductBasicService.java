@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -185,7 +186,12 @@ public class ProductBasicService {
         return null;
     }
 
+//	public static List<Map> spMessage(Integer ids) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 //
+////
 //
 //
 //    public Optional<ProductBasicDto> getProductDTOById(Integer productId) {
