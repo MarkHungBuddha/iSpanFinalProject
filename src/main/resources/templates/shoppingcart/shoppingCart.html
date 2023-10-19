@@ -10,39 +10,37 @@
   <h1>購物車</h1>
 
 <!-- 顯示購物車內容 -->
+<form method="Post" th:action="@{addProduct}">
 <table>
     <tr>
-        <th>商品名稱</th>
+        <th>商品id</th>
+        <th>名稱</th>
         <th>價格</th>
-        <th>數量</th>
     </tr>
-   <tr th:each="ShoppingCart : ${ShoppingCart}"> 
-        <td th:if="${ShoppingCart != null}"  th:text="${ShoppingCart.name}"></td>
-        <td th:if="${ShoppingCart != null}"  th:text="${ShoppingCart.price}"></td>
-        <td th:if="${ShoppingCart != null}"  th:text="${ShoppingCart.quantity}"></td>
-    </tr>
+			<!--<tr th:each="list:${products}">
+				<td th:text="${list.value.products.id}"></td>
+				<td th:text="${list.value.products.productname}"></td>
+				<td th:text="${list.value.products.price}"></td>
+				<td align="center">
+					<a href="${pageContext.request.contextPath }/ShoppingCart/addProduct/${products.id}">Buy Now</a>
+				</td>
+			</tr>  -->
+			<tr>
+            <td><input type="text" name="id"></td>
+            <td><input type="text" name="name"></td>
+            <td><input type="number" name="price" /></td>
+            <td align="center">
+					<input type="submit" value="buy"/>
+				</td>
+        </tr>
+
 </table>
-
-<!-- 顯示購物車總價 -->
-<p th:if="${ShoppingCart != null}"  th:text="${ShoppingCart.totalPrice}"></p>
-
-<!-- 添加商品到購物車的表單 -->
-
-<!-- 更新購物車的表單 -->
-<form th:action="@{/ShoppingCart/update}">
-    <!-- 這裡放置更新購物車的輸入字段 -->
-    <button type="submit">更新購物車</button>
 </form>
 
-<!-- 移除商品 -->
-<form >
-    <button type="submit">移除商品</button>
-</form>
 
-<!-- 清空購物車 -->
-<form th:action="@{/ShoppingCart/clear}">
-    <button type="submit">清空購物車</button>
-</form>
+   
 </div>
 </body>
+
 </html>
+
