@@ -17,7 +17,7 @@ public class OrderBasicService {
 	@Autowired
 	private OrderBasicRepository orderRepo;
 
-	public List<OrderBasic> findOrderBasicDataBymemberid(Member buyer) {
+	public List<OrderBasic> findOrderBasicBymemberOrderid(Member buyer) {
 //		Integer Member= buyer.getId();
 		
 		List<OrderBasic> orders =orderRepo.findOrderBasicBybuyer(buyer);
@@ -32,14 +32,14 @@ public class OrderBasicService {
 	
 
 	public OrderBasic getOrder(Integer orderId) {
-		OrderBasic orders=orderRepo.findOrderBasicById(orderId);
+		OrderBasic orders=orderRepo.findOrderBasicByOrderid(orderId);
 		return orders;
 	}
 
 
 
-	public List<OrderBasic> getMemberOrders(Integer memberId) {
-		List<OrderBasic> orders=orderRepo.findOrderBasicBybuyer(memberId);
-		return orders;
-	}
+//	public List<OrderBasic> getMemberOrders(Integer memberId) {
+//		List<OrderBasic> orders=orderRepo.findOrderBasicBybuyer(memberId);
+//		return orders;
+//	}
 }

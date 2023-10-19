@@ -1,12 +1,27 @@
 package com.peko.houshoukaizokudan.model;
 
-import jakarta.persistence.*;
-import lombok.*;
+import java.util.Set;
+
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Nationalized;
 
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Builder
 @AllArgsConstructor
@@ -20,7 +35,7 @@ public class OrderBasic {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "orderid", nullable = false)
-    private Integer id;
+    private Integer orderid;
 
     @ManyToOne
     @JoinColumn(name = "sellerid")
@@ -46,7 +61,7 @@ public class OrderBasic {
 
     @Nationalized
     @Column(name = "reviewcontent", length = 400)
-    private String reviewcontent;
+    private String reviewcontent; //評價
 
     @Nationalized
     @Column(name = "merchantid", length = 10)
@@ -100,6 +115,7 @@ public class OrderBasic {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "statusid")
+    @Fetch(FetchMode.JOIN)
     private OrderStatus statusid;
 
 

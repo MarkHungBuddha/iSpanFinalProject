@@ -1,5 +1,8 @@
 package com.peko.houshoukaizokudan.model;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,8 +19,9 @@ public class ProductImage {
     @Column(name = "imageid", nullable = false)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "productid")
+    @Fetch(FetchMode.JOIN)
     private ProductBasic productid;
 
     @Column(name = "imagepath", nullable = false, length = 200)
