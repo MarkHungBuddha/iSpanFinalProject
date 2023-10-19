@@ -97,5 +97,17 @@ public class MemberController {
 		return response;
 	}
 	
+	@PostMapping("/member/logout")
+	public Map<String, String> logout(HttpSession httpsession) {
+	    Map<String, String> response = new HashMap<>();
+	    
+	    httpsession.removeAttribute("loginUser");
+	    
+	    httpsession.invalidate();
+	    
+	    response.put("success", "登出成功");
+	    
+	    return response;
+	}
 	// 其他控制器方法和功能
 }
