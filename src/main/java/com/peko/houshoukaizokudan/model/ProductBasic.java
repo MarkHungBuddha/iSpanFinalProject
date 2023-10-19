@@ -2,6 +2,9 @@ package com.peko.houshoukaizokudan.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Nationalized;
 
 import java.math.BigDecimal;
@@ -24,6 +27,7 @@ public class ProductBasic {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sellermemberid")
+    @Fetch(FetchMode.JOIN)
     private Member sellermemberid;
 
     @Nationalized
@@ -38,6 +42,7 @@ public class ProductBasic {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "categoryid")
+    @Fetch(FetchMode.JOIN)
     private ProductCategory categoryid;
 
     @Column(name = "quantity", nullable = false)

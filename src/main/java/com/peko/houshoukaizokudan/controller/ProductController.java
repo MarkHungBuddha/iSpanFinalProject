@@ -2,22 +2,28 @@ package com.peko.houshoukaizokudan.controller;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import org.hibernate.Hibernate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.peko.houshoukaizokudan.DTO.ProductBasicDto;
 import com.peko.houshoukaizokudan.model.Member;
-import com.peko.houshoukaizokudan.model.OrderBasic;
-import com.peko.houshoukaizokudan.model.ProductCategory;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-
 import com.peko.houshoukaizokudan.model.ProductBasic;
+import com.peko.houshoukaizokudan.model.ProductCategory;
 import com.peko.houshoukaizokudan.service.ProductBasicService;
 import com.peko.houshoukaizokudan.service.ProductCategoryService;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class ProductController {
@@ -69,31 +75,60 @@ public class ProductController {
 			return "background/uploadPage";
 		}
 	}
-
 	@GetMapping("/back/show")
-	public String showPage(Model model, HttpSession session) {
+	@ResponseBody
+	public List<ProductBasicDto> showPage(HttpSession session) {
 		Member loginUser = (Member) session.getAttribute("loginUser");
-
 		if (loginUser != null) {
 			List<ProductBasic> list = prdService.findAllProductBasic(loginUser);
-			model.addAttribute("List", list);
-	        System.out.println("Size of list: " + list.size());
-	        for (ProductBasic product : list) {
-	            System.out.println("Seller Member ID: " + product.getSellermemberid().getId());
-	            System.out.println("Product Name: " + product.getProductname());
-	            System.out.println("Price: " + product.getPrice());
-	            System.out.println("Special Price: " + product.getSpecialprice());
-	            System.out.println("Category ID: " + product.getCategoryid().getId());
-	            System.out.println("Quantity: " + product.getQuantity());
-	            System.out.println("Description: " + product.getDescription());
-	            System.out.println("-------------------");
-	        }
-			return "background/showUpload";
+			
+	        System.out.println("Size of list: " + list.size());	        
+	        
+//	        for (ProductBasic product : list) {
+//	            System.out.println("Seller Member ID: " + product.getSellermemberid().getId());
+//	            System.out.println("Product Name: " + product.getProductname());
+//	            System.out.println("Price: " + product.getPrice());
+//	            System.out.println("Special Price: " + product.getSpecialprice());
+//	            System.out.println("Category ID: " + product.getCategoryid().getId());
+//	            System.out.println("Quantity: " + product.getQuantity());
+//	            System.out.println("Description: " + product.getDescription());
+//	            System.out.println("-------------------");
+//	        }
+	        
+	        List<ProductBasicDto> dtoList = list.stream()
+	                .map(product -> {
+	                	ProductBasicDto dto = new ProductBasicDto();
+	                	dto.setProductId(product.getId());
+	                    dto.setSellermemberid(product.getSellermemberid().getMemberid());
+	                    // 其他字段設置...
+//	                    if (product.getSellermemberid() != null) {
+//	                        dto.setSellermemberid(product.getSellermemberid().getId());
+//	                        if (product.getSellermemberid().getMembertypeid() != null) {
+//	                            dto.setMembertypeid(product.getSellermemberid().getMembertypeid().getId());
+//	                        }
+//	                    }
+	                    dto.setProductName(product.getProductname());
+	                    dto.setPrice(product.getPrice());
+	                    dto.setSpecialPrice(product.getSpecialprice());
+	                    if (product.getCategoryid() != null) {
+	                        dto.setCategoryName(product.getCategoryid().getCategoryname());
+	                        dto.setParentCategoryName(product.getCategoryid().getParentid().getParentname());
+	                    }
+	                    dto.setQuantity(product.getQuantity());
+	                    dto.setDescription(product.getDescription());
+	                    
+	                    
+	                    return dto;
+	                })
+	                .collect(Collectors.toList());
+
+	        return dtoList;
 		} else {
-			// 如果会话中没有登录用户信息，可以重定向到登录页面或采取其他操作
-			return "background/showUpload";
+			return null;
 		}
+		
 	}
+	
 
 	@DeleteMapping("/back/delete")
 	public String deleteProduct(@RequestParam("id") Integer id) {

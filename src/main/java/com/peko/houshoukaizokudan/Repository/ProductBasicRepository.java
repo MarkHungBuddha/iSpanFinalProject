@@ -3,7 +3,6 @@ package com.peko.houshoukaizokudan.Repository;
 import java.util.List;
 import java.util.Optional;
 
-import org.hibernate.Session;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,6 +16,9 @@ public interface ProductBasicRepository extends JpaRepository<ProductBasic, Inte
 	//模糊搜尋產品名稱
 	
 	List<ProductBasic> findProductBasicDataByproductnameLike(String productname);
+	
+	@Query("SELECT p FROM ProductBasic p LEFT JOIN FETCH p.categoryid WHERE p.id= :id")
+	List<ProductBasic> findAllProductBasicWithCategory(@Param("id") Integer id);
 
 	@Query("SELECT p FROM ProductBasic p JOIN FETCH p.sellermemberid WHERE p.id = :id")
 	Optional<ProductBasic> findByIdWithSeller(@Param("id") Integer id);
@@ -29,6 +31,7 @@ public interface ProductBasicRepository extends JpaRepository<ProductBasic, Inte
 	List<ProductBasic> findBySellermemberid(Member sellermemberid);
 
 
+	
 }
 
 

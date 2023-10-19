@@ -20,7 +20,7 @@ public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "memberid", nullable = false)
-    private Integer id;
+    private Integer memberid;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "membertypeid")

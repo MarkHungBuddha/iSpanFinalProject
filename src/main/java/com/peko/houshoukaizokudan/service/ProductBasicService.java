@@ -1,25 +1,33 @@
 package com.peko.houshoukaizokudan.service;
 
-import com.peko.houshoukaizokudan.DTO.ProductBasicDto;
-import com.peko.houshoukaizokudan.Repository.*;
-import com.peko.houshoukaizokudan.model.*;
-
-import org.hibernate.query.Query;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.peko.houshoukaizokudan.DTO.ProductBasicDto;
+import com.peko.houshoukaizokudan.Repository.ParentCategoryRepository;
 import com.peko.houshoukaizokudan.Repository.ProductBasicRepository;
-
-import java.util.Optional;
-import java.util.Set;
+import com.peko.houshoukaizokudan.Repository.ProductCategoryRepository;
+import com.peko.houshoukaizokudan.Repository.ProductImageRepository;
+import com.peko.houshoukaizokudan.Repository.ProductReviewRepository;
+import com.peko.houshoukaizokudan.Repository.QandARepository;
+import com.peko.houshoukaizokudan.model.Member;
+import com.peko.houshoukaizokudan.model.ProductBasic;
+import com.peko.houshoukaizokudan.model.ProductCategory;
+import com.peko.houshoukaizokudan.model.ProductImage;
 
 @Service
 public class ProductBasicService {
