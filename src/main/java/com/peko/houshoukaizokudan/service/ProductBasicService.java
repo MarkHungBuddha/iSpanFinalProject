@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -144,10 +145,10 @@ public class ProductBasicService {
 		productDTO.setQuantity(productBasic.getQuantity());
 		productDTO.setCategoryName(productBasic.getCategoryid().getCategoryname());
 		productDTO.setParentCategoryName(productBasic.getCategoryid().getParentid().getParentname());
-		productDTO.setSellerUsername(productBasic.getSellermemberid().getUsername());
-		productDTO.setImages(productBasic.getProductImage());
-		productDTO.setReviews(productBasic.getProductReview());
-		productDTO.setQandAs(productBasic.getQandA());
+//		productDTO.setSellerUsername(productBasic.getSellermemberid().getUsername());
+//		productDTO.setImages(productBasic.getProductImage());
+//		productDTO.setReviews(productBasic.getProductReview());
+//		productDTO.setQandAs(productBasic.getQandA());
 
 		return Optional.of(productDTO);
 	}
@@ -201,6 +202,41 @@ public class ProductBasicService {
 		return list;
 	}
 
+	public List<ProductBasicDto> findAllProductBasicDto(List<ProductBasic> list){
+		List<ProductBasicDto> dtoList = list.stream()
+                .map(product -> {
+                	ProductBasicDto dto = new ProductBasicDto();
+                	dto.setProductId(product.getId());
+                    dto.setSellermemberid(product.getSellermemberid().getMemberid());
+                    // 其他字段設置...
+//                    if (product.getSellermemberid() != null) {
+//                        dto.setSellermemberid(product.getSellermemberid().getId());
+//                        if (product.getSellermemberid().getMembertypeid() != null) {
+//                            dto.setMembertypeid(product.getSellermemberid().getMembertypeid().getId());
+//                        }
+//                    }
+                    dto.setProductName(product.getProductname());
+                    dto.setPrice(product.getPrice());
+                    dto.setSpecialPrice(product.getSpecialprice());
+                    if (product.getCategoryid() != null) {
+                        dto.setCategoryName(product.getCategoryid().getCategoryname());
+                        dto.setParentCategoryName(product.getCategoryid().getParentid().getParentname());
+                    }
+                    dto.setQuantity(product.getQuantity());
+                    dto.setDescription(product.getDescription());
+                    
+                    
+                    return dto;
+                })
+                .collect(Collectors.toList());
+
+        return dtoList;
+	}
+	}
+	
+	
+	
+	
 //
 //
 //
@@ -209,4 +245,4 @@ public class ProductBasicService {
 //        return Optional.empty(); // Placeholder, you'll need to implement the actual logic
 //    }
 
-}
+

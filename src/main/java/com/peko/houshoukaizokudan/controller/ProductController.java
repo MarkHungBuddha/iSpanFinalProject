@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -34,22 +35,26 @@ public class ProductController {
 	@Autowired
 	private ProductCategoryService pcService;
 
-	@GetMapping("/product/{productId}")
-	public String viewProduct(@PathVariable Integer productId, Model model) {
-		ProductBasicDto productDTO = prdService.getProductDTOById(productId).orElse(null);
-		model.addAttribute("product", productDTO);
-		return "product/productView";
-	}
-
-	@GetMapping("/back/add")
-	private String addPage(Model model) {
-		return "background/uploadPage";
-	}
+//	@GetMapping("/product/{productId}")
+//	public String viewProduct(@PathVariable Integer productId, Model model) {
+//		ProductBasicDto productDTO = prdService.getProductDTOById(productId).orElse(null);
+//		model.addAttribute("product", productDTO);
+//		return "product/productView";
+//	}
+//
+//	@GetMapping("/back/add")
+//	private String addPage(Model model) {
+//		return "background/uploadPage";
+//	}
 
 	@PostMapping("/back/add")
-	private String uploadPage(@RequestParam String productname, @RequestParam BigDecimal price,
-			@RequestParam BigDecimal specialprice, @RequestParam Integer categoryid, @RequestParam Integer quantity,
-			@RequestParam String description, Model model, HttpServletRequest request
+	@ResponseBody
+	private ResponseEntity<Object> uploadPage(@RequestParam String productname, 
+			@RequestParam BigDecimal price,
+			@RequestParam BigDecimal specialprice, 
+			@RequestParam Integer categoryid, 
+			@RequestParam Integer quantity,
+			@RequestParam String description,HttpServletRequest request
 
 	) {
 		// 获取 HttpSession 对象
@@ -70,9 +75,9 @@ public class ProductController {
 			pb1.setDescription(description);
 
 			prdService.insert(pb1);
-			return "background/uploadPage";
+			return ResponseEntity.ok().build();
 		} else {
-			return "background/uploadPage";
+			return ResponseEntity.notFound().build();
 		}
 	}
 	@GetMapping("/back/show")
@@ -82,51 +87,11 @@ public class ProductController {
 		if (loginUser != null) {
 			List<ProductBasic> list = prdService.findAllProductBasic(loginUser);
 			
-	        System.out.println("Size of list: " + list.size());	        
-	        
-//	        for (ProductBasic product : list) {
-//	            System.out.println("Seller Member ID: " + product.getSellermemberid().getId());
-//	            System.out.println("Product Name: " + product.getProductname());
-//	            System.out.println("Price: " + product.getPrice());
-//	            System.out.println("Special Price: " + product.getSpecialprice());
-//	            System.out.println("Category ID: " + product.getCategoryid().getId());
-//	            System.out.println("Quantity: " + product.getQuantity());
-//	            System.out.println("Description: " + product.getDescription());
-//	            System.out.println("-------------------");
-//	        }
-	        
-	        List<ProductBasicDto> dtoList = list.stream()
-	                .map(product -> {
-	                	ProductBasicDto dto = new ProductBasicDto();
-	                	dto.setProductId(product.getId());
-	                    dto.setSellermemberid(product.getSellermemberid().getMemberid());
-	                    // 其他字段設置...
-//	                    if (product.getSellermemberid() != null) {
-//	                        dto.setSellermemberid(product.getSellermemberid().getId());
-//	                        if (product.getSellermemberid().getMembertypeid() != null) {
-//	                            dto.setMembertypeid(product.getSellermemberid().getMembertypeid().getId());
-//	                        }
-//	                    }
-	                    dto.setProductName(product.getProductname());
-	                    dto.setPrice(product.getPrice());
-	                    dto.setSpecialPrice(product.getSpecialprice());
-	                    if (product.getCategoryid() != null) {
-	                        dto.setCategoryName(product.getCategoryid().getCategoryname());
-	                        dto.setParentCategoryName(product.getCategoryid().getParentid().getParentname());
-	                    }
-	                    dto.setQuantity(product.getQuantity());
-	                    dto.setDescription(product.getDescription());
-	                    
-	                    
-	                    return dto;
-	                })
-	                .collect(Collectors.toList());
-
-	        return dtoList;
-		} else {
+	        List<ProductBasicDto> dtolist = prdService.findAllProductBasicDto(list);
+	        return dtolist;
+		}else {
 			return null;
 		}
-		
 	}
 	
 
