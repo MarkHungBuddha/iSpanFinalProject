@@ -2,17 +2,86 @@
 <html xmlns:th="http://www.thymeleaf.org/">
 <head>
 <meta charset="UTF-8">
-<title>瀏覽頁面</title>
+<title>搜尋商品</title>
+	<style>
+		.td{
+			margin: 5px;
+		}
+	</style>
 </head>
 <body>
 	<div th:replace="~{layout/navbar}"></div>
 	<div class="container">
-	<h1>瀏覽頁面</h1>
-	
+		<h1>搜尋商品</h1>
+
+		<div class="card">
+			<div class="card-header">輸入商品名稱</div>
+			<div class="card-body">
+				<form th:action="@{/product/page}" th:method="get">
+					<div class="input-group">
+						<label for="productname" class="form-label">select</label> <input
+							class="form-control" name="productname" id="productname" required />
+					</div>
+					<br>
+					<button class="btn btn-outline-primary" type="submit">送出</button>
+				</form>
+			</div>
+		</div>
+
+		<table>
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>產品名稱</th>
+				</tr>
+			</thead>
+			<tbody>
+				<!-- 使用Thymeleaf迴圈顯示產品列表 -->
+				<tr th:each="product : ${page.content}">
+<!-- 					<td> -->
+<!-- 						<img width="50px" th:src="'https://imgur.com/' + ${product.productImage[0].imagepath} + '.jpg'"/> -->
+<!-- 					</td>  -->
+<!-- 					<td th:text="${product.productImage.iterator().next().imagepath}></td> -->
+<!-- 					<td th:text="${product.productname}"></td> -->
+				</tr>
+				    <!-- 查無此商品的文字說明 -->
+   				 <tr th:if="${#lists.isEmpty(page.content)}">
+     				<td colspan="2">查無此商品</td>
+   				 </tr>
+				
+			</tbody>
+		</table>
+
+        <ul class="pagination" th:if="${param.productname != null and not #strings.isEmpty(param.productname) and not #lists.isEmpty(page.content)}">
+			<!-- 上一頁 -->
+			
+			
+			<li th:if="${page.hasPrevious()}" class="page-item">
+				<a	class="page-link" th:href="@{/product/page(pageNumber=${page.number}, productname=${param.productname})}">上一页</a>
+			</li>
+			<li th:unless="${page.hasPrevious()}" class="page-item disabled">
+				<span class="page-link">第一頁</span>
+			</li>
 
 
-	
-	
-	</div>	
+    
+			<!-- 頁數 -->
+			<th:block th:each="pageNumber : ${#numbers.sequence(1, page.totalPages)}">
+				<li	th:classappend="${page.number == pageNumber-1} ? 'page-item active' : 'page-item'">
+					<a class="page-link" th:href="@{/product/page(pageNumber=${pageNumber}, productname=${param.productname})}"
+					   th:text="${pageNumber}"></a>
+				</li>
+			</th:block>
+
+			<!-- 下一頁 -->
+			<li th:if="${page.hasNext()}" class="page-item">
+				<a	class="page-link" th:href="@{/product/page(pageNumber=${page.number + 2}, productname=${param.productname})}">下一页</a>
+			</li>
+			<li th:unless="${page.hasNext()}" class="page-item disabled">
+				<span class="page-link">最後一頁</span>
+			</li>
+
+		</ul>
+	</div>
 </body>
 </html>

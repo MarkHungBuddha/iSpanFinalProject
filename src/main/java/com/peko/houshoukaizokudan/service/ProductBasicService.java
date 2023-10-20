@@ -1,15 +1,20 @@
 package com.peko.houshoukaizokudan.service;
 
 import com.peko.houshoukaizokudan.DTO.ProductBasicDto;
+import com.peko.houshoukaizokudan.DTO.ProductDto;
 import com.peko.houshoukaizokudan.Repository.*;
 import com.peko.houshoukaizokudan.model.*;
+
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -18,6 +23,7 @@ import com.peko.houshoukaizokudan.Repository.ProductBasicRepository;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductBasicService {
@@ -146,18 +152,43 @@ public class ProductBasicService {
 
 
 
-    //頁碼  //1頁2筆
+  //頁碼  //1頁3筆
+//    @Transactional
+//    public Page<ProductBasic> findProductByPage(Integer pageNumber, String productname) {
+//	     Pageable pageable = PageRequest.of(pageNumber - 1, 3, Sort.Direction.ASC, "id");
+//	     return productBasicRepository.findProductBasicByproductname(productname, pageable);
+//	    }
+// 
     @Transactional
-    public Page<ProductBasic> findProductByPage(Integer pageNumber) {
-        Pageable pgb = PageRequest.of(pageNumber - 1, 3, Sort.Direction.ASC, "id");
-        Page<ProductBasic> page = productBasicRepository.findAll(pgb);
-        return page;
+    public Page<ProductDto> getProductsByPage(Pageable pageable, String productname) {
+        Page<ProductBasic> page = productBasicRepository.findProductBasicByproductname(productname, pageable);
+        List<ProductDto> dtos = page.getContent().stream().map(pro -> {
+            ProductDto dto = new ProductDto();
+            dto.setProductid(pro.getId());
+            dto.setProductname(pro.getProductname());
+            dto.setPrice(pro.getPrice());
+            dto.setSpecialprice(pro.getSpecialprice());
+            dto.setCategoryname(pro.getCategoryid().getCategoryname());
+            dto.setQuantity(pro.getQuantity());
+            dto.setDescription(pro.getDescription());
+            
+            
+            // 使用 ProductImageRepository 查詢圖像路徑
+            String imagepath = productImageRepository.findImagepathByProductid(pro.getId());
+            dto.setImagepath(imagepath);
+            return dto;
+        }).collect(Collectors.toList());
+        return new PageImpl<>(dtos, pageable, page.getTotalElements());
     }
+
+    
+
+
 
 //	public ProductBasic findLastest() {
 //		return prdRepo.findFirstByOrderIdDesc();
 //	}
-    // 	return 	products;
+  // 	return 	products;
 
     // };
 

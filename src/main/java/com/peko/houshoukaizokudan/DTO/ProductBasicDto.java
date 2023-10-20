@@ -14,18 +14,19 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductBasicDto {
-    private Integer ProductId;
-    private String productName;
-    private BigDecimal price;
-    private BigDecimal specialPrice;
-    private String description;
-    private Integer quantity;
-    private String sellerUsername;
-    private String sellerFirstName;
-    private String sellerLastName;
-    private Set<ProductImage> images;
-    private Set<QandA> qandAs;
-    private Set<ProductReview> reviews;
-    private String categoryName;
-    private String parentCategoryName;
+	private Integer ProductId;
+	private String productName;
+	private BigDecimal price;
+	private BigDecimal specialPrice;
+	private String description;
+	private Integer quantity;
+	private String sellerUsername;
+	private String sellerFirstName;
+	private String sellerLastName;
+	private Set<ProductImage> images;
+	private Set<QandA> qandAs;
+	private Set<ProductReview> reviews;
+	private String categoryName;
+	private String parentCategoryName;
+
 }

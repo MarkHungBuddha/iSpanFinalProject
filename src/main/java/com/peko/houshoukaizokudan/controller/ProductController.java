@@ -1,22 +1,32 @@
 package com.peko.houshoukaizokudan.controller;
 
 import java.math.BigDecimal;
+
 import java.util.List;
 
 import com.peko.houshoukaizokudan.DTO.ProductBasicDto;
+import com.peko.houshoukaizokudan.DTO.ProductDto;
 import com.peko.houshoukaizokudan.model.Member;
 import com.peko.houshoukaizokudan.model.ProductCategory;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Pageable;
+
+
 
 import com.peko.houshoukaizokudan.model.ProductBasic;
 import com.peko.houshoukaizokudan.service.ProductBasicService;
 
+@RestController
 @Controller
 public class ProductController {
 
@@ -30,22 +40,38 @@ public class ProductController {
 		return "product/productFindPage";
 	}
     
-    @PostMapping("/product/productFind")
-    public String productFind(@RequestParam("productName") String productname, Model model) {
-        List<ProductBasic> products = prdService.findProductBasicDataByproductname(productname);
-        
-        model.addAttribute("products", products);
-        return "product/productFindPage"; 
-    }
-    
-    @GetMapping("/product/page")
-	public String findProductByPage(@RequestParam(name="p", defaultValue = "1") Integer pageNumber, Model model){
-    	Page<ProductBasic> Page = prdService.findProductByPage(pageNumber);
-    	
-    	model.addAttribute("Page" ,Page);
-
-    	return "product/productFindPages";
+	//模糊搜尋 存頁碼跟關鍵字
+	//未給頁碼 預設第一頁
+	
+//	@GetMapping("/product/page")
+//	 public String findProductByPage(
+//	 @RequestParam(name = "pageNumber", defaultValue = "1") Integer pageNumber,
+//	 @RequestParam(name = "productname", required = false) String productname, 
+//	 Model model) {
+//	 Page<ProductBasic> page = prdService.findProductByPage(pageNumber, productname);
+//	 // 傳出 page P改小寫
+//	 model.addAttribute("page", page);
+//
+//	 return "product/productFindPages";
+//	 }
+//  
+	
+	
+	
+	@ResponseBody
+	@GetMapping("/api/products")
+	public Page<ProductDto> getProductsByPage(
+	    @RequestParam(name = "p", defaultValue = "1") Integer pageNumber,
+	    @RequestParam(name = "productname", required = false) String productname) {
+	    Pageable pageable = PageRequest.of(pageNumber - 1, 3); // 3 items per page
+	    Page<ProductDto> page = prdService.getProductsByPage(pageable, productname);
+	    return page;
 	}
+
+	
+	
+	
+
 
 
 
