@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.peko.houshoukaizokudan.DTO.OrderBasicDto;
 import com.peko.houshoukaizokudan.model.Member;
 import com.peko.houshoukaizokudan.model.OrderBasic;
+import com.peko.houshoukaizokudan.model.OrderStatus;
+import com.peko.houshoukaizokudan.model.ProductBasic;
 import com.peko.houshoukaizokudan.service.OrderBasicService;
 import com.peko.houshoukaizokudan.service.OrderStatusService;
 
@@ -48,36 +50,32 @@ public class OrderController {
 		Member loginUser = (Member) session.getAttribute("loginUser");
 
 		if (loginUser != null) {
+			
 	        List<OrderBasic> orders = orderService.findOrderBasicBymemberOrderid(loginUser);
-	        List<OrderBasicDto> dtoOrderList = orders.stream()
-	            .map(order -> {
-	                OrderBasicDto dto = new OrderBasicDto();
-	                dto.setOrderid(order.getOrderid());
-	                dto.setSeller(order.getSeller().getUsername());
-	                dto.setBuyer(order.getBuyer().getUsername());
-	                dto.setMerchanttradedate(order.getMerchanttradedate());
-	                dto.setChoosepayment(order.getChoosepayment());
-	                dto.setTotalamount(order.getTotalamount());
-	                dto.setRating(order.getRating());
-	                dto.setReviewcontent(order.getReviewcontent());
-	                dto.setMerchantid(order.getMerchantid());
-	                dto.setMerchanttradenno(order.getMerchanttradenno());
-	                dto.setPaymenttype(order.getPaymenttype());
-	                dto.setTradedesc(order.getTradedesc());
-	                dto.setItemname(order.getItemname());
-	                dto.setStatusname(order.getStatusid().getStatusname());
-	                
-	                
-	                
-	                return dto;
-	            })
-	            .collect(Collectors.toList());  // 将映射后的对象收集到列表中
+	        
+	        List<OrderBasicDto> dtoOrderList= orderService.getOrder(orders);
+	        
 	        return dtoOrderList;
 	    } else {
 	        return null;
 	    }
 	}
+	
+	//下單
+	@PostMapping("/order/addOrder")
+	public List<OrderBasic> placeOrder(HttpSession session){
+		
+		Member loginUser = (Member) session.getAttribute("loginUser");
+		List<ProductBasic> buyProducts = (List<ProductBasic>) session.getAttribute("buyProducts");
+		List<OrderBasic>order=orderService.save(buyProducts,loginUser);
+		
+		
+		return order;
+	}
 
+	
+	
+	
 	/* 準備前往綠界 */
 	 @GetMapping("/goEcPay")
 	public void goEcPay(Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session)
@@ -113,27 +111,27 @@ public class OrderController {
 	}
 
 	// 綠界回傳資料
-//	@PostMapping("/returnURL")
-//	public void returnURL(
-//			@RequestParam("MerchantTradeNo") String MerchantTradeNo, // 特店訂單編號
-//			@RequestParam("RtnCode") int RtnCode, // 交易訊息
-//			@RequestParam("TradeAmt") int TradeAmt, // 交易金額
-//			HttpServletRequest request) {
-//		// 交易成功
-//		if ((request.getRemoteAddr().equalsIgnoreCase("175.99.72.1")
-//				|| request.getRemoteAddr().equalsIgnoreCase("175.99.72.11")
-//				|| request.getRemoteAddr().equalsIgnoreCase("175.99.72.24")
-//				|| request.getRemoteAddr().equalsIgnoreCase("175.99.72.28")
-//				|| request.getRemoteAddr().equalsIgnoreCase("175.99.72.32")) && RtnCode == 1) {
-//			String orderIdStr = MerchantTradeNo.substring(13);
-//			int orderId = Integer.parseInt(orderIdStr);
-//			OrderBasic ob = orderService.getOrder(orderId);
-//			//設定交易狀態
-//			OrderStatus OrderStatus = orderStatusService.findOrderStatusById(3);
-//			ob.setStatusid(OrderStatus);
-//		}
-//		// 在这里你需要处理交易失败的情况，添加相应的逻辑。
-//	}
+	@PostMapping("/returnURL")
+	public void returnURL(
+			@RequestParam("MerchantTradeNo") String MerchantTradeNo, // 特店訂單編號
+			@RequestParam("RtnCode") int RtnCode, // 交易訊息
+			@RequestParam("TradeAmt") int TradeAmt, // 交易金額
+			HttpServletRequest request) {
+		// 交易成功
+		if ((request.getRemoteAddr().equalsIgnoreCase("175.99.72.1")
+				|| request.getRemoteAddr().equalsIgnoreCase("175.99.72.11")
+				|| request.getRemoteAddr().equalsIgnoreCase("175.99.72.24")
+				|| request.getRemoteAddr().equalsIgnoreCase("175.99.72.28")
+				|| request.getRemoteAddr().equalsIgnoreCase("175.99.72.32")) && RtnCode == 1) {
+			String orderIdStr = MerchantTradeNo.substring(13);
+			int orderId = Integer.parseInt(orderIdStr);
+			OrderBasic ob = orderService.getOrder(orderId);
+			//設定交易狀態
+			OrderStatus OrderStatus = orderStatusService.findOrderStatusById(3);
+			ob.setStatusid(OrderStatus);
+		}
+		// 在这里你需要处理交易失败的情况，添加相应的逻辑。
+	}
 
 	// 查詢歷史清單
 //	 @PostMapping("/showHistoryOrder")

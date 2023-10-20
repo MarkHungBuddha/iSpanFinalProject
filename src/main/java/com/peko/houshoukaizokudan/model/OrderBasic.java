@@ -109,6 +109,10 @@ public class OrderBasic {
     @Nationalized
     @Column(name = "needextrapaidinfo", length = 1)
     private String needextrapaidinfo; // 是否需要額外的付款資訊 不回傳額外的付款資訊時，參數值請傳：Ｎ
+    
+    @Nationalized
+    @Column(name = "orderaddress",length = 200) // 訂單地址
+    private String orderaddress;
 
     @OneToMany(mappedBy = "orderid")
     private Set<OrderDetail>  orderDetail;

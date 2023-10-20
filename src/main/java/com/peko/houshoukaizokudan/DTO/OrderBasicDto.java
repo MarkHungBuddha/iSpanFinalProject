@@ -36,6 +36,8 @@ public class OrderBasicDto {
 	private String needextrapaidinfo; // 是否需要額外的付款資訊 不回傳額外的付款資訊時，參數值請傳：Ｎ
 	private String statusname; //訂單狀態
 	private OrderStatus statusid; //訂單狀態
+	private String orderaddess;
+	
 
 	
 	
