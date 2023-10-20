@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,10 +14,14 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.peko.houshoukaizokudan.DTO.ProductBasicDto;
+import com.peko.houshoukaizokudan.DTO.ProductBasicDto2;
 import com.peko.houshoukaizokudan.model.Member;
 import com.peko.houshoukaizokudan.model.ProductBasic;
 import com.peko.houshoukaizokudan.model.ProductCategory;
@@ -26,7 +31,7 @@ import com.peko.houshoukaizokudan.service.ProductCategoryService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
-@Controller
+@RestController
 public class ProductController {
 
 	@Autowired
@@ -48,7 +53,6 @@ public class ProductController {
 //	}
 
 	@PostMapping("/back/add")
-	@ResponseBody
 	private ResponseEntity<Object> uploadPage(@RequestParam String productname, 
 			@RequestParam BigDecimal price,
 			@RequestParam BigDecimal specialprice, 
@@ -81,7 +85,6 @@ public class ProductController {
 		}
 	}
 	@GetMapping("/back/show")
-	@ResponseBody
 	public List<ProductBasicDto> showPage(HttpSession session) {
 		Member loginUser = (Member) session.getAttribute("loginUser");
 		if (loginUser != null) {
@@ -95,19 +98,37 @@ public class ProductController {
 	}
 	
 
-	@DeleteMapping("/back/delete")
-	public String deleteProduct(@RequestParam("id") Integer id) {
-		prdService.deleteById(id);
-		return "redirect:/background/showUpload";
-	}
+//	@DeleteMapping("/back/delete")
+//	public String deleteProduct(@RequestParam("id") Integer id) {
+//		prdService.deleteById(id);
+//		return "redirect:/background/showUpload";
+//	}
 
-	@GetMapping("/back/edit")
-	public String editPage(@RequestParam("id") Integer id, Model model) {
+	@PutMapping("/back/edit/{id}")
+	private ResponseEntity<Object> editPage(@PathVariable("id") Integer id,@RequestBody ProductBasic up,HttpServletRequest request) {
 
-		ProductBasic pb5 = prdService.findById(id);
-		model.addAttribute("product", pb5);
-		return "product/productView";
-	}
+		
+		
+		ProductBasic ed = prdService.findById(id);
+		if(ed==null) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		ProductBasic upd = prdService.updateProduct(ed,up);
+		
+		ProductBasicDto2 nupd = prdService.findNewOne(upd);
+		
+		if (upd != null) {
+		 return new ResponseEntity<>(nupd, HttpStatus.OK);
+    } else {
+        // 更新失敗，返回 500 Internal Server Error 或其他適當的錯誤狀態碼
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+		
+    	
+    }
+		
+	
+		
 
 //        findProductByPageLikeProductName
 //        productFindPage

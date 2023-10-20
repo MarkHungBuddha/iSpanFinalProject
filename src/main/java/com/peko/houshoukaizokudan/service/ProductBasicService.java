@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.peko.houshoukaizokudan.DTO.ProductBasicDto;
+import com.peko.houshoukaizokudan.DTO.ProductBasicDto2;
 import com.peko.houshoukaizokudan.Repository.ParentCategoryRepository;
 import com.peko.houshoukaizokudan.Repository.ProductBasicRepository;
 import com.peko.houshoukaizokudan.Repository.ProductCategoryRepository;
@@ -232,8 +233,56 @@ public class ProductBasicService {
 
         return dtoList;
 	}
+	@Transactional
+	public ProductBasic updateProduct(ProductBasic ed,ProductBasic up) {
+		 if (up.getProductname() != null) {
+			 ed.setProductname(up.getProductname());
+		    }
+		 if (up.getPrice() != null) {
+			 ed.setPrice(up.getPrice());
+		 }
+		 if (up.getSpecialprice() != null) {
+			 ed.setSpecialprice(up.getSpecialprice());
+		 }
+		 if (up.getQuantity() != null) {
+			 ed.setQuantity(up.getQuantity());
+		 }
+		 if (up.getDescription() != null) {
+			 ed.setDescription(up.getDescription());
+		 }
+		 
+
+		    
+
+		 
+		return productBasicRepository.save(ed);
 	}
+
 	
+
+	public ProductBasicDto2 findNewOne(ProductBasic upd) {
+	
+	
+	ProductBasicDto2 dto = new ProductBasicDto2();
+
+	dto.setProductId(upd.getId());
+//	dto.setSellermemberid(upd.getSellermemberid());
+    dto.setProductName(upd.getProductname());
+    dto.setPrice(upd.getPrice());
+//    if (upd.getCategoryid() != null) {
+//        dto.setCategoryName(upd.getCategoryid().getCategoryname());
+//        if (upd.getCategoryid().getParentid() != null) {
+//            dto.setParentCategoryName(upd.getCategoryid().getParentid().getParentname());
+//        }
+//    }
+    dto.setSpecialPrice(upd.getSpecialprice());
+    dto.setQuantity(upd.getQuantity());
+    dto.setDescription(upd.getDescription());
+	
+    return dto;
+	}
+
+}
 	
 	
 	
