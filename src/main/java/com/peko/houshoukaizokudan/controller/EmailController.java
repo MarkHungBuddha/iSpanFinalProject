@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.peko.houshoukaizokudan.model.EmailRequest;
 import com.peko.houshoukaizokudan.service.EmailService;
+import com.peko.houshoukaizokudan.service.VerificationCodeGenerator;
 
 @RestController
 @RequestMapping("/email")
@@ -16,15 +17,16 @@ public class EmailController {
     @Autowired
     private EmailService emailService;
 
-    // 使用 POST 请求方法
     @PostMapping("/sendEmail")
     public String sendEmail(@RequestBody EmailRequest emailRequest) {
         String recipient = emailRequest.getRecipient();
-        String subject = "您的验证码";
-        String content = "验证码是：" + emailRequest.getContent();
 
-        emailService.sendVerificationEmail(recipient, emailRequest.getContent());
+        // 生成验证码，例如：
+        String verificationCode = VerificationCodeGenerator.generateCode(6);
 
-        return "验证码已发送";
+        // 发送验证邮件
+        emailService.sendVerificationEmail(recipient, verificationCode);
+
+        return "驗證碼已發送";
     }
 }

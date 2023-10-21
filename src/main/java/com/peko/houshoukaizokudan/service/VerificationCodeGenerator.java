@@ -1,10 +1,8 @@
 package com.peko.houshoukaizokudan.service;
-
-import org.springframework.stereotype.Service;
 import java.security.SecureRandom;
 
-@Service
 public class VerificationCodeGenerator {
+	
     public static String generateCode(int length) {
         String allowedChars = "0123456789";
         SecureRandom random = new SecureRandom();
