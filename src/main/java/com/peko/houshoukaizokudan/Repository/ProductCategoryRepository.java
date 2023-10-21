@@ -8,4 +8,6 @@ import com.peko.houshoukaizokudan.model.ProductCategory;
 
 public interface ProductCategoryRepository extends JpaRepository<ProductCategory, Integer>{
 	Optional<ProductCategory> findById(Integer id);
+
+//    ProductCategory findByCategoryId(Integer categoryId);
 }

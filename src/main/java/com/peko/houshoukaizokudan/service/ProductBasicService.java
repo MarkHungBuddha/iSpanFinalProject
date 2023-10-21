@@ -40,6 +40,7 @@ public class ProductBasicService {
 	@Autowired
 	private ProductCategoryRepository productCategoryRepository;
 
+
 	@Autowired
 	private QandARepository qandARepository;
 
@@ -52,6 +53,7 @@ public class ProductBasicService {
 	@Autowired
 	private ParentCategoryRepository parentCategoryRepository;
 
+	
 	// 建立商品
 	@Transactional
 	public ProductBasic addProductWithImages(ProductBasic productBasic, ProductCategory category,
@@ -250,13 +252,20 @@ public class ProductBasicService {
 		 if (up.getDescription() != null) {
 			 ed.setDescription(up.getDescription());
 		 }
-		 
+//		 if (up.getCategoryid() != null) {
+//		        // 直接将新的categoryid设置给ProductBasic
+//		        ed.setCategoryid(up.getCategoryid());
+//		    }
 
 		    
 
 		 
 		return productBasicRepository.save(ed);
 	}
+
+	
+
+	
 
 	
 

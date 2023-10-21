@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
@@ -19,13 +18,12 @@ import io.jsonwebtoken.io.IOException;
 // ...
 
 @RestController
-@RequestMapping("/upload")
 public class ProductImageController {
 
     private final String IMGUR_UPLOAD_URL = "https://api.imgur.com/3/upload";
     private final String CLIENT_ID = "Bearer 9394e99b2cdc13a531746679fe2ded9638bfbd91";  // 替換為你的 Imgur Client ID
 
-    @PostMapping
+    @PostMapping("/upload")
     public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file) throws java.io.IOException {
         RestTemplate restTemplate = new RestTemplate();
 

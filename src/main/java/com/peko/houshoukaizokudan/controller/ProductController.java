@@ -1,15 +1,13 @@
 package com.peko.houshoukaizokudan.controller;
 
+import java.io.File;
 import java.math.BigDecimal;
+import java.nio.file.Files;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,7 +15,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.peko.houshoukaizokudan.DTO.ProductBasicDto;
@@ -84,6 +81,7 @@ public class ProductController {
 			return ResponseEntity.notFound().build();
 		}
 	}
+	
 	@GetMapping("/back/show")
 	public List<ProductBasicDto> showPage(HttpSession session) {
 		Member loginUser = (Member) session.getAttribute("loginUser");
@@ -98,11 +96,11 @@ public class ProductController {
 	}
 	
 
-//	@DeleteMapping("/back/delete")
-//	public String deleteProduct(@RequestParam("id") Integer id) {
-//		prdService.deleteById(id);
-//		return "redirect:/background/showUpload";
-//	}
+	@DeleteMapping("/back/delete/{id}")
+	public ResponseEntity<Object> deleteProduct(@PathVariable("id") Integer id) {
+		prdService.deleteById(id);
+		return ResponseEntity.ok().build();
+	}
 
 	@PutMapping("/back/edit/{id}")
 	private ResponseEntity<Object> editPage(@PathVariable("id") Integer id,@RequestBody ProductBasic up,HttpServletRequest request) {
