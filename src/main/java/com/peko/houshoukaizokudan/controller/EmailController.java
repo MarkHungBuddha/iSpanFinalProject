@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.peko.houshoukaizokudan.model.EmailRequest;
@@ -28,5 +29,15 @@ public class EmailController {
         emailService.sendVerificationEmail(recipient, verificationCode);
 
         return "驗證碼已發送";
+    }
+    @PostMapping("/verifyCode")
+    public String verifyCode(@RequestParam String userInputCode, @RequestParam String storedCode) {
+        boolean isVerified = emailService.verifyVerificationCode(userInputCode, storedCode);
+
+        if (isVerified) {
+            return "驗證成功";
+        } else {
+            return "驗證失敗";
+        }
     }
 }
