@@ -12,8 +12,8 @@ public class EmailService {
     private JavaMailSender javaMailSender;
     private String storedVerificationCode;
     public void sendVerificationEmail(String to, String verificationCode) {
-        String subject = "验证您的邮箱";
-        String content = "您的验证码是：" + verificationCode;
+        String subject = "驗證您的信箱";
+        String content = "您的驗證碼是：" + verificationCode;
         
         
         
