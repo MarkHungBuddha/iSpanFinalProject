@@ -20,6 +20,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.peko.houshoukaizokudan.DTO.ProductBasicDto;
 import com.peko.houshoukaizokudan.DTO.ProductBasicDto2;
+import com.peko.houshoukaizokudan.Repository.MemberRepository;
 import com.peko.houshoukaizokudan.Repository.ParentCategoryRepository;
 import com.peko.houshoukaizokudan.Repository.ProductBasicRepository;
 import com.peko.houshoukaizokudan.Repository.ProductCategoryRepository;
@@ -39,7 +40,8 @@ public class ProductBasicService {
 
 	@Autowired
 	private ProductCategoryRepository productCategoryRepository;
-
+	@Autowired
+	private MemberRepository mRepo;
 
 	@Autowired
 	private QandARepository qandARepository;
@@ -53,7 +55,6 @@ public class ProductBasicService {
 	@Autowired
 	private ParentCategoryRepository parentCategoryRepository;
 
-	
 	// 建立商品
 	@Transactional
 	public ProductBasic addProductWithImages(ProductBasic productBasic, ProductCategory category,
@@ -205,100 +206,85 @@ public class ProductBasicService {
 		return list;
 	}
 
-	public List<ProductBasicDto> findAllProductBasicDto(List<ProductBasic> list){
-		List<ProductBasicDto> dtoList = list.stream()
-                .map(product -> {
-                	ProductBasicDto dto = new ProductBasicDto();
-                	dto.setProductId(product.getId());
-                    dto.setSellermemberid(product.getSellermemberid().getMemberid());
-                    // 其他字段設置...
+	public List<ProductBasicDto> findAllProductBasicDto(List<ProductBasic> list) {
+		List<ProductBasicDto> dtoList = list.stream().map(product -> {
+			ProductBasicDto dto = new ProductBasicDto();
+			dto.setProductId(product.getId());
+			dto.setSellermemberid(product.getSellermemberid().getMemberid());
+			// 其他字段設置...
 //                    if (product.getSellermemberid() != null) {
 //                        dto.setSellermemberid(product.getSellermemberid().getId());
 //                        if (product.getSellermemberid().getMembertypeid() != null) {
 //                            dto.setMembertypeid(product.getSellermemberid().getMembertypeid().getId());
 //                        }
 //                    }
-                    dto.setProductName(product.getProductname());
-                    dto.setPrice(product.getPrice());
-                    dto.setSpecialPrice(product.getSpecialprice());
-                    if (product.getCategoryid() != null) {
-                        dto.setCategoryName(product.getCategoryid().getCategoryname());
-                        dto.setParentCategoryName(product.getCategoryid().getParentid().getParentname());
-                    }
-                    dto.setQuantity(product.getQuantity());
-                    dto.setDescription(product.getDescription());
-                    
-                    
-                    return dto;
-                })
-                .collect(Collectors.toList());
+			dto.setProductName(product.getProductname());
+			dto.setPrice(product.getPrice());
+			dto.setSpecialPrice(product.getSpecialprice());
+			if (product.getCategoryid() != null) {
+				dto.setCategoryName(product.getCategoryid().getCategoryname());
+				dto.setParentCategoryName(product.getCategoryid().getParentid().getParentname());
+			}
+			dto.setQuantity(product.getQuantity());
+			dto.setDescription(product.getDescription());
 
-        return dtoList;
+			return dto;
+		}).collect(Collectors.toList());
+
+		return dtoList;
 	}
+
 	@Transactional
-	public ProductBasic updateProduct(ProductBasic ed,ProductBasic up) {
-		 if (up.getProductname() != null) {
-			 ed.setProductname(up.getProductname());
-		    }
-		 if (up.getPrice() != null) {
-			 ed.setPrice(up.getPrice());
-		 }
-		 if (up.getSpecialprice() != null) {
-			 ed.setSpecialprice(up.getSpecialprice());
-		 }
-		 if (up.getQuantity() != null) {
-			 ed.setQuantity(up.getQuantity());
-		 }
-		 if (up.getDescription() != null) {
-			 ed.setDescription(up.getDescription());
-		 }
-		 if (up.getCategoryid() != null) {
-		        // 直接将新的categoryid设置给ProductBasic
-		        ed.setCategoryid(up.getCategoryid());
-		    }
+	public ProductBasic updateProduct(ProductBasic ed, ProductBasic up) {
+		if (up.getProductname() != null) {
+			ed.setProductname(up.getProductname());
+		}
+		if (up.getPrice() != null) {
+			ed.setPrice(up.getPrice());
+		}
+		if (up.getSpecialprice() != null) {
+			ed.setSpecialprice(up.getSpecialprice());
+		}
+		if (up.getQuantity() != null) {
+			ed.setQuantity(up.getQuantity());
+		}
+		if (up.getDescription() != null) {
+			ed.setDescription(up.getDescription());
+		}
+		if (up.getCategoryid() != null) {
+			// 直接将新的categoryid设置给ProductBasic
+			ed.setCategoryid(up.getCategoryid());
+		}
 //		 if (up.getSellermemberid() != null) {
 //			 // 直接将新的categoryid设置给ProductBasic
 //			 ed.setSellermemberid(up.getSellermemberid());
 //		 }
-		 
-		    
 
-		 
 		return productBasicRepository.save(ed);
 	}
 
-	
-
-	
-
-	
-
 	public ProductBasicDto2 findNewOne(ProductBasic upd) {
-	
-	
-	ProductBasicDto2 dto = new ProductBasicDto2();
 
-	dto.setProductId(upd.getId());
-//	dto.setSellermemberid(upd.getSellermemberid());
-    dto.setProductName(upd.getProductname());
-    dto.setPrice(upd.getPrice());
-    if (upd.getCategoryid() != null) {
-        dto.setCategoryName(upd.getCategoryid().getCategoryname());
-        if (upd.getCategoryid().getParentid() != null) {
-            dto.setParentCategoryName(upd.getCategoryid().getParentid().getParentname());
-        }
-    }
-    dto.setSpecialPrice(upd.getSpecialprice());
-    dto.setQuantity(upd.getQuantity());
-    dto.setDescription(upd.getDescription());
-	
-    return dto;
+		ProductBasicDto2 dto = new ProductBasicDto2();
+		dto.setProductId(upd.getId());
+//		dto.setSellermemberid(upd.getSellermemberid());
+		dto.setProductName(upd.getProductname());
+		dto.setPrice(upd.getPrice());
+		if (upd.getCategoryid() != null) {
+			dto.setCategoryName(upd.getCategoryid().getCategoryname());
+			if (upd.getCategoryid().getParentid() != null) {
+				dto.setParentCategoryName(upd.getCategoryid().getParentid().getParentname());
+			}
+		}
+		dto.setSpecialPrice(upd.getSpecialprice());
+		dto.setQuantity(upd.getQuantity());
+		dto.setDescription(upd.getDescription());
+
+		return dto;
 	}
 
 }
-	
-	
-	
+
 //
 //
 //
@@ -306,5 +292,3 @@ public class ProductBasicService {
 //        // Logic to fetch and assemble data into ProductDTO
 //        return Optional.empty(); // Placeholder, you'll need to implement the actual logic
 //    }
-
-

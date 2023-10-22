@@ -13,8 +13,7 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class ProductBasicDto2 {
+public class RevenueDto {
     private Integer ProductId;
     private String productName;
     private BigDecimal price;
@@ -23,5 +22,5 @@ public class ProductBasicDto2 {
     private Integer quantity;
     private String categoryName;
     private String parentCategoryName;
-//    private Member sellermemberid;
+    private Member sellermemberid;
 }

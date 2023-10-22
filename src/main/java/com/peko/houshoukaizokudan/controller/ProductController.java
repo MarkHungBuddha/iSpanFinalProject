@@ -1,8 +1,6 @@
 package com.peko.houshoukaizokudan.controller;
 
-import java.io.File;
 import java.math.BigDecimal;
-import java.nio.file.Files;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +22,7 @@ import com.peko.houshoukaizokudan.model.ProductBasic;
 import com.peko.houshoukaizokudan.model.ProductCategory;
 import com.peko.houshoukaizokudan.service.ProductBasicService;
 import com.peko.houshoukaizokudan.service.ProductCategoryService;
+import com.peko.houshoukaizokudan.service.ProductImageService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -36,6 +35,8 @@ public class ProductController {
 
 	@Autowired
 	private ProductCategoryService pcService;
+	
+	private ProductImageService piService;
 
 //	@GetMapping("/product/{productId}")
 //	public String viewProduct(@PathVariable Integer productId, Model model) {
@@ -103,27 +104,35 @@ public class ProductController {
 	}
 
 	@PutMapping("/back/edit/{id}")
-	private ResponseEntity<Object> editPage(@PathVariable("id") Integer id,@RequestBody ProductBasic up,HttpServletRequest request) {
+	public ResponseEntity<Object> editPage(@PathVariable("id") Integer id, @RequestBody ProductBasic up, HttpServletRequest request) throws java.io.IOException {
+	    ProductBasic ed = prdService.findById(id);
+	    if (ed == null) {
+	        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	    }
 
-		
-		
-		ProductBasic ed = prdService.findById(id);
-		if(ed==null) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-		ProductBasic upd = prdService.updateProduct(ed,up);
-		
-		ProductBasicDto2 nupd = prdService.findNewOne(upd);
-		
-		if (upd != null) {
-		 return new ResponseEntity<>(nupd, HttpStatus.OK);
-    } else {
-        // 更新失敗，返回 500 Internal Server Error 或其他適當的錯誤狀態碼
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-		
-    	
-    }
+	    // 处理上传的文件，将其保存到数据库或云存储
+//	    String imageUrl = null;
+//	    try {
+//	        imageUrl = piService.uploadImage(file);
+//	    } catch (IOException e) {
+//	        e.printStackTrace();
+//	        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+//	    }
+
+
+	    // 保存更新后的ProductBasic
+	    ProductBasic updatedProduct = prdService.updateProduct(ed, up);
+	    ProductBasicDto2 nupd = prdService.findNewOne(updatedProduct);
+	    if (nupd != null) {
+	        // 传递productId和imageUrl给saveProductImage方法
+//	        piService.saveProductImage(updatedProduct.getId(), imageUrl);
+	        return new ResponseEntity<>(nupd, HttpStatus.OK);
+	    } else {
+	        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+	    }
+	}
+
+
 		
 	
 		
