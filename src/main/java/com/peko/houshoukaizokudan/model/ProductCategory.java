@@ -39,4 +39,7 @@ public class ProductCategory {
 		
 	}
 
+	public ProductCategory(Integer id) {
+	    this.id = id;
+	}
 }

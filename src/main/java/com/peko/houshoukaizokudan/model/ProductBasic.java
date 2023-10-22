@@ -70,4 +70,7 @@ public class ProductBasic {
     @OneToMany(mappedBy = "productid")
     private Set<Wishlist> wishlist ;
 
+//    public ProductBasic(Member sellermemberid) {
+//        this.sellermemberid = sellermemberid;
+//    }
 }

@@ -252,11 +252,15 @@ public class ProductBasicService {
 		 if (up.getDescription() != null) {
 			 ed.setDescription(up.getDescription());
 		 }
-//		 if (up.getCategoryid() != null) {
-//		        // 直接将新的categoryid设置给ProductBasic
-//		        ed.setCategoryid(up.getCategoryid());
-//		    }
-
+		 if (up.getCategoryid() != null) {
+		        // 直接将新的categoryid设置给ProductBasic
+		        ed.setCategoryid(up.getCategoryid());
+		    }
+//		 if (up.getSellermemberid() != null) {
+//			 // 直接将新的categoryid设置给ProductBasic
+//			 ed.setSellermemberid(up.getSellermemberid());
+//		 }
+		 
 		    
 
 		 
@@ -278,12 +282,12 @@ public class ProductBasicService {
 //	dto.setSellermemberid(upd.getSellermemberid());
     dto.setProductName(upd.getProductname());
     dto.setPrice(upd.getPrice());
-//    if (upd.getCategoryid() != null) {
-//        dto.setCategoryName(upd.getCategoryid().getCategoryname());
-//        if (upd.getCategoryid().getParentid() != null) {
-//            dto.setParentCategoryName(upd.getCategoryid().getParentid().getParentname());
-//        }
-//    }
+    if (upd.getCategoryid() != null) {
+        dto.setCategoryName(upd.getCategoryid().getCategoryname());
+        if (upd.getCategoryid().getParentid() != null) {
+            dto.setParentCategoryName(upd.getCategoryid().getParentid().getParentname());
+        }
+    }
     dto.setSpecialPrice(upd.getSpecialprice());
     dto.setQuantity(upd.getQuantity());
     dto.setDescription(upd.getDescription());
