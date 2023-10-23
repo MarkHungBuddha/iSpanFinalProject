@@ -8,34 +8,23 @@
 <div th:replace="~{layout/navbar}"></div>
 	<div class="container">
   <h1>購物車</h1>
-
-<!-- 顯示購物車內容 -->
-<form method="Post" th:action="@{addProduct}">
+<h2 th:text="@{${title}}"></h2>
 <table>
-    <tr>
+			<tr>
         <th>商品id</th>
         <th>名稱</th>
         <th>價格</th>
-    </tr>
-			<!--<tr th:each="list:${products}">
-				<td th:text="${list.value.products.id}"></td>
-				<td th:text="${list.value.products.productname}"></td>
-				<td th:text="${list.value.products.price}"></td>
-				<td align="center">
-					<a href="${pageContext.request.contextPath }/ShoppingCart/addProduct/${products.id}">Buy Now</a>
-				</td>
-			</tr>  -->
-			<tr>
-            <td><input type="text" name="id"></td>
-            <td><input type="text" name="name"></td>
-            <td><input type="number" name="price" /></td>
-            <td align="center">
-					<input type="submit" value="buy"/>
-				</td>
-        </tr>
-
+   </tr>
+			 <tr th:each="product : ${products}">
+				<td th:text="${product.id}"></td>
+				<td th:text="${product.productname}"></td>
+				<td th:text="${product.price}"></td>
+				<td><a th:href="@{/shoppingcart/addproduct?productId={id}(id=${product.id})}"><input type="button" value="加入購物車"/></a></td>
+				</tr> 
 </table>
-</form>
+
+<p th:text="${test}"></p>
+<p></p>
 
 
    

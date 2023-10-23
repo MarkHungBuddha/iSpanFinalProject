@@ -2,10 +2,15 @@ package com.peko.houshoukaizokudan.service;
 
 import com.peko.houshoukaizokudan.Repository.ShoppingCartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 
+import com.peko.houshoukaizokudan.model.Member;
 import com.peko.houshoukaizokudan.model.ProductBasic;
 import com.peko.houshoukaizokudan.model.ShoppingCart;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ShoppingCartService {
@@ -13,20 +18,21 @@ public class ShoppingCartService {
     @Autowired
     private  ShoppingCartRepository shoppingCartRepository;
 
-    public ShoppingCartService(ShoppingCartRepository shoppingCartRepository) {
-        this.shoppingCartRepository = shoppingCartRepository;
-    }
-
-    // 新增商品進購物車
-    public void addProductToCart(ProductBasic product) {
-
-        // 創建購物車項目
+    
+    
+     // 新增商品進購物車
+    public void addProductToCart(Member member,ProductBasic product) {
+    	Integer checkcart = shoppingCartRepository.CheckProductByMemberId(member.getId(),product.getId());
+    	if (checkcart > 0) {
+    		shoppingCartRepository.UpdateCartQuantity(member.getId(),product.getId(),checkcart + 1);
+    	}
+    	else {
         ShoppingCart cartItem = new ShoppingCart();
+        cartItem.setMemberid(member);
         cartItem.setProductid(product);
-        cartItem.setQuantity(1); // 假設預設數量是1
-
-        // 將購物車項目保存到資料庫
+        cartItem.setQuantity(1);
         shoppingCartRepository.save(cartItem);
+    	}
     }
 
     // 更新購物車
