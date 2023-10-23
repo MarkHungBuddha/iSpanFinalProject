@@ -31,8 +31,8 @@ public class EmailController {
         return "驗證碼已發送";
     }
     @PostMapping("/verifyCode")
-    public String verifyCode(@RequestParam String userInputCode, @RequestParam String storedCode) {
-        boolean isVerified = emailService.verifyVerificationCode(userInputCode, storedCode);
+    public String verifyCode(@RequestParam String userInputCode) {
+        boolean isVerified = emailService.verifyVerificationCode(userInputCode);
 
         if (isVerified) {
             return "驗證成功";

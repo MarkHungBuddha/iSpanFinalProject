@@ -49,4 +49,19 @@ public class MemberService {
         return usersRepo.findById(id)
             .orElseThrow(() -> new RuntimeException("找不到 ID 為 " + id + " 的會員"));
     }
+    public Member findByEmail(String email) {
+        Member member = usersRepo.findByEmail(email);
+        if (member == null) {
+            throw new RuntimeException("找不到 " + email + " 的會員");
+        }
+        return member;
+    }
+    public Member updateMember(Member member) {
+        return usersRepo.save(member);
+    }
+    public void deleteMember(Integer memberId) {
+        usersRepo.deleteById(memberId);
+    }
+    
+    
 }
