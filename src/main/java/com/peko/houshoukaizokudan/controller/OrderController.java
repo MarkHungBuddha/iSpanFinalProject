@@ -6,12 +6,18 @@ import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -43,43 +49,84 @@ public class OrderController {
 		return "order/showOrders";
 	}
 
-	//使用者訂單查詢
+	// 使用者訂單查詢
 	@PostMapping("/orders/orderBase")
 	public List<OrderBasicDto> orderShow(HttpSession session) {
 
 		Member loginUser = (Member) session.getAttribute("loginUser");
 
 		if (loginUser != null) {
-			
-	        List<OrderBasic> orders = orderService.findOrderBasicBymemberOrderid(loginUser);
-	        
-	        List<OrderBasicDto> dtoOrderList= orderService.getOrder(orders);
-	        
-	        return dtoOrderList;
-	    } else {
-	        return null;
-	    }
-	}
-	
-	//下單
-	@PostMapping("/order/addOrder")
-	public List<OrderBasic> placeOrder(HttpSession session){
-		
-		Member loginUser = (Member) session.getAttribute("loginUser");
-		List<ProductBasic> buyProducts = (List<ProductBasic>) session.getAttribute("buyProducts");
-		List<OrderBasic>order=orderService.save(buyProducts,loginUser);
-		
-		
-		return order;
+
+			List<OrderBasic> orders = orderService.findOrderBasicBymemberOrderid(loginUser);
+
+			List<OrderBasicDto> dtoOrderList = orderService.getOrder(orders);
+
+			return dtoOrderList;
+		} else {
+			return null;
+		}
 	}
 
-	
-	
-	
+	// 下單
+//	@PostMapping("/order/addOrder")
+//	public List<OrderBasic> placeOrder(HttpSession session){
+//		
+//		Member loginUser = (Member) session.getAttribute("loginUser");
+//		List<ProductBasic> buyProducts = (List<ProductBasic>) session.getAttribute("buyProducts");
+//		List<OrderBasic>order=orderService.save(buyProducts,loginUser);
+//		
+//		
+//		return order;
+//	}
+
+	// 修改訂單地址
+	@PutMapping("/order/{id}")
+	public ResponseEntity<?> changeOrderAddres(@PathVariable Integer id, @RequestBody OrderBasic updateorderaddress,
+			HttpSession session) {
+		Member loginUser = (Member) session.getAttribute("loginUser");
+		OrderBasic optional = orderService.getOrder(id);
+
+		if (optional == null)
+			return new ResponseEntity<>("沒有這筆資料", null, HttpStatus.BAD_REQUEST);
+
+		if (loginUser.getId() == optional.getBuyer().getId()) {
+
+			OrderBasic result = orderService.updateOrderBasic(optional, updateorderaddress);
+			OrderBasicDto updateOrder = orderService.updateOrderDto(result);
+
+			return new ResponseEntity<>(updateOrder, null, HttpStatus.OK);
+
+		} else
+			return new ResponseEntity<>("這不是你的訂單，無法修改", null, HttpStatus.BAD_REQUEST);
+
+	}
+
+	// 取消訂單
+	@PutMapping("/cancelOrder/{id}")
+	public ResponseEntity<?> cancelOrder(@PathVariable Integer id, 
+			HttpSession session) {
+		Member loginUser = (Member) session.getAttribute("loginUser");
+		OrderBasic optional = orderService.getOrder(id);
+
+		if (optional == null)
+			return new ResponseEntity<>("沒有這筆資料", null, HttpStatus.BAD_REQUEST);
+
+		if (loginUser.getId() == optional.getBuyer().getId()) {
+
+			OrderBasic result = orderService.cancelOrderBasic(optional);
+			OrderBasicDto updateOrder = orderService.updateOrderDto(result);
+
+			return new ResponseEntity<>(updateOrder, null, HttpStatus.OK);
+
+		} else
+			return new ResponseEntity<>("這不是你的訂單，無法修改", null, HttpStatus.BAD_REQUEST);
+
+	}
+
 	/* 準備前往綠界 */
-	 @GetMapping("/goEcPay")
+	@GetMapping("/goEcPay")
 	public void goEcPay(Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session)
-			throws IOException  {
+			throws IOException {
 		OrderBasic ob = (OrderBasic) request.getAttribute("OrderBasic");
 
 		// 設定金流
@@ -112,8 +159,7 @@ public class OrderController {
 
 	// 綠界回傳資料
 	@PostMapping("/returnURL")
-	public void returnURL(
-			@RequestParam("MerchantTradeNo") String MerchantTradeNo, // 特店訂單編號
+	public void returnURL(@RequestParam("MerchantTradeNo") String MerchantTradeNo, // 特店訂單編號
 			@RequestParam("RtnCode") int RtnCode, // 交易訊息
 			@RequestParam("TradeAmt") int TradeAmt, // 交易金額
 			HttpServletRequest request) {
@@ -126,7 +172,7 @@ public class OrderController {
 			String orderIdStr = MerchantTradeNo.substring(13);
 			int orderId = Integer.parseInt(orderIdStr);
 			OrderBasic ob = orderService.getOrder(orderId);
-			//設定交易狀態
+			// 設定交易狀態
 			OrderStatus OrderStatus = orderStatusService.findOrderStatusById(3);
 			ob.setStatusid(OrderStatus);
 		}

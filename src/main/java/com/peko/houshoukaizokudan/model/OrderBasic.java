@@ -6,6 +6,8 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Nationalized;
 
+import com.peko.houshoukaizokudan.DTO.OrderBasicDto;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -121,6 +123,9 @@ public class OrderBasic {
     @JoinColumn(name = "statusid")
     @Fetch(FetchMode.JOIN)
     private OrderStatus statusid;
+
+
+
 
 
 }

@@ -15,8 +15,8 @@ public interface OrderBasicRepository extends JpaRepository<OrderBasic, Integer>
 
 	OrderBasic findOrderBasicByOrderid(int orderid);
 	
-	@Query()
-	List<OrderBasic> saveAll(List<ProductBasic> buyProducts);
+//	@Query() //還沒寫
+//	List<OrderBasic> saveAll(List<ProductBasic> buyProducts);
 
 
 }

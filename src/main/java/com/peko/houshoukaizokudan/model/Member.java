@@ -2,6 +2,8 @@ package com.peko.houshoukaizokudan.model;
 
 import java.util.Set;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Nationalized;
 
 import jakarta.persistence.Column;
@@ -37,6 +39,7 @@ public class Member {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "membertypeid")
+    @Fetch(FetchMode.JOIN)
     private MemberType membertypeid;
 
     @Nationalized

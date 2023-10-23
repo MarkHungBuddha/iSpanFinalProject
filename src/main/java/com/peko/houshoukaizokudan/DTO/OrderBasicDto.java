@@ -37,8 +37,4 @@ public class OrderBasicDto {
 	private String statusname; //訂單狀態
 	private OrderStatus statusid; //訂單狀態
 	private String orderaddess;
-	
-
-	
-	
 }
