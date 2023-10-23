@@ -4,6 +4,9 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.peko.houshoukaizokudan.DTO.ProductBasicDto;
 import com.peko.houshoukaizokudan.DTO.ProductBasicDto2;
+import com.peko.houshoukaizokudan.DTO.ProductDto;
 import com.peko.houshoukaizokudan.model.Member;
 import com.peko.houshoukaizokudan.model.ProductBasic;
 import com.peko.houshoukaizokudan.model.ProductCategory;
@@ -38,6 +42,29 @@ public class ProductController {
 	
 	private ProductImageService piService;
 
+	
+	@GetMapping("/api/products")
+	public ResponseEntity<Page<ProductDto>> getProductsByPage(
+	    @RequestParam(name = "p", defaultValue = "1") Integer pageNumber,
+	    @RequestParam(name = "productname", required = false) String productname,
+	    HttpServletRequest request) {
+		 HttpSession session = request.getSession();
+
+		    // 从 HttpSession 中获取存储的用户信息
+		    Member loginUser = (Member) session.getAttribute("loginUser");
+		 if (loginUser != null) {
+		        Pageable pageable = PageRequest.of(pageNumber - 1, 3); // 3 items per page
+		        Page<ProductDto> page = prdService.getProductsByPage(pageable, productname);
+		        return new ResponseEntity<>(page, HttpStatus.OK);
+		    } else {
+		        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+		    }
+	}
+	
+	
+	
+	
+	
 //	@GetMapping("/product/{productId}")
 //	public String viewProduct(@PathVariable Integer productId, Model model) {
 //		ProductBasicDto productDTO = prdService.getProductDTOById(productId).orElse(null);
@@ -121,7 +148,7 @@ public class ProductController {
 
 
 	    // 保存更新后的ProductBasic
-	    ProductBasic updatedProduct = prdService.updateProduct(ed, up);
+	    ProductBasic updatedProduct = prdService.updateProduct(ed,up);
 	    ProductBasicDto2 nupd = prdService.findNewOne(updatedProduct);
 	    if (nupd != null) {
 	        // 传递productId和imageUrl给saveProductImage方法

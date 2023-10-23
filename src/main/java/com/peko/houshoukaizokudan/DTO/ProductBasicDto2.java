@@ -23,5 +23,5 @@ public class ProductBasicDto2 {
     private Integer quantity;
     private String categoryName;
     private String parentCategoryName;
-//    private Member sellermemberid;
+    private Integer sellermemberid;
 }

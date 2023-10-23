@@ -27,6 +27,7 @@ public class Member {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "membertypeid")
+    @Fetch(FetchMode.JOIN)
     private MemberType membertypeid;
 
     @Nationalized

@@ -1,25 +1,20 @@
 package com.peko.houshoukaizokudan.service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.peko.houshoukaizokudan.DTO.ProductBasicDto;
 import com.peko.houshoukaizokudan.DTO.ProductBasicDto2;
+import com.peko.houshoukaizokudan.DTO.ProductDto;
 import com.peko.houshoukaizokudan.Repository.MemberRepository;
 import com.peko.houshoukaizokudan.Repository.ParentCategoryRepository;
 import com.peko.houshoukaizokudan.Repository.ProductBasicRepository;
@@ -55,78 +50,78 @@ public class ProductBasicService {
 	@Autowired
 	private ParentCategoryRepository parentCategoryRepository;
 
-	// 建立商品
-	@Transactional
-	public ProductBasic addProductWithImages(ProductBasic productBasic, ProductCategory category,
-			List<ProductImage> images) {
-		// Save the product basic information
-		ProductBasic savedProduct = productBasicRepository.save(productBasic);
-
-		// Link product to its category
-		category.setProductBasic(Set.of(savedProduct));
-		productCategoryRepository.save(category);
-
-		// Save the product images
-		images.forEach(image -> {
-			image.setProductid(savedProduct);
-			productImageRepository.save(image);
-		});
-
-		return savedProduct;
-	}
-
-	// 編輯商品
-
-	@Transactional
-	public ProductBasic editProduct(ProductBasic productBasic, ProductCategory category, List<ProductImage> images) {
-		if (productBasicRepository.existsById(productBasic.getId())) {
-			productBasicRepository.save(productBasic);
-
-			// Link product to its category
-			category.setProductBasic(Set.of(productBasic));
-			productCategoryRepository.save(category);
-
-			// Save the product images
-			images.forEach(image -> {
-				image.setProductid(productBasic);
-				productImageRepository.save(image);
-			});
-
-			return productBasic;
-		} else {
-			throw new RuntimeException("Product not found with ID: " + productBasic.getId());
-		}
-	}
-
-	// 刪除商品
-	@Transactional
-	public void deleteProduct(Integer productId) {
-		productBasicRepository.deleteById(productId);
-	}
-
-	@Transactional
-	// 列出全部商品
-	public List<ProductBasic> listAllProducts() {
-		return productBasicRepository.findAll();
-	}
-
-	@Transactional
-	// 商品like搜尋
-	public List<ProductBasic> searchProductsByName(String keyword) {
-		return productBasicRepository.findProductBasicDataByproductnameLike(keyword);
-	}
-
-	@Transactional
-	public List<ProductBasic> findProductBasicDataByproductname(String productname) {
-
-		List<ProductBasic> products = productBasicRepository
-				.findProductBasicDataByproductnameLike("%" + productname + "%");
-
-		if (products.isEmpty()) {
-			return null;
-		}
-		return products;
-	}
+//	// 建立商品
+//	@Transactional
+//	public ProductBasic addProductWithImages(ProductBasic productBasic, ProductCategory category,
+//			List<ProductImage> images) {
+//		// Save the product basic information
+//		ProductBasic savedProduct = productBasicRepository.save(productBasic);
+//
+//		// Link product to its category
+//		category.setProductBasic(Set.of(savedProduct));
+//		productCategoryRepository.save(category);
+//
+//		// Save the product images
+//		images.forEach(image -> {
+//			image.setProductid(savedProduct);
+//			productImageRepository.save(image);
+//		});
+//
+//		return savedProduct;
+//	}
+//
+//	// 編輯商品
+//
+//	@Transactional
+//	public ProductBasic editProduct(ProductBasic productBasic, ProductCategory category, List<ProductImage> images) {
+//		if (productBasicRepository.existsById(productBasic.getId())) {
+//			productBasicRepository.save(productBasic);
+//
+//			// Link product to its category
+//			category.setProductBasic(Set.of(productBasic));
+//			productCategoryRepository.save(category);
+//
+//			// Save the product images
+//			images.forEach(image -> {
+//				image.setProductid(productBasic);
+//				productImageRepository.save(image);
+//			});
+//
+//			return productBasic;
+//		} else {
+//			throw new RuntimeException("Product not found with ID: " + productBasic.getId());
+//		}
+//	}
+//
+//	// 刪除商品
+//	@Transactional
+//	public void deleteProduct(Integer productId) {
+//		productBasicRepository.deleteById(productId);
+//	}
+//
+//	@Transactional
+//	// 列出全部商品
+//	public List<ProductBasic> listAllProducts() {
+//		return productBasicRepository.findAll();
+//	}
+//
+//	@Transactional
+//	// 商品like搜尋
+//	public List<ProductBasic> searchProductsByName(String keyword) {
+//		return productBasicRepository.findProductBasicDataByproductnameLike(keyword);
+//	}
+//
+//	@Transactional
+//	public List<ProductBasic> findProductBasicDataByproductname(String productname) {
+//
+//		List<ProductBasic> products = productBasicRepository
+//				.findProductBasicDataByproductnameLike("%" + productname + "%");
+//
+//		if (products.isEmpty()) {
+//			return null;
+//		}
+//		return products;
+//	}
 
 	@Transactional
 	public Optional<ProductBasicDto> getProductDTOById(Integer productId) {
@@ -159,11 +154,26 @@ public class ProductBasicService {
 
 	// 頁碼 //1頁2筆
 	@Transactional
-	public Page<ProductBasic> findProductByPage(Integer pageNumber) {
-		Pageable pgb = PageRequest.of(pageNumber - 1, 3, Sort.Direction.ASC, "id");
-		Page<ProductBasic> page = productBasicRepository.findAll(pgb);
-		return page;
-	}
+    public Page<ProductDto> getProductsByPage(Pageable pageable, String productname) {
+        Page<ProductBasic> page = productBasicRepository.findProductBasicByproductname(productname, pageable);
+        List<ProductDto> dtos = page.getContent().stream().map(pro -> {
+            ProductDto dto = new ProductDto();
+            dto.setProductid(pro.getId());
+            dto.setProductname(pro.getProductname());
+            dto.setPrice(pro.getPrice());
+            dto.setSpecialprice(pro.getSpecialprice());
+            dto.setCategoryname(pro.getCategoryid().getCategoryname());
+            dto.setQuantity(pro.getQuantity());
+            dto.setDescription(pro.getDescription());
+            
+            
+            // 使用 ProductImageRepository 查詢圖像路徑
+            String imagepath = productImageRepository.findImagepathByProductid(pro.getId());
+            dto.setImagepath(imagepath);
+            return dto;
+        }).collect(Collectors.toList());
+        return new PageImpl<>(dtos, pageable, page.getTotalElements());
+    }
 
 //	public ProductBasic findLastest() {
 //		return prdRepo.findFirstByOrderIdDesc();
@@ -255,10 +265,14 @@ public class ProductBasicService {
 			// 直接将新的categoryid设置给ProductBasic
 			ed.setCategoryid(up.getCategoryid());
 		}
-//		 if (up.getSellermemberid() != null) {
-//			 // 直接将新的categoryid设置给ProductBasic
-//			 ed.setSellermemberid(up.getSellermemberid());
-//		 }
+		if (up.getSellermemberid() != null) {
+		    Integer memberId = up.getSellermemberid().getMemberid(); // 假设 Member 对象有名为 "id" 的属性
+		    Member mb = mRepo.findById(memberId).orElse(null);
+		    if (mb != null) {
+		        ed.setSellermemberid(mb);
+		    }
+		
+		 }
 
 		return productBasicRepository.save(ed);
 	}
@@ -267,7 +281,6 @@ public class ProductBasicService {
 
 		ProductBasicDto2 dto = new ProductBasicDto2();
 		dto.setProductId(upd.getId());
-//		dto.setSellermemberid(upd.getSellermemberid());
 		dto.setProductName(upd.getProductname());
 		dto.setPrice(upd.getPrice());
 		if (upd.getCategoryid() != null) {
@@ -276,6 +289,7 @@ public class ProductBasicService {
 				dto.setParentCategoryName(upd.getCategoryid().getParentid().getParentname());
 			}
 		}
+		dto.setSellermemberid(upd.getSellermemberid().getMemberid());
 		dto.setSpecialPrice(upd.getSpecialprice());
 		dto.setQuantity(upd.getQuantity());
 		dto.setDescription(upd.getDescription());
