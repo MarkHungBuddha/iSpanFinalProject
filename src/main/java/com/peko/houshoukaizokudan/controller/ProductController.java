@@ -14,9 +14,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.peko.houshoukaizokudan.DTO.ProductBasicDto;
 import com.peko.houshoukaizokudan.DTO.ProductBasicDto2;
@@ -28,6 +29,7 @@ import com.peko.houshoukaizokudan.service.ProductBasicService;
 import com.peko.houshoukaizokudan.service.ProductCategoryService;
 import com.peko.houshoukaizokudan.service.ProductImageService;
 
+import io.jsonwebtoken.io.IOException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
@@ -39,7 +41,7 @@ public class ProductController {
 
 	@Autowired
 	private ProductCategoryService pcService;
-	
+	@Autowired
 	private ProductImageService piService;
 
 	
@@ -101,6 +103,8 @@ public class ProductController {
 			pb1.setCategoryid(pc1);
 			pb1.setQuantity(quantity);
 			pb1.setDescription(description);
+			
+			
 
 			//圖片
 			prdService.insert(pb1);
@@ -135,20 +139,21 @@ public class ProductController {
 	}
 
 	@PutMapping("/back/edit/{id}")
-	public ResponseEntity<Object> editPage(@PathVariable("id") Integer id, @RequestBody ProductBasic up, HttpServletRequest request) throws java.io.IOException {
+	public ResponseEntity<Object> editPage(@PathVariable("id") Integer id,@RequestPart("file") MultipartFile file,
+            @RequestPart("up") ProductBasic up, HttpServletRequest request) throws java.io.IOException {
 	    ProductBasic ed = prdService.findById(id);
 	    if (ed == null) {
 	        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	    }
 
 	    // 处理上传的文件，将其保存到数据库或云存储
-//	    String imageUrl = null;
-//	    try {
-//	        imageUrl = piService.uploadImage(file);
-//	    } catch (IOException e) {
-//	        e.printStackTrace();
-//	        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-//	    }
+	    String imageUrl = null;
+	    try {
+	        imageUrl = piService.uploadImage(file,id);
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+	    }
 
 
 	    // 保存更新后的ProductBasic

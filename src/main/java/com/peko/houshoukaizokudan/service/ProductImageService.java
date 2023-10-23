@@ -1,11 +1,15 @@
 package com.peko.houshoukaizokudan.service;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -30,8 +34,7 @@ public class ProductImageService {
     @Autowired
     private ProductBasicRepository productBasicRepository;
     
-    
-    public String uploadImage(MultipartFile file) throws IOException, java.io.IOException {
+    public String uploadImage(MultipartFile file,Integer id) throws IOException, java.io.IOException {
         RestTemplate restTemplate = new RestTemplate();
 
         // 检查文件是否存在
@@ -63,6 +66,20 @@ public class ProductImageService {
 
             // 从响应中获取图片网址
             String imageUrl = response.getBody();
+            String pattern = "https://i.imgur.com/(\\w{7})\\.png";
+            Pattern r = Pattern.compile(pattern);
+            Matcher m = r.matcher(imageUrl);
+
+            String extractedCode = "";
+            if (m.find()) {
+                extractedCode = m.group(1);
+            }
+            System.out.println(extractedCode);
+            saveProductImage(id, extractedCode);
+            // 保存 ProductImage 到数据库
+            System.out.println("Link:"+extractedCode);
+
+            
 
             // 返回图片网址
             return imageUrl;
@@ -71,6 +88,17 @@ public class ProductImageService {
             throw new RuntimeException("文件上傳失敗");
         }
     }
+    @Transactional
+    public void saveProductImage(ProductBasic product, String imageUrl, String extractedCode) {
+        // 创建 ProductImage 对象并设置相应的字段
+        ProductImage productImage = new ProductImage();
+        productImage.setProductid(product);
+        productImage.setImagepath(extractedCode);
+
+        // 保存 ProductImage
+        productImageRepository.save(productImage);
+    }
+
 
     public void saveProductImage(Integer productId, String imageUrl) {
         // 将图片信息保存到数据库，包括productid

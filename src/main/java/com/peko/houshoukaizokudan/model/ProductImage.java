@@ -23,4 +23,8 @@ public class ProductImage {
     @Column(name = "imagepath", nullable = false, length = 200)
     private String imagepath;
 
+    public ProductImage(ProductBasic productid, String extractedCode) {
+        this.productid = productid;
+        this.imagepath = "https://i.imgur.com/" + extractedCode + ".png";
+    }
 }
