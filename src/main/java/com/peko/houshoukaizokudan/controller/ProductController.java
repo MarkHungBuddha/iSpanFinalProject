@@ -50,7 +50,6 @@ public class ProductController {
 	    HttpServletRequest request) {
 		 HttpSession session = request.getSession();
 
-		    // 从 HttpSession 中获取存储的用户信息
 		    Member loginUser = (Member) session.getAttribute("loginUser");
 		 if (loginUser != null) {
 		        Pageable pageable = PageRequest.of(pageNumber - 1, 3); // 3 items per page
@@ -103,6 +102,7 @@ public class ProductController {
 			pb1.setQuantity(quantity);
 			pb1.setDescription(description);
 
+			//圖片
 			prdService.insert(pb1);
 			return ResponseEntity.ok().build();
 		} else {
@@ -117,6 +117,10 @@ public class ProductController {
 			List<ProductBasic> list = prdService.findAllProductBasic(loginUser);
 			
 	        List<ProductBasicDto> dtolist = prdService.findAllProductBasicDto(list);
+	        
+	        //圖片
+	        
+	        
 	        return dtolist;
 		}else {
 			return null;
