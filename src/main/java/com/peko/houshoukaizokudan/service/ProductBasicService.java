@@ -1,9 +1,10 @@
 package com.peko.houshoukaizokudan.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.peko.houshoukaizokudan.DTO.ProductBasicDto;
 import com.peko.houshoukaizokudan.DTO.ProductBasicDto2;
@@ -24,8 +26,8 @@ import com.peko.houshoukaizokudan.Repository.ProductReviewRepository;
 import com.peko.houshoukaizokudan.Repository.QandARepository;
 import com.peko.houshoukaizokudan.model.Member;
 import com.peko.houshoukaizokudan.model.ProductBasic;
-import com.peko.houshoukaizokudan.model.ProductCategory;
-import com.peko.houshoukaizokudan.model.ProductImage;
+
+import io.jsonwebtoken.lang.Collections;
 
 @Service
 public class ProductBasicService {
@@ -154,26 +156,41 @@ public class ProductBasicService {
 
 	// 頁碼 //1頁2筆
 	@Transactional
-    public Page<ProductDto> getProductsByPage(Pageable pageable, String productname) {
-        Page<ProductBasic> page = productBasicRepository.findProductBasicByproductname(productname, pageable);
-        List<ProductDto> dtos = page.getContent().stream().map(pro -> {
-            ProductDto dto = new ProductDto();
-            dto.setProductid(pro.getId());
-            dto.setProductname(pro.getProductname());
-            dto.setPrice(pro.getPrice());
-            dto.setSpecialprice(pro.getSpecialprice());
-            dto.setCategoryname(pro.getCategoryid().getCategoryname());
-            dto.setQuantity(pro.getQuantity());
-            dto.setDescription(pro.getDescription());
-            
-            
-            // 使用 ProductImageRepository 查詢圖像路徑
-            String imagepath = productImageRepository.findImagepathByProductid(pro.getId());
-            dto.setImagepath(imagepath);
-            return dto;
-        }).collect(Collectors.toList());
-        return new PageImpl<>(dtos, pageable, page.getTotalElements());
+	public Page<ProductDto> getProductsByPage(Pageable pageable, String productname, Integer memberIdd) {
+	    List<ProductDto> productDtos = new ArrayList<>();
+	    Page<ProductBasic> pageByName = null;
+	    Page<ProductBasic> pageByMemberId = null;
+
+	    if (StringUtils.hasText(productname)) {
+	        pageByName = productBasicRepository.findProductBasicByProductname(productname, pageable);
+	        productDtos.addAll(pageByName.getContent().stream().map(this::convertToProductDto).collect(Collectors.toList()));
+	    }
+
+	    if (memberIdd != null) {
+	        pageByMemberId = productBasicRepository.findProductBasicBySellermemberid(memberIdd, pageable);
+	        productDtos.addAll(pageByMemberId.getContent().stream().map(this::convertToProductDto).collect(Collectors.toList()));
+	    }
+
+	    if (!productDtos.isEmpty()) {
+	        return new PageImpl<>(productDtos, pageable, productDtos.size());
+	    }
+
+	    // 如果没有提供筛选条件，返回一个空的页面
+	    return new PageImpl<>(Collections.emptyList(), pageable, 0);
+	}
+
+
+	public ProductDto convertToProductDto(ProductBasic productBasic) {
+        ProductDto productDto = new ProductDto();
+        // 执行转换逻辑，将 productBasic 的属性赋值给 productDto
+        productDto.setProductid(productBasic.getId());
+        productDto.setProductname(productBasic.getProductname());
+        productDto.setPrice(productBasic.getPrice());
+        productDto.setSpecialprice(productBasic.getSpecialprice());
+        // 其他属性的转换
+        return productDto;
     }
+
 
 //	public ProductBasic findLastest() {
 //		return prdRepo.findFirstByOrderIdDesc();
@@ -277,7 +294,7 @@ public class ProductBasicService {
 		return productBasicRepository.save(ed);
 	}
 
-	public ProductBasicDto2 findNewOne(ProductBasic upd) {
+	public ProductBasicDto2 findNewOne(ProductBasic upd,String imageUrl) {
 
 		ProductBasicDto2 dto = new ProductBasicDto2();
 		dto.setProductId(upd.getId());
@@ -293,6 +310,7 @@ public class ProductBasicService {
 		dto.setSpecialPrice(upd.getSpecialprice());
 		dto.setQuantity(upd.getQuantity());
 		dto.setDescription(upd.getDescription());
+		dto.setImagepath(imageUrl);
 
 		return dto;
 	}

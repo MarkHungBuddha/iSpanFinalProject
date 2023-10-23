@@ -29,7 +29,12 @@ public interface ProductBasicRepository extends JpaRepository<ProductBasic, Inte
 	Optional<ProductBasic> findByIdWithRelationships(@Param("id") Integer id);
 	
 	List<ProductBasic> findBySellermemberid(Member sellermemberid);
+	
+	@Query("SELECT pb FROM ProductBasic pb WHERE pb.productname = :productname")
+    Page<ProductBasic> findProductBasicByProductname(@Param("productname") String productname, Pageable pageable);
 
+    @Query("SELECT pb FROM ProductBasic pb WHERE pb.sellermemberid = :memberId")
+    Page<ProductBasic> findProductBasicBySellermemberid(@Param("memberId") Integer memberIdd, Pageable pageable);
 
 	
 }

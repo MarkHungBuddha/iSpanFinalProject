@@ -45,7 +45,7 @@ public class ProductController {
 	private ProductImageService piService;
 
 	
-	@GetMapping("/api/products")
+	@GetMapping("/back/products")
 	public ResponseEntity<Page<ProductDto>> getProductsByPage(
 	    @RequestParam(name = "p", defaultValue = "1") Integer pageNumber,
 	    @RequestParam(name = "productname", required = false) String productname,
@@ -54,8 +54,10 @@ public class ProductController {
 
 		    Member loginUser = (Member) session.getAttribute("loginUser");
 		 if (loginUser != null) {
+			 Integer memberIdd = loginUser.getMemberid();
+			 System.out.println("Member ID: " + memberIdd);
 		        Pageable pageable = PageRequest.of(pageNumber - 1, 3); // 3 items per page
-		        Page<ProductDto> page = prdService.getProductsByPage(pageable, productname);
+		        Page<ProductDto> page = prdService.getProductsByPage(pageable, productname,memberIdd);
 		        return new ResponseEntity<>(page, HttpStatus.OK);
 		    } else {
 		        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -158,7 +160,7 @@ public class ProductController {
 
 	    // 保存更新后的ProductBasic
 	    ProductBasic updatedProduct = prdService.updateProduct(ed,up);
-	    ProductBasicDto2 nupd = prdService.findNewOne(updatedProduct);
+	    ProductBasicDto2 nupd = prdService.findNewOne(updatedProduct,imageUrl);
 	    if (nupd != null) {
 	        // 传递productId和imageUrl给saveProductImage方法
 //	        piService.saveProductImage(updatedProduct.getId(), imageUrl);
