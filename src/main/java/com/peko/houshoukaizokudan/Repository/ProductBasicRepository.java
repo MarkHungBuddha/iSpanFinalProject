@@ -15,7 +15,7 @@ import com.peko.houshoukaizokudan.model.ProductBasic;
 
 public interface ProductBasicRepository extends JpaRepository<ProductBasic, Integer> {
 	
-	//模糊搜尋產品名稱
+	//模糊搜尋產品名稱 
 	
 	@Query("FROM ProductBasic WHERE productname LIKE %:productname%")
 	Page<ProductBasic> findProductBasicByproductname(@Param("productname") String productname, Pageable Pageable);
@@ -33,9 +33,10 @@ public interface ProductBasicRepository extends JpaRepository<ProductBasic, Inte
 	@Query("SELECT pb FROM ProductBasic pb WHERE pb.productname = :productname")
     Page<ProductBasic> findProductBasicByProductname(@Param("productname") String productname, Pageable pageable);
 
-    @Query("SELECT pb FROM ProductBasic pb WHERE pb.sellermemberid = :memberId")
-    Page<ProductBasic> findProductBasicBySellermemberid(@Param("memberId") Integer memberIdd, Pageable pageable);
-
+//    @Query("SELECT pb FROM ProductBasic pb WHERE pb.sellermemberid = :memberId")
+    @Query(value = "SELECT * FROM ProductBasic pb WHERE pb.sellermemberid = :memberId", nativeQuery = true)
+    Page<ProductBasic> findProductBasicBySellermemberid(@Param("memberId") Integer memberId, Pageable pageable);
+//    
 	
 }
 

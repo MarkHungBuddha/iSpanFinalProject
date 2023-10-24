@@ -156,7 +156,7 @@ public class ProductBasicService {
 
 	// 頁碼 //1頁2筆
 	@Transactional
-	public Page<ProductDto> getProductsByPage(Pageable pageable, String productname, Integer memberIdd) {
+	public Page<ProductDto> getProductByPage(Pageable pageable, String productname, Integer memberIdd) {
 	    List<ProductDto> productDtos = new ArrayList<>();
 	    Page<ProductBasic> pageByName = null;
 	    Page<ProductBasic> pageByMemberId = null;

@@ -57,7 +57,7 @@ public class ProductController {
 			 Integer memberIdd = loginUser.getMemberid();
 			 System.out.println("Member ID: " + memberIdd);
 		        Pageable pageable = PageRequest.of(pageNumber - 1, 3); // 3 items per page
-		        Page<ProductDto> page = prdService.getProductsByPage(pageable, productname,memberIdd);
+		        Page<ProductDto> page = prdService.getProductByPage(pageable, productname,memberIdd);
 		        return new ResponseEntity<>(page, HttpStatus.OK);
 		    } else {
 		        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -86,9 +86,10 @@ public class ProductController {
 			@RequestParam BigDecimal specialprice, 
 			@RequestParam Integer categoryid, 
 			@RequestParam Integer quantity,
-			@RequestParam String description,HttpServletRequest request
+			@RequestParam String description,HttpServletRequest request,
+			@RequestPart("file") MultipartFile file
 
-	) {
+	) throws java.io.IOException {
 		// 获取 HttpSession 对象
 		HttpSession session = request.getSession();
 
@@ -106,9 +107,16 @@ public class ProductController {
 			pb1.setQuantity(quantity);
 			pb1.setDescription(description);
 			
-			
+			int id=pb1.getId();
 
 			//圖片
+			String imageUrl = null;
+		    try {
+		        imageUrl = piService.uploadImage(file,id);
+		    } catch (IOException e) {
+		        e.printStackTrace();
+		        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		    }
 			prdService.insert(pb1);
 			return ResponseEntity.ok().build();
 		} else {
