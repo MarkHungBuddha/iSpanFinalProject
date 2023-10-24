@@ -40,6 +40,10 @@ public class ProductBasic {
     @JoinColumn(name = "categoryid")
     private ProductCategory categoryid;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parentid")
+    private ProductCategory parentid;
+
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
 

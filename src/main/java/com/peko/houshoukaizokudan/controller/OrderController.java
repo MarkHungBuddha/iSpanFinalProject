@@ -3,11 +3,10 @@ package com.peko.houshoukaizokudan.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import com.peko.houshoukaizokudan.model.Member;
 import com.peko.houshoukaizokudan.model.OrderBasic;
@@ -15,8 +14,9 @@ import com.peko.houshoukaizokudan.service.OrderBasicService;
 
 import jakarta.servlet.http.HttpSession;
 
-@Controller
+@RestController
 public class OrderController {
+
 	@Autowired
 	private OrderBasicService orderService;
 
@@ -39,6 +39,15 @@ public class OrderController {
 	        return "order/showOrders";
 	    }
 	}
+
+	@PostMapping("/api/checkoutOrder")
+    public ResponseEntity<?> checkoutOrder(@RequestBody CheckoutRequest request) {
+
+
+		return  false;
+	}
+
+
 
 
 }

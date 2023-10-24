@@ -95,6 +95,10 @@ public class OrderBasic {
     @Column(name = "needextrapaidinfo", length = 1)
     private String needextrapaidinfo;
 
+    @Nationalized
+    @Column(name = "orderaddress", length = 100)
+    private String orderaddress;
+
     @OneToOne(mappedBy = "orderid")
     private OrderDetail  orderDetail;
 
