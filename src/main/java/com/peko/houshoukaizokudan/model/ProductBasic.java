@@ -42,7 +42,7 @@ public class ProductBasic {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parentid")
-    private ProductCategory parentid;
+    private ParentCategory  parentid;
 
     @Column(name = "quantity", nullable = false)
     private Integer quantity;

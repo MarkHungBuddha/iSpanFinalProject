@@ -61,12 +61,12 @@ public class ProductController {
 //		return "product/productView";
 //	}
 
-	@GetMapping("/product/{productId}")
-	public String viewProduct(@PathVariable Integer productId, Model model) {
-		ProductBasicDto productDTO = prdService.getProductDTOById(productId).orElse(null);
-		model.addAttribute("product", productDTO);
-		return "product/productView";
-	}
+//	@GetMapping("/product/{productId}")
+//	public String viewProduct(@PathVariable Integer productId, Model model) {
+//		ProductBasicDto productDTO = prdService.getProductDTOById(productId).orElse(null);
+//		model.addAttribute("product", productDTO);
+//		return "product/productView";
+//	}
 
 
 
