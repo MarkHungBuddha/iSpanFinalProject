@@ -18,7 +18,7 @@ import java.util.Set;
 @Builder
 public class checkoutOrderDto {
 
-    Member sellerMember;
+
     private Member member;        // 會員物件
     private Set<ProductItem> productItems; // 一個列表，包含多個商品和相關的資訊
 
