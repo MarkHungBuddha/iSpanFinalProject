@@ -10,6 +10,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
@@ -20,13 +23,18 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.peko.houshoukaizokudan.DTO.OrderBasicDto;
+import com.peko.houshoukaizokudan.DTO.OrderDetailDto;
+import com.peko.houshoukaizokudan.Repository.OrderDetailRepository;
 import com.peko.houshoukaizokudan.model.Member;
 import com.peko.houshoukaizokudan.model.OrderBasic;
+import com.peko.houshoukaizokudan.model.OrderDetail;
 import com.peko.houshoukaizokudan.model.OrderStatus;
 import com.peko.houshoukaizokudan.model.ProductBasic;
 import com.peko.houshoukaizokudan.service.OrderBasicService;
+import com.peko.houshoukaizokudan.service.OrderDetailService;
 import com.peko.houshoukaizokudan.service.OrderStatusService;
 
 import ecpay.payment.integration.AllInOne;
@@ -43,13 +51,15 @@ public class OrderController {
 	@Autowired
 	private OrderStatusService orderStatusService;
 
+	private OrderDetailService orderDetailService;
+
 	// 跳頁
 	@GetMapping("/orders/orderBase")
 	public String orderShowPage() {
 		return "order/showOrders";
 	}
 
-	// 使用者訂單查詢
+	// 使用者訂單查詢 old
 	@PostMapping("/orders/orderBase")
 	public List<OrderBasicDto> orderShow(HttpSession session) {
 
@@ -62,6 +72,44 @@ public class OrderController {
 			List<OrderBasicDto> dtoOrderList = orderService.getOrder(orders);
 
 			return dtoOrderList;
+		} else {
+			return null;
+		}
+	}
+
+	// 買家找訂單 (page)
+	@GetMapping("/findorders")
+	public Page<OrderBasicDto> orderShow(@RequestParam(name = "p", defaultValue = "1") Integer pageNumber,
+			HttpSession session) {
+
+		Member loginUser = (Member) session.getAttribute("loginUser");
+
+		if (loginUser != null) {
+
+			Pageable pageable = PageRequest.of(pageNumber - 1, 10); // 每頁10筆訂單
+			Page<OrderBasicDto> page = orderService.getOrder(pageable, loginUser);
+
+			return page;
+
+		} else {
+			return null;
+		}
+	}
+
+	// 買家找訂單 by 訂單狀態 (page)
+	@GetMapping("/findorders/status")
+	public Page<OrderBasicDto> orderShowByStatus(@RequestParam(name = "p", defaultValue = "1") Integer pageNumber,
+			HttpSession session, @RequestParam Integer statusid) {
+
+		Member loginUser = (Member) session.getAttribute("loginUser");
+
+		if (loginUser != null) {
+
+			Pageable pageable = PageRequest.of(pageNumber - 1, 10); // 每頁10筆訂單
+			Page<OrderBasicDto> page = orderService.getOrderByStatus(pageable, loginUser, statusid);
+
+			return page;
+
 		} else {
 			return null;
 		}
@@ -88,8 +136,9 @@ public class OrderController {
 
 		if (optional == null)
 			return new ResponseEntity<>("沒有這筆資料", null, HttpStatus.BAD_REQUEST);
-
-		if (loginUser.getId() == optional.getBuyer().getId()) {
+		// 確認訂單人且訂單狀態碼是 待付款 待出貨 才可以改變地址
+		if (loginUser.getId() == optional.getBuyer().getId() && optional.getStatusid().getId() == 1
+				|| optional.getStatusid().getId() == 2) {
 
 			OrderBasic result = orderService.updateOrderBasic(optional, updateorderaddress);
 			OrderBasicDto updateOrder = orderService.updateOrderDto(result);
@@ -97,21 +146,20 @@ public class OrderController {
 			return new ResponseEntity<>(updateOrder, null, HttpStatus.OK);
 
 		} else
-			return new ResponseEntity<>("這不是你的訂單，無法修改", null, HttpStatus.BAD_REQUEST);
-
+			return new ResponseEntity<>("無法修改地址，訂單狀態碼錯誤或者不是你的訂單", null, HttpStatus.BAD_REQUEST);
 	}
 
 	// 取消訂單
 	@PutMapping("/cancelOrder/{id}")
-	public ResponseEntity<?> cancelOrder(@PathVariable Integer id, 
-			HttpSession session) {
+	public ResponseEntity<?> cancelOrder(@PathVariable Integer id, HttpSession session) {
 		Member loginUser = (Member) session.getAttribute("loginUser");
 		OrderBasic optional = orderService.getOrder(id);
 
 		if (optional == null)
 			return new ResponseEntity<>("沒有這筆資料", null, HttpStatus.BAD_REQUEST);
-
-		if (loginUser.getId() == optional.getBuyer().getId()) {
+		// 確認訂單人且訂單狀態碼是 待付款 待出貨 才可以取消訂單
+		if (loginUser.getId() == optional.getBuyer().getId() && optional.getStatusid().getId() == 1
+				|| optional.getStatusid().getId() == 2) {
 
 			OrderBasic result = orderService.cancelOrderBasic(optional);
 			OrderBasicDto updateOrder = orderService.updateOrderDto(result);
@@ -119,8 +167,25 @@ public class OrderController {
 			return new ResponseEntity<>(updateOrder, null, HttpStatus.OK);
 
 		} else
-			return new ResponseEntity<>("這不是你的訂單，無法修改", null, HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("無法取消訂單，訂單狀態碼錯誤或者不是你的訂單", null, HttpStatus.BAD_REQUEST);
+	}
 
+	// 查詢訂單內容的商品
+	@GetMapping("/orders/orderDetail")
+	public ResponseEntity<?> getOrderDetail(@RequestParam Integer orderid, HttpSession session) {
+
+		Member loginUser = (Member) session.getAttribute("loginUser");
+
+		if (loginUser != null) {
+			// 取得訂單每個商品
+			List<OrderDetail> products = orderDetailService.findOrderDetailByOrderid(orderid);
+
+			List<OrderDetailDto> dtoProductList = orderDetailService.getProducts(products);
+
+			return new ResponseEntity<>(dtoProductList, null, HttpStatus.OK);
+		} else {
+			return null;
+		}
 	}
 
 	/* 準備前往綠界 */

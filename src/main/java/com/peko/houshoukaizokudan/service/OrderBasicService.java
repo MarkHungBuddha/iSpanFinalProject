@@ -5,10 +5,15 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.peko.houshoukaizokudan.model.Member;
 import com.peko.houshoukaizokudan.model.OrderBasic;
+import com.peko.houshoukaizokudan.model.OrderDetail;
 import com.peko.houshoukaizokudan.model.OrderStatus;
 import com.peko.houshoukaizokudan.model.ProductBasic;
 import com.peko.houshoukaizokudan.DTO.OrderBasicDto;
@@ -37,7 +42,7 @@ public class OrderBasicService {
 		return orders;
 	}
 
-	// 找訂單dto
+	// 買家找訂單dto 舊的
 	public List<OrderBasicDto> getOrder(List<OrderBasic> orders) {
 		List<OrderBasicDto> dtoOrderList = orders.stream().map(order -> {
 			OrderBasicDto dto = new OrderBasicDto();
@@ -60,6 +65,65 @@ public class OrderBasicService {
 		}).collect(Collectors.toList()); // 将映射后的对象收集到列表中
 		return dtoOrderList;
 	}
+	// 買家找訂單 改成page
+	@Transactional
+	public Page<OrderBasicDto> getOrder(Pageable pageable, Member loginUser) {
+	
+	 
+        Page<OrderBasic> page = orderRepo.findOrderBasicBybuyer(loginUser, pageable);
+        List<OrderBasicDto> dtoOrderList = page.getContent().stream().map(order -> {
+        	OrderBasicDto dto = new OrderBasicDto();
+        	dto.setOrderid(order.getOrderid());
+			dto.setSeller(order.getSeller().getUsername());
+			dto.setBuyer(order.getBuyer().getUsername());
+			dto.setMerchanttradedate(order.getMerchanttradedate());
+			dto.setChoosepayment(order.getChoosepayment());
+			dto.setTotalamount(order.getTotalamount());
+			dto.setRating(order.getRating());
+			dto.setReviewcontent(order.getReviewcontent());
+			dto.setMerchantid(order.getMerchantid());
+			dto.setMerchanttradenno(order.getMerchanttradenno());
+			dto.setPaymenttype(order.getPaymenttype());
+			dto.setTradedesc(order.getTradedesc());
+			dto.setItemname(order.getItemname());
+			dto.setStatusname(order.getStatusid().getStatusname());
+			dto.setOrderaddess(order.getOrderaddress());
+			return dto;
+
+        }).collect(Collectors.toList());
+        return new PageImpl<>(dtoOrderList, pageable, page.getTotalElements());
+    }
+	
+	// 買家找訂單狀態 改成page
+	@Transactional
+	public Page<OrderBasicDto> getOrderByStatus(Pageable pageable, Member loginUser,Integer statusid) {
+	
+		Integer buyer = loginUser.getId();
+        Page<OrderBasic> page = orderRepo.findOrderBasicByStatus(buyer,statusid, pageable);
+        
+        List<OrderBasicDto> dtoOrderList = page.getContent().stream().map(order -> {
+        	OrderBasicDto dto = new OrderBasicDto();
+        	dto.setOrderid(order.getOrderid());
+			dto.setSeller(order.getSeller().getUsername());
+			dto.setBuyer(order.getBuyer().getUsername());
+			dto.setMerchanttradedate(order.getMerchanttradedate());
+			dto.setChoosepayment(order.getChoosepayment());
+			dto.setTotalamount(order.getTotalamount());
+			dto.setRating(order.getRating());
+			dto.setReviewcontent(order.getReviewcontent());
+			dto.setMerchantid(order.getMerchantid());
+			dto.setMerchanttradenno(order.getMerchanttradenno());
+			dto.setPaymenttype(order.getPaymenttype());
+			dto.setTradedesc(order.getTradedesc());
+			dto.setItemname(order.getItemname());
+			dto.setStatusname(order.getStatusid().getStatusname());
+			dto.setOrderaddess(order.getOrderaddress());
+			return dto;
+
+        }).collect(Collectors.toList());
+        return new PageImpl<>(dtoOrderList, pageable, page.getTotalElements());
+    }
+
 
 	// 儲存新訂單
 	public OrderBasic updateOrderBasic(OrderBasic order, OrderBasic updateOrder) {
@@ -69,6 +133,7 @@ public class OrderBasicService {
 	}
 
 	// 修改訂單dto
+	@Transactional
 	public OrderBasicDto updateOrderDto(OrderBasic order) {
 
 		OrderBasicDto dto = new OrderBasicDto();
@@ -91,6 +156,7 @@ public class OrderBasicService {
 	}
 
 	// 修改訂單 變成取消訂單
+	@Transactional
 	public OrderBasic cancelOrderBasic(OrderBasic order) {
 		OrderStatus orderStatus = new OrderStatus();
 		orderStatus.setId(5);
@@ -98,6 +164,8 @@ public class OrderBasicService {
 		order.setStatusid(orderStatus);
 		return orderRepo.save(order);
 	}
+
+
 
 	// 產生訂單
 //	public List<OrderBasic> save(List<ProductBasic> buyProducts, Member loginUser) {

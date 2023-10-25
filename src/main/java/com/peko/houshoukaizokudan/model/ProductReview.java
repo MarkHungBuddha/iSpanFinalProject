@@ -2,6 +2,9 @@ package com.peko.houshoukaizokudan.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Nationalized;
 
 @Builder
@@ -17,12 +20,14 @@ public class ProductReview {
     @Column(name = "reviewid", nullable = false)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "productid")
+    @Fetch(FetchMode.JOIN)
     private ProductBasic productid;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "memberid")
+    @Fetch(FetchMode.JOIN)
     private Member memberid;
 
     @Column(name = "rating")
