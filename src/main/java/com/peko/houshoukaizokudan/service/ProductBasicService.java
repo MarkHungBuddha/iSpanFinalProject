@@ -159,6 +159,7 @@ public class ProductBasicService {
 //	     return productBasicRepository.findProductBasicByproductname(productname, pageable);
 //	    }
 // 
+    //模糊搜尋 + ProductBasic欄位 +Image 的圖片路徑
     @Transactional
     public Page<ProductDto> getProductsByPage(Pageable pageable, String productname) {
         Page<ProductBasic> page = productBasicRepository.findProductBasicByproductname(productname, pageable);

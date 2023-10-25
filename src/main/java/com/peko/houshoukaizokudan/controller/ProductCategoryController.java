@@ -4,7 +4,9 @@ import java.math.BigDecimal;
 
 import java.util.List;
 
+
 import com.peko.houshoukaizokudan.DTO.ProductBasicDto;
+import com.peko.houshoukaizokudan.DTO.ProductCategoryDto;
 import com.peko.houshoukaizokudan.DTO.ProductDto;
 import com.peko.houshoukaizokudan.model.Member;
 import com.peko.houshoukaizokudan.model.ProductCategory;
@@ -25,15 +27,19 @@ import org.springframework.data.domain.Pageable;
 
 import com.peko.houshoukaizokudan.model.ProductBasic;
 import com.peko.houshoukaizokudan.service.ProductBasicService;
+import com.peko.houshoukaizokudan.service.ProductCategoryService;
 
 @RestController
 @Controller
-public class ProductController {
+public class ProductCategoryController {
 
     @Autowired
     private ProductBasicService prdService;
     
-    
+    @Autowired
+    private ProductCategoryService productCategoryService; // 确保已注入 ProductCategoryService
+
+
 	//跳頁
 	@GetMapping("/product/productFind")
 	public String productFindPage() {
@@ -42,37 +48,26 @@ public class ProductController {
     
 	//模糊搜尋 存頁碼跟關鍵字
 	//未給頁碼 預設第一頁
-	
-//	@GetMapping("/product/page")
-//	 public String findProductByPage(
-//	 @RequestParam(name = "pageNumber", defaultValue = "1") Integer pageNumber,
-//	 @RequestParam(name = "productname", required = false) String productname, 
-//	 Model model) {
-//	 Page<ProductBasic> page = prdService.findProductByPage(pageNumber, productname);
-//	 // 傳出 page P改小寫
-//	 model.addAttribute("page", page);
-//
-//	 return "product/productFindPages";
-//	 }
-//  
-	
-	
-	
 	@ResponseBody
 	@GetMapping("/api/products")
 	public Page<ProductDto> getProductsByPage(
 	    @RequestParam(name = "p", defaultValue = "1") Integer pageNumber,
 	    @RequestParam(name = "productname", required = false) String productname) {
-	    Pageable pageable = PageRequest.of(pageNumber - 1, 3); // 3 items per page
+	    Pageable pageable = PageRequest.of(pageNumber - 1, 3); // 每頁 3 項
 	    Page<ProductDto> page = prdService.getProductsByPage(pageable, productname);
 	    return page;
 	}
-
 	
-	
-	
-
-
+	//搜尋類別id
+	@ResponseBody
+	@GetMapping("/api/productCategories")
+	   public Page<ProductCategoryDto> getCategoryId(
+	       @RequestParam(value = "categoryid") Integer categoryid,
+	       @RequestParam(name = "p", defaultValue = "1") Integer pageNumber) {
+	       Pageable pageable = PageRequest.of(pageNumber - 1, 10); // 每頁 3 項
+	       Page<ProductCategoryDto> page = productCategoryService.getCategoryId(pageable, categoryid);
+	       return page;
+	    }
 
 
 //	@GetMapping("product/{id}")
@@ -118,7 +113,7 @@ public class ProductController {
 
 		if (loginUser != null) {
 			ProductCategory pc1 = new ProductCategory();
-			pc1.setId(categoryid);
+//			pc1.setId(categoryid);
 			ProductBasic pb1 = new ProductBasic();
 			pb1.setSellermemberid(loginUser);
 			pb1.setProductname(productname);
