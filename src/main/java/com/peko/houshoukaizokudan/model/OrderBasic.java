@@ -80,6 +80,10 @@ public class OrderBasic {
     private Integer encrypttype;
 
     @Nationalized
+    @Column(name = "orderaddress",length = 200) // 訂單地址
+    private String orderaddress;
+
+    @Nationalized
     @Column(name = "clientbackurl", length = 200)
     private String clientbackurl;
 
@@ -95,9 +99,7 @@ public class OrderBasic {
     @Column(name = "needextrapaidinfo", length = 1)
     private String needextrapaidinfo;
 
-    @Nationalized
-    @Column(name = "orderaddress", length = 100)
-    private String orderaddress;
+
 
     @OneToOne(mappedBy = "orderid")
     private OrderDetail  orderDetail;

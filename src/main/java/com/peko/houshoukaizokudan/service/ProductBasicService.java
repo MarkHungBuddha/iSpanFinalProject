@@ -98,7 +98,7 @@ public class ProductBasicService {
     @Transactional
     //商品like搜尋
     public List<ProductBasic> searchProductsByName(String keyword) {
-        return productBasicRepository.findProductBasicDataByproductnameLike(keyword);
+        return productBasicRepository.findByProductnameLike(keyword);
     }
 
 
@@ -106,7 +106,7 @@ public class ProductBasicService {
     public List<ProductBasic> findProductBasicDataByproductname(String productname) {
 
 
-        List<ProductBasic> products = productBasicRepository.findProductBasicDataByproductnameLike("%" + productname + "%");
+        List<ProductBasic> products = productBasicRepository.findByProductnameLike("%" + productname + "%");
 
         if (products.isEmpty()) {
             return null;

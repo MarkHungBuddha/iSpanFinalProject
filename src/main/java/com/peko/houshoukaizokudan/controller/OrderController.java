@@ -1,7 +1,10 @@
 package com.peko.houshoukaizokudan.controller;
 
 import java.util.List;
+import java.util.Set;
 
+import com.peko.houshoukaizokudan.DTO.ProductItem;
+import com.peko.houshoukaizokudan.DTO.checkoutOrderDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -40,14 +43,19 @@ public class OrderController {
 	    }
 	}
 
-	@PostMapping("/api/checkoutOrder")
-    public ResponseEntity<?> checkoutOrder(@RequestBody CheckoutRequest request) {
+	@PostMapping("/api/checkout")
+	public ResponseEntity<?> checkout(@RequestBody checkoutOrderDto orderDto) {
+		Set<ProductItem> items = orderDto.getProductItems();
 
+		// 進行結帳的相關操作...
+		// 例如，您可以使用 orderDto.getTotalPrice() 來獲取總價
+		double totalPrice = orderDto.getTotalPrice();
 
-		return  false;
+		return ResponseEntity.ok().build();
 	}
-
-
-
-
 }
+
+
+
+
+

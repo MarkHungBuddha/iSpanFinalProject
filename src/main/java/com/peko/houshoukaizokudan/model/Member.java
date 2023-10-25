@@ -58,6 +58,9 @@ public class Member {
     @Column(name = "email", nullable = false, length = 100)
     private String email;
 
+    @Column(name = "resetToken",  length = 50)
+    private String resetToken;
+
     @Nationalized
     @Column(name = "membercreationdate", nullable = false, length = 50)
     private String membercreationdate;
