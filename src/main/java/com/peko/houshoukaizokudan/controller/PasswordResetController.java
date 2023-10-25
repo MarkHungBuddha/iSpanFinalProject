@@ -16,7 +16,7 @@ public class PasswordResetController {
     public String requestPasswordReset(@RequestParam String email) {
         try {
             passwordResetService.requestPasswordReset(email);
-            return "Password reset email sent successfully.";
+            return "驗證信已寄出";
         } catch (Exception e) {
             return "Error: " + e.getMessage();
         }
@@ -27,9 +27,9 @@ public class PasswordResetController {
         try {
             boolean success = passwordResetService.resetPassword(email, resetToken, newPassword);
             if (success) {
-                return "Password reset successful.";
+                return "密碼更改成功";
             } else {
-                return "Password reset failed. Please check your email and token.";
+                return "更改失敗，請檢查驗證碼與密碼格式";
             }
         } catch (Exception e) {
             return "Error: " + e.getMessage();
