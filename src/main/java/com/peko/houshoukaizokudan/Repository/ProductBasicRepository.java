@@ -37,6 +37,12 @@ public interface ProductBasicRepository extends JpaRepository<ProductBasic, Inte
     @Query(value = "SELECT * FROM ProductBasic pb WHERE pb.sellermemberid = :memberId", nativeQuery = true)
     Page<ProductBasic> findProductBasicBySellermemberid(@Param("memberId") Integer memberId, Pageable pageable);
 //    
+
+
+    @Query(value = "SELECT * FROM productbasic pb WHERE pb.sellermemberid = :memberIdd AND pb.productname LIKE %:productname%",
+    	       nativeQuery = true)
+	Page<ProductBasic> findProductBasicBySellermemberidAndProductnameContaining(Integer memberIdd, String productname,
+			Pageable pageable);
 	
 }
 

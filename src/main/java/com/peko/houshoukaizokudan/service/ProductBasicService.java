@@ -157,27 +157,20 @@ public class ProductBasicService {
 	// 頁碼 //1頁2筆
 	@Transactional
 	public Page<ProductDto> getProductByPage(Pageable pageable, String productname, Integer memberIdd) {
-	    List<ProductDto> productDtos = new ArrayList<>();
-	    Page<ProductBasic> pageByName = null;
-	    Page<ProductBasic> pageByMemberId = null;
-
-	    if (StringUtils.hasText(productname)) {
-	        pageByName = productBasicRepository.findProductBasicByProductname(productname, pageable);
-	        productDtos.addAll(pageByName.getContent().stream().map(this::convertToProductDto).collect(Collectors.toList()));
-	    }
-
 	    if (memberIdd != null) {
-	        pageByMemberId = productBasicRepository.findProductBasicBySellermemberid(memberIdd, pageable);
-	        productDtos.addAll(pageByMemberId.getContent().stream().map(this::convertToProductDto).collect(Collectors.toList()));
+	        // 单次筛选：根据会员ID筛选并根据产品名称模糊搜索
+	        Page<ProductBasic> pageByMemberId = productBasicRepository.findProductBasicBySellermemberidAndProductnameContaining(memberIdd, productname, pageable);
+	        
+	        List<ProductDto> productDtos = pageByMemberId.getContent().stream()
+	            .map(this::convertToProductDto)
+	            .collect(Collectors.toList());
+
+	        return new PageImpl<>(productDtos, pageable, pageByMemberId.getTotalElements());
 	    }
 
-	    if (!productDtos.isEmpty()) {
-	        return new PageImpl<>(productDtos, pageable, productDtos.size());
-	    }
-
-	    // 如果没有提供筛选条件，返回一个空的页面
 	    return new PageImpl<>(Collections.emptyList(), pageable, 0);
 	}
+
 
 
 	public ProductDto convertToProductDto(ProductBasic productBasic) {

@@ -44,30 +44,24 @@ public class ProductController {
 	@Autowired
 	private ProductImageService piService;
 
-	
 	@GetMapping("/back/products")
 	public ResponseEntity<Page<ProductDto>> getProductsByPage(
-	    @RequestParam(name = "p", defaultValue = "1") Integer pageNumber,
-	    @RequestParam(name = "productname", required = false) String productname,
-	    HttpServletRequest request) {
-		 HttpSession session = request.getSession();
+			@RequestParam(name = "p", defaultValue = "1") Integer pageNumber,
+			@RequestParam(name = "productname", required = false) String productname, HttpServletRequest request) {
+		HttpSession session = request.getSession();
 
-		    Member loginUser = (Member) session.getAttribute("loginUser");
-		 if (loginUser != null) {
-			 Integer memberIdd = loginUser.getMemberid();
-			 System.out.println("Member ID: " + memberIdd);
-		        Pageable pageable = PageRequest.of(pageNumber - 1, 3); // 3 items per page
-		        Page<ProductDto> page = prdService.getProductByPage(pageable, productname,memberIdd);
-		        return new ResponseEntity<>(page, HttpStatus.OK);
-		    } else {
-		        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-		    }
+		Member loginUser = (Member) session.getAttribute("loginUser");
+		if (loginUser != null) {
+			Integer memberIdd = loginUser.getMemberid();
+			System.out.println("Member ID: " + memberIdd);
+			Pageable pageable = PageRequest.of(pageNumber - 1, 3); // 3 items per page
+			Page<ProductDto> page = prdService.getProductByPage(pageable, productname, memberIdd);
+			return new ResponseEntity<>(page, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+		}
 	}
-	
-	
-	
-	
-	
+
 //	@GetMapping("/product/{productId}")
 //	public String viewProduct(@PathVariable Integer productId, Model model) {
 //		ProductBasicDto productDTO = prdService.getProductDTOById(productId).orElse(null);
@@ -81,13 +75,9 @@ public class ProductController {
 //	}
 
 	@PostMapping("/back/add")
-	private ResponseEntity<Object> uploadPage(@RequestParam String productname, 
-			@RequestParam BigDecimal price,
-			@RequestParam BigDecimal specialprice, 
-			@RequestParam Integer categoryid, 
-			@RequestParam Integer quantity,
-			@RequestParam String description,HttpServletRequest request,
-			@RequestPart("file") MultipartFile file
+	private ResponseEntity<Object> uploadPage(@RequestParam String productname, @RequestParam BigDecimal price,
+			@RequestParam BigDecimal specialprice, @RequestParam Integer categoryid, @RequestParam Integer quantity,
+			@RequestParam String description, HttpServletRequest request, @RequestPart("file") MultipartFile file
 
 	) throws java.io.IOException {
 		// 获取 HttpSession 对象
@@ -97,6 +87,7 @@ public class ProductController {
 		Member loginUser = (Member) session.getAttribute("loginUser");
 
 		if (loginUser != null) {
+
 			ProductCategory pc1 = pcService.findById(categoryid);
 			ProductBasic pb1 = new ProductBasic();
 			pb1.setSellermemberid(loginUser);
@@ -106,83 +97,87 @@ public class ProductController {
 			pb1.setCategoryid(pc1);
 			pb1.setQuantity(quantity);
 			pb1.setDescription(description);
-			
-			int id=pb1.getId();
-
-			//圖片
-			String imageUrl = null;
-		    try {
-		        imageUrl = piService.uploadImage(file,id);
-		    } catch (IOException e) {
-		        e.printStackTrace();
-		        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		    }
 			prdService.insert(pb1);
+
+			int id = pb1.getId();
+			System.out.println("ID:" + id);
+
+			// 圖片
+			String imageUrl = null;
+			try {
+				imageUrl = piService.uploadImage(file, id);
+			} catch (IOException e) {
+				e.printStackTrace();
+				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			}
 			return ResponseEntity.ok().build();
 		} else {
 			return ResponseEntity.notFound().build();
 		}
 	}
-	
+
+	// 加PAGE
 	@GetMapping("/back/show")
 	public List<ProductBasicDto> showPage(HttpSession session) {
 		Member loginUser = (Member) session.getAttribute("loginUser");
 		if (loginUser != null) {
 			List<ProductBasic> list = prdService.findAllProductBasic(loginUser);
-			
-	        List<ProductBasicDto> dtolist = prdService.findAllProductBasicDto(list);
-	        
-	        //圖片
-	        
-	        
-	        return dtolist;
-		}else {
+
+			List<ProductBasicDto> dtolist = prdService.findAllProductBasicDto(list);
+
+			// 圖片
+
+			return dtolist;
+		} else {
 			return null;
 		}
 	}
-	
 
+	// 加鎖ID
 	@DeleteMapping("/back/delete/{id}")
-	public ResponseEntity<Object> deleteProduct(@PathVariable("id") Integer id) {
-		prdService.deleteById(id);
-		return ResponseEntity.ok().build();
+	public ResponseEntity<Object> deleteProduct(@PathVariable("id") Integer id, HttpSession session) {
+		Member loginUser = (Member) session.getAttribute("loginUser");
+		if (loginUser != null) {
+			prdService.deleteById(id);
+			return ResponseEntity.ok().build();
+		}
+		return null;
 	}
 
+//加鎖ID
 	@PutMapping("/back/edit/{id}")
-	public ResponseEntity<Object> editPage(@PathVariable("id") Integer id,@RequestPart("file") MultipartFile file,
-            @RequestPart("up") ProductBasic up, HttpServletRequest request) throws java.io.IOException {
-	    ProductBasic ed = prdService.findById(id);
-	    if (ed == null) {
-	        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-	    }
+	public ResponseEntity<Object> editPage(@PathVariable("id") Integer id, @RequestPart("file") MultipartFile file,
+			@RequestPart("up") ProductBasic up, HttpServletRequest request) throws java.io.IOException {
+		HttpSession session = request.getSession();
+		Member loginUser = (Member) session.getAttribute("loginUser");
+//		if (loginUser != null) {
+		
 
-	    // 处理上传的文件，将其保存到数据库或云存储
-	    String imageUrl = null;
-	    try {
-	        imageUrl = piService.uploadImage(file,id);
-	    } catch (IOException e) {
-	        e.printStackTrace();
-	        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-	    }
+		ProductBasic ed = prdService.findById(id);
+		if (ed == null) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
 
+		// 处理上传的文件，将其保存到数据库或云存储
+		String imageUrl = null;
+		try {
+			imageUrl = piService.uploadImage(file, id);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 
-	    // 保存更新后的ProductBasic
-	    ProductBasic updatedProduct = prdService.updateProduct(ed,up);
-	    ProductBasicDto2 nupd = prdService.findNewOne(updatedProduct,imageUrl);
-	    if (nupd != null) {
-	        // 传递productId和imageUrl给saveProductImage方法
+		// 保存更新后的ProductBasic
+		ProductBasic updatedProduct = prdService.updateProduct(ed, up);
+		ProductBasicDto2 nupd = prdService.findNewOne(updatedProduct, imageUrl);
+		if (nupd != null) {
+			// 传递productId和imageUrl给saveProductImage方法
 //	        piService.saveProductImage(updatedProduct.getId(), imageUrl);
-	        return new ResponseEntity<>(nupd, HttpStatus.OK);
-	    } else {
-	        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-	    }
-	}
-
-
-		
-	
-		
-
+			return new ResponseEntity<>(nupd, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+}
 //        findProductByPageLikeProductName
 //        productFindPage
 //        findByCategoryOrderByRating
