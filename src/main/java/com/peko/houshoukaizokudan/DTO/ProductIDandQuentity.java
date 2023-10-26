@@ -1,5 +1,6 @@
 package com.peko.houshoukaizokudan.DTO;
 
+
 import com.peko.houshoukaizokudan.model.ProductBasic;
 import lombok.*;
 
@@ -11,8 +12,8 @@ import lombok.*;
 @NoArgsConstructor
 @ToString
 @Builder
-public class ProductItem {
-    private ProductBasic product; // 商品物件
+public class ProductIDandQuentity {
+    private Integer productID; // 商品物件
     private int quantity;         // 商品數量
 
 }

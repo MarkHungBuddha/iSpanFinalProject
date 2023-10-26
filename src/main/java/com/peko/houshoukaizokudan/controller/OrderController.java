@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.peko.houshoukaizokudan.DTO.ProductIDandQuentity;
 import com.peko.houshoukaizokudan.DTO.ProductItem;
 import com.peko.houshoukaizokudan.DTO.checkoutOrderDto;
 import com.peko.houshoukaizokudan.model.ProductBasic;
@@ -54,17 +55,19 @@ public class OrderController {
 
 
 	@PostMapping("/api/order/checkout")
-	public ResponseEntity<checkoutOrderDto> checkout(@RequestBody List<ProductItem> productItems, HttpSession session) {
+	public ResponseEntity<checkoutOrderDto> checkout(@RequestBody List<ProductIDandQuentity> productItems, HttpSession session) {
 		Member loginUser = (Member) session.getAttribute("loginUser"); // assuming you stored user ID in session
 		if(loginUser == null) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
 		}
+		System.out.println(productItems.toString());
 		try {
 			System.out.println("checkoutOrderDto orderDto");
 			checkoutOrderDto orderDto = orderService.processCheckout(loginUser, productItems);
 			System.out.println("return ResponseEntity.ok(orderDto);");
 			return ResponseEntity.ok(orderDto);
 		} catch (Exception e) {
+			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 	}
