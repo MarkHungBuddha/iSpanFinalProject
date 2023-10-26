@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.peko.houshoukaizokudan.DTO.ProductIDandQuentity;
-import com.peko.houshoukaizokudan.DTO.ProductItem;
 import com.peko.houshoukaizokudan.DTO.checkoutOrderDto;
 import com.peko.houshoukaizokudan.model.ProductBasic;
 import com.peko.houshoukaizokudan.model.ProductReview;

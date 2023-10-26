@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.peko.houshoukaizokudan.DTO.ProductIDandQuentity;
-import com.peko.houshoukaizokudan.DTO.ProductItem;
 import com.peko.houshoukaizokudan.DTO.checkoutOrderDto;
 import com.peko.houshoukaizokudan.Repository.ProductBasicRepository;
 import com.peko.houshoukaizokudan.Repository.ProductReviewRepository;
