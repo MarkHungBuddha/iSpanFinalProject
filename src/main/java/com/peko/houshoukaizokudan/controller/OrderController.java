@@ -62,9 +62,7 @@ public class OrderController {
 		}
 		System.out.println(productItems.toString());
 		try {
-			System.out.println("checkoutOrderDto orderDto");
 			checkoutOrderDto orderDto = orderService.processCheckout(loginUser, productItems);
-			System.out.println("return ResponseEntity.ok(orderDto);");
 			return ResponseEntity.ok(orderDto);
 		} catch (Exception e) {
 			e.printStackTrace();

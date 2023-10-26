@@ -1,5 +1,6 @@
 package com.peko.houshoukaizokudan.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Nationalized;

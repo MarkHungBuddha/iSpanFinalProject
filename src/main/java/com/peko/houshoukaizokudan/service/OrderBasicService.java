@@ -15,6 +15,7 @@ import com.peko.houshoukaizokudan.DTO.checkoutOrderDto;
 import com.peko.houshoukaizokudan.Repository.ProductBasicRepository;
 import com.peko.houshoukaizokudan.Repository.ProductReviewRepository;
 import com.peko.houshoukaizokudan.Repository.ShoppingCartRepository;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +36,8 @@ public class OrderBasicService {
     @Autowired
     private ShoppingCartRepository shoppingCartRepo;
 
+
+    @Transactional
     public List<OrderBasic> findOrderBasicDataBymemberid(Member buyer) {
 //		Integer Member= buyer.getId();
 
@@ -47,6 +50,7 @@ public class OrderBasicService {
         return orders;
     }
 
+    @Transactional
     public checkoutOrderDto processCheckout(Member member, List<ProductIDandQuentity> productItems) throws Exception {
         System.out.println(productItems.toString());
 
@@ -92,15 +96,16 @@ public class OrderBasicService {
         double totalPrice = 0.0;
         for (ProductBasic product : cartProducts) {
             BigDecimal effectivePrice = (product.getSpecialprice() != null && product.getSpecialprice().compareTo(BigDecimal.ZERO) > 0) ? product.getSpecialprice() : product.getPrice();
-            totalPrice += effectivePrice.doubleValue();
+            int quantity = productItems.stream().filter(item -> item.getProductID().equals(product.getId())).findFirst().get().getQuantity();
+            totalPrice += effectivePrice.doubleValue() * quantity;
         }
 
-        // Steps 5 & 6: Setup checkoutOrderDto
-        checkoutOrderDto orderDto = checkoutOrderDto.builder()
-                .member(member)
-//                .productItems(new HashSet<>(productItems))// converting list to set
-                .totalPrice(BigDecimal.valueOf(totalPrice))
-                .build();
+        // Create the checkoutOrderDto
+        checkoutOrderDto orderDto = new checkoutOrderDto(
+                member.getId(),
+                new HashSet<>(productItems), // Directly use the productItems list
+                BigDecimal.valueOf(totalPrice)
+        );
 
         return orderDto;
     }
