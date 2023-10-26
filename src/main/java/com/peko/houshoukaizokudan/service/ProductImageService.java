@@ -1,5 +1,6 @@
 package com.peko.houshoukaizokudan.service;
 
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,7 +35,7 @@ public class ProductImageService {
     @Autowired
     private ProductBasicRepository productBasicRepository;
     
-    public String uploadImage(MultipartFile file,Integer id) throws IOException, java.io.IOException {
+    public String uploadImage(MultipartFile file,Integer id,Integer od) throws IOException, java.io.IOException {
         RestTemplate restTemplate = new RestTemplate();
 
         // 检查文件是否存在
@@ -66,7 +67,7 @@ public class ProductImageService {
 
             // 从响应中获取图片网址
             String imageUrl = response.getBody();
-            String pattern = "https://i.imgur.com/(\\w{7})\\.png";
+            String pattern = "https://i.imgur.com/(\\w{7})\\.(?:jpeg|png)";
             Pattern r = Pattern.compile(pattern);
             Matcher m = r.matcher(imageUrl);
 
@@ -74,8 +75,9 @@ public class ProductImageService {
             if (m.find()) {
                 extractedCode = m.group(1);
             }
+            
             System.out.println(extractedCode);
-            saveProductImage(id, extractedCode);
+            saveProductImage(id, extractedCode,od);
             // 保存 ProductImage 到数据库
             System.out.println("Link:"+extractedCode);
 
@@ -89,7 +91,7 @@ public class ProductImageService {
         }
     }
     @Transactional
-    public void saveProductImage(ProductBasic product, String imageUrl, String extractedCode) {
+    public void saveProductImage(ProductBasic product,String extractedCode) {
         // 创建 ProductImage 对象并设置相应的字段
         ProductImage productImage = new ProductImage();
         productImage.setProductid(product);
@@ -100,7 +102,7 @@ public class ProductImageService {
     }
 
 
-    public void saveProductImage(Integer productId, String imageUrl) {
+    public void saveProductImage(Integer productId, String imageUrl,Integer od) {
         // 将图片信息保存到数据库，包括productid
         ProductImage productImage = new ProductImage();
         ProductBasic product = productBasicRepository.findById(productId).orElse(null);
@@ -108,6 +110,20 @@ public class ProductImageService {
         // 设置productImage的属性，包括productid和imagepath
         productImage.setProductid(product);
         productImage.setImagepath(imageUrl);
+        productImage.setOrderID(od);
         productImageRepository.save(productImage);
     }
+    public ProductImage findImgPathByPid(Integer id) {
+    	 Optional<ProductImage> imageOptional = productImageRepository.findById(id);
+
+    	    if (imageOptional.isPresent()) {
+    	        return imageOptional.get();
+    	    } else {
+    	        // 如果找不到对应的ProductImage，可以返回null或抛出异常，视情况而定
+    	        return null;
+    	    }
+	}
+
+
 }
+

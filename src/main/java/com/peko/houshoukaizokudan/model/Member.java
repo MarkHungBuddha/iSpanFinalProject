@@ -2,9 +2,6 @@ package com.peko.houshoukaizokudan.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Nationalized;
 
 import java.util.LinkedHashSet;
@@ -23,11 +20,10 @@ public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "memberid", nullable = false)
-    private Integer memberid;
+    private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "membertypeid")
-    @Fetch(FetchMode.JOIN)
     private MemberType membertypeid;
 
     @Nationalized
@@ -61,6 +57,9 @@ public class Member {
 
     @Column(name = "email", nullable = false, length = 100)
     private String email;
+
+    @Column(name = "resetToken",  length = 50)
+    private String resetToken;
 
     @Nationalized
     @Column(name = "membercreationdate", nullable = false, length = 50)

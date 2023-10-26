@@ -17,11 +17,11 @@ public class ProductReview {
     @Column(name = "reviewid", nullable = false)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "productid")
     private ProductBasic productid;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "memberid")
     private Member memberid;
 
@@ -35,5 +35,9 @@ public class ProductReview {
     @Nationalized
     @Column(name = "reviewtime", length = 50)
     private String reviewtime;
+
+    @OneToOne
+    @JoinColumn(name = "orderdetailid")
+    private OrderDetail orderdetail;
 
 }

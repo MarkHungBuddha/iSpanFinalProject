@@ -184,6 +184,20 @@ public class ProductBasicService {
         return productDto;
     }
 
+	public ProductBasicDto convertToProductBasicDto(ProductBasic productBasic) {
+        ProductBasicDto productBasicDto = new ProductBasicDto();
+        // 执行属性赋值
+        productBasicDto.setProductId(productBasic.getId());
+        productBasicDto.setProductName(productBasic.getProductname());
+        productBasicDto.setPrice(productBasic.getPrice());
+        productBasicDto.setSpecialPrice(productBasic.getSpecialprice());
+        productBasicDto.setDescription(productBasic.getDescription());
+        productBasicDto.setQuantity(productBasic.getQuantity());
+        productBasicDto.setCategoryName(productBasic.getCategoryid().getCategoryname());
+        productBasicDto.setParentCategoryName(productBasic.getParentid().getParentname());
+        
+        return productBasicDto;
+    }
 
 //	public ProductBasic findLastest() {
 //		return prdRepo.findFirstByOrderIdDesc();
@@ -230,7 +244,7 @@ public class ProductBasicService {
 		List<ProductBasicDto> dtoList = list.stream().map(product -> {
 			ProductBasicDto dto = new ProductBasicDto();
 			dto.setProductId(product.getId());
-			dto.setSellermemberid(product.getSellermemberid().getMemberid());
+			dto.setSellermemberid(product.getSellermemberid().getId());
 			// 其他字段設置...
 //                    if (product.getSellermemberid() != null) {
 //                        dto.setSellermemberid(product.getSellermemberid().getId());
@@ -274,9 +288,11 @@ public class ProductBasicService {
 		if (up.getCategoryid() != null) {
 			// 直接将新的categoryid设置给ProductBasic
 			ed.setCategoryid(up.getCategoryid());
+			ed.setParentid(up.getParentid());
 		}
+		
 		if (up.getSellermemberid() != null) {
-		    Integer memberId = up.getSellermemberid().getMemberid(); // 假设 Member 对象有名为 "id" 的属性
+		    Integer memberId = up.getSellermemberid().getId(); // 假设 Member 对象有名为 "id" 的属性
 		    Member mb = mRepo.findById(memberId).orElse(null);
 		    if (mb != null) {
 		        ed.setSellermemberid(mb);
@@ -299,7 +315,7 @@ public class ProductBasicService {
 				dto.setParentCategoryName(upd.getCategoryid().getParentid().getParentname());
 			}
 		}
-		dto.setSellermemberid(upd.getSellermemberid().getMemberid());
+		dto.setSellermemberid(upd.getSellermemberid().getId());
 		dto.setSpecialPrice(upd.getSpecialprice());
 		dto.setQuantity(upd.getQuantity());
 		dto.setDescription(upd.getDescription());
@@ -308,7 +324,23 @@ public class ProductBasicService {
 		return dto;
 	}
 
-}
+	public Page<ProductBasicDto> getAllProductByPage(Pageable pageable, Integer memberIdd) {
+	    if (memberIdd != null) {
+	        Page<ProductBasic> pageByMemberId = productBasicRepository.findProductBasicBySellermemberid(memberIdd, pageable);
+
+	        List<ProductBasicDto> productDtos = pageByMemberId.getContent().stream()
+	            .map(this::convertToProductBasicDto)
+	            .collect(Collectors.toList());
+
+	        return new PageImpl<>(productDtos, pageable, pageByMemberId.getTotalElements());
+	    }
+
+	    return new PageImpl<>(Collections.emptyList(), pageable, 0);
+	}
+	}
+
+	// 请确保有适当的 convertToProductBasicDto 方法，用于将 ProductBasic 转换为 ProductBasicDto
+
 
 //
 //

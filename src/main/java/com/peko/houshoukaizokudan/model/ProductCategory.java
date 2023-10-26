@@ -7,9 +7,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -26,20 +23,11 @@ public class ProductCategory {
     @Column(name = "categoryname", nullable = false, length = 50)
     private String categoryname;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parentid")
-    @Fetch(FetchMode.JOIN)
     private ParentCategory parentid;
 
     @OneToMany(mappedBy = "categoryid")
     private Set<ProductBasic> productBasic ;
 
-	public void setProductBasic(Set<ProductBasic> of) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public ProductCategory(Integer id) {
-	    this.id = id;
-	}
 }

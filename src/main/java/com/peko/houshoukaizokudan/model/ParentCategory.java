@@ -7,9 +7,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -27,7 +24,9 @@ public class ParentCategory {
     private String parentname;
 
     @OneToMany(mappedBy = "parentid")
-    @Fetch(FetchMode.JOIN)
     private Set<ProductCategory> productCategory ;
+
+    @OneToMany(mappedBy = "parentid")
+    private Set<ProductBasic> productBasic ;
 
 }

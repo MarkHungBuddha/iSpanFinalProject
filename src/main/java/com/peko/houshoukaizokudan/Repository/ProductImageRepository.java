@@ -13,4 +13,5 @@ public interface ProductImageRepository extends JpaRepository<ProductImage, Inte
 		       "WHERE pic.productid.id = :productid " +
 		       "AND pic.id = (SELECT MIN(pic2.id) FROM ProductImage pic2 WHERE pic2.productid.id = :productid)")
 	String findImagepathByProductid(@Param("productid") Integer productid);
+
 }

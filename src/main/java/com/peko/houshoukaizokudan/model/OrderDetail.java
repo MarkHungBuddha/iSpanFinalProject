@@ -19,7 +19,7 @@ public class OrderDetail {
     @Column(name = "orderdetailid", nullable = false)
     private Integer id;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "orderid")
     private OrderBasic orderid;
 
@@ -33,5 +33,7 @@ public class OrderDetail {
     @Column(name = "unitprice", nullable = false, precision = 10, scale = 2)
     private BigDecimal unitprice;
 
+    @OneToOne(mappedBy = "orderdetail")
+    private ProductReview productReview;
 
 }

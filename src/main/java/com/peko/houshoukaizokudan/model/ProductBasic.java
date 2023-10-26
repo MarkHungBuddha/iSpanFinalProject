@@ -45,6 +45,11 @@ public class ProductBasic {
     @Fetch(FetchMode.JOIN)
     private ProductCategory categoryid;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parentid")
+    @Fetch(FetchMode.JOIN)
+    private ParentCategory  parentid;
+
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
@@ -70,7 +75,4 @@ public class ProductBasic {
     @OneToMany(mappedBy = "productid")
     private Set<Wishlist> wishlist ;
 
-//    public ProductBasic(Member sellermemberid) {
-//        this.sellermemberid = sellermemberid;
-//    }
 }

@@ -20,17 +20,17 @@ public class QandA {
     @Column(name = "productquestionid", nullable = false)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "productid")
     @ToString.Exclude
     private ProductBasic productid;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sellermemberid")
     @ToString.Exclude
     private Member sellerMember;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "buyermemberid")
     @ToString.Exclude
     private Member buyerMember;
