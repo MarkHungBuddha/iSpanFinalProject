@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
@@ -50,7 +51,7 @@ public class OrderController {
 	private OrderBasicService orderService;
 	@Autowired
 	private OrderStatusService orderStatusService;
-
+	@Autowired
 	private OrderDetailService orderDetailService;
 
 	// 跳頁
@@ -58,7 +59,8 @@ public class OrderController {
 	public String orderShowPage() {
 		return "order/showOrders";
 	}
-
+   
+	
 	// 使用者訂單查詢 old
 	@PostMapping("/orders/orderBase")
 	public List<OrderBasicDto> orderShow(HttpSession session) {
@@ -86,7 +88,7 @@ public class OrderController {
 
 		if (loginUser != null) {
 
-			Pageable pageable = PageRequest.of(pageNumber - 1, 10); // 每頁10筆訂單
+			Pageable pageable = PageRequest.of(pageNumber - 1, 10,Sort.Direction.DESC,"id"); // 每頁10筆訂單
 			Page<OrderBasicDto> page = orderService.getOrder(pageable, loginUser);
 
 			return page;
@@ -105,7 +107,7 @@ public class OrderController {
 
 		if (loginUser != null) {
 
-			Pageable pageable = PageRequest.of(pageNumber - 1, 10); // 每頁10筆訂單
+			Pageable pageable = PageRequest.of(pageNumber - 1, 10,Sort.Direction.DESC,"id"); // 每頁10筆訂單
 			Page<OrderBasicDto> page = orderService.getOrderByStatus(pageable, loginUser, statusid);
 
 			return page;
@@ -135,7 +137,7 @@ public class OrderController {
 		OrderBasic optional = orderService.getOrder(id);
 
 		if (optional == null)
-			return new ResponseEntity<>("沒有這筆資料", null, HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("沒有這筆資料", null, HttpStatus.NOT_FOUND);
 		// 確認訂單人且訂單狀態碼是 待付款 待出貨 才可以改變地址
 		if (loginUser.getId() == optional.getBuyer().getId() && optional.getStatusid().getId() == 1
 				|| optional.getStatusid().getId() == 2) {
@@ -156,7 +158,7 @@ public class OrderController {
 		OrderBasic optional = orderService.getOrder(id);
 
 		if (optional == null)
-			return new ResponseEntity<>("沒有這筆資料", null, HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("沒有這筆資料", null, HttpStatus.NOT_FOUND);
 		// 確認訂單人且訂單狀態碼是 待付款 待出貨 才可以取消訂單
 		if (loginUser.getId() == optional.getBuyer().getId() && optional.getStatusid().getId() == 1
 				|| optional.getStatusid().getId() == 2) {
@@ -179,70 +181,91 @@ public class OrderController {
 		if (loginUser != null) {
 			// 取得訂單每個商品
 			List<OrderDetail> products = orderDetailService.findOrderDetailByOrderid(orderid);
-
 			List<OrderDetailDto> dtoProductList = orderDetailService.getProducts(products);
 
 			return new ResponseEntity<>(dtoProductList, null, HttpStatus.OK);
 		} else {
+			return new ResponseEntity<>("錯誤", null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	//賣家查訂單
+	@GetMapping("/findSellerOrders")
+	public Page<OrderBasicDto> sellerOrderShow(@RequestParam(name = "p", defaultValue = "1") Integer pageNumber,
+			HttpSession session) {
+
+		Member loginUser = (Member) session.getAttribute("loginUser");
+
+		if (loginUser != null) {
+
+			Pageable pageable = PageRequest.of(pageNumber - 1, 10,Sort.Direction.DESC,"id"); // 每頁10筆訂單
+			Page<OrderBasicDto> page = orderService.getSellerOrder(pageable, loginUser);
+
+			return page;
+
+		} else {
 			return null;
 		}
 	}
-
+	
+	
+	
+	
 	/* 準備前往綠界 */
-	@GetMapping("/goEcPay")
-	public void goEcPay(Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session)
-			throws IOException {
-		OrderBasic ob = (OrderBasic) request.getAttribute("OrderBasic");
-
-		// 設定金流
-		AllInOne aio = new AllInOne("");
-		AioCheckOutDevide aioCheck = new AioCheckOutDevide();
-		// 特店編號
-		aioCheck.setMerchantID("2000214");
-		// 特店交易時間
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-		sdf.setLenient(false);
-		aioCheck.setMerchantTradeDate(sdf.format(new Date()));
-		// 交易金額
-		aioCheck.setTotalAmount(ob.getTotalamount().toString()); // Changed to String.valueOf()
-		// 交易描述
-		aioCheck.setTradeDesc("speakitup");
-		// 商品名稱
-		aioCheck.setItemName("500");
-		// 特店交易編號 唯一
-		aioCheck.setMerchantTradeNo("testSpeakitup" + ob.getOrderid()); // Changed to getOrderno() and fixed case
-		// 付款完成回傳網址
-		aioCheck.setReturnURL("https://speakitup.nctu.me/order/returnURL");
-		// Client端回傳付款結果網址
-		aioCheck.setOrderResultURL("https://speakitup.nctu.me/order/showHistoryOrder");
-
-		// 輸出 HTML
-		PrintWriter out = response.getWriter(); // Changed to getWriter()
-		response.setContentType("text/html");
-		out.print(aio.aioCheckOut(aioCheck, null));
-	}
+//	@GetMapping("/goEcPay")
+//	public void goEcPay(Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session)
+//			throws IOException {
+//		OrderBasic ob = (OrderBasic) request.getAttribute("OrderBasic");
+//
+//		// 設定金流
+//		AllInOne aio = new AllInOne("");
+//		AioCheckOutDevide aioCheck = new AioCheckOutDevide();
+//		// 特店編號
+//		aioCheck.setMerchantID("2000214");
+//		// 特店交易時間
+//		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+//		sdf.setLenient(false);
+//		aioCheck.setMerchantTradeDate(sdf.format(new Date()));
+//		// 交易金額
+//		aioCheck.setTotalAmount(ob.getTotalamount().toString()); // Changed to String.valueOf()
+//		// 交易描述
+//		aioCheck.setTradeDesc("speakitup");
+//		// 商品名稱
+//		aioCheck.setItemName("500");
+//		// 特店交易編號 唯一
+//		aioCheck.setMerchantTradeNo("testSpeakitup" + ob.getOrderid()); // Changed to getOrderno() and fixed case
+//		// 付款完成回傳網址
+//		aioCheck.setReturnURL("https://speakitup.nctu.me/order/returnURL");
+//		// Client端回傳付款結果網址
+//		aioCheck.setOrderResultURL("https://speakitup.nctu.me/order/showHistoryOrder");
+//
+//		// 輸出 HTML
+//		PrintWriter out = response.getWriter(); // Changed to getWriter()
+//		response.setContentType("text/html");
+//		out.print(aio.aioCheckOut(aioCheck, null));
+//	}
 
 	// 綠界回傳資料
-	@PostMapping("/returnURL")
-	public void returnURL(@RequestParam("MerchantTradeNo") String MerchantTradeNo, // 特店訂單編號
-			@RequestParam("RtnCode") int RtnCode, // 交易訊息
-			@RequestParam("TradeAmt") int TradeAmt, // 交易金額
-			HttpServletRequest request) {
-		// 交易成功
-		if ((request.getRemoteAddr().equalsIgnoreCase("175.99.72.1")
-				|| request.getRemoteAddr().equalsIgnoreCase("175.99.72.11")
-				|| request.getRemoteAddr().equalsIgnoreCase("175.99.72.24")
-				|| request.getRemoteAddr().equalsIgnoreCase("175.99.72.28")
-				|| request.getRemoteAddr().equalsIgnoreCase("175.99.72.32")) && RtnCode == 1) {
-			String orderIdStr = MerchantTradeNo.substring(13);
-			int orderId = Integer.parseInt(orderIdStr);
-			OrderBasic ob = orderService.getOrder(orderId);
-			// 設定交易狀態
-			OrderStatus OrderStatus = orderStatusService.findOrderStatusById(3);
-			ob.setStatusid(OrderStatus);
-		}
-		// 在这里你需要处理交易失败的情况，添加相应的逻辑。
-	}
+//	@PostMapping("/returnURL")
+//	public void returnURL(@RequestParam("MerchantTradeNo") String MerchantTradeNo, // 特店訂單編號
+//			@RequestParam("RtnCode") int RtnCode, // 交易訊息
+//			@RequestParam("TradeAmt") int TradeAmt, // 交易金額
+//			HttpServletRequest request) {
+//		// 交易成功
+//		if ((request.getRemoteAddr().equalsIgnoreCase("175.99.72.1")
+//				|| request.getRemoteAddr().equalsIgnoreCase("175.99.72.11")
+//				|| request.getRemoteAddr().equalsIgnoreCase("175.99.72.24")
+//				|| request.getRemoteAddr().equalsIgnoreCase("175.99.72.28")
+//				|| request.getRemoteAddr().equalsIgnoreCase("175.99.72.32")) && RtnCode == 1) {
+//			String orderIdStr = MerchantTradeNo.substring(13);
+//			int orderId = Integer.parseInt(orderIdStr);
+//			OrderBasic ob = orderService.getOrder(orderId);
+//			// 設定交易狀態
+//			OrderStatus OrderStatus = orderStatusService.findOrderStatusById(3);
+//			ob.setStatusid(OrderStatus);
+//		}
+//		// 在这里你需要处理交易失败的情况，添加相应的逻辑。
+//	}
 
 	// 查詢歷史清單
 //	 @PostMapping("/showHistoryOrder")

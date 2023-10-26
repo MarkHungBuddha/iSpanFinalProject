@@ -1,20 +1,12 @@
 package com.peko.houshoukaizokudan.model;
 
-import java.util.Set;
-
+import jakarta.persistence.*;
+import lombok.*;
 import org.hibernate.annotations.Nationalized;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 @Builder
 @AllArgsConstructor
@@ -37,7 +29,7 @@ public class MemberType {
     @Column(name = "memberTypeDescription", length = 50)
     private String memberTypeDescription;
 
-    @OneToMany(mappedBy = "membertypeid")  
+    @OneToMany(mappedBy = "membertypeid")
     private Set<Member> member;
 
 }

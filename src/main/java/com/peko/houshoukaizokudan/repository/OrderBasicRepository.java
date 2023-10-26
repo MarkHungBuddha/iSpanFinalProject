@@ -13,17 +13,22 @@ import com.peko.houshoukaizokudan.model.OrderBasic;
 
 public interface OrderBasicRepository extends JpaRepository<OrderBasic, Integer> {
 
+	//買家找訂單 By 購買人(List)
 	List<OrderBasic> findOrderBasicBybuyer(Member buyer);
 
-	//買家找訂單(Page)
+	//買家找訂單 By 買家id(Page)
 	Page<OrderBasic> findOrderBasicBybuyer(Member buyer, Pageable Pageable);
 	
-	//買家找訂單狀態
+	//賣家找訂單 By 賣家id(Page)
+	Page<OrderBasic> findOrderBasicByseller(Member seller, Pageable Pageable);
+	
+	//買家找訂單 By 訂單狀態
 //	@Query(value = "SELECT * FROM OrderBasic OB INNER JOIN OrderStatus OS ON OB.statusID = OS.statusid WHERE OB.memberid = ?1 AND OS.statusID = ?2", nativeQuery = true)
 	@Query(value = "SELECT * FROM OrderBasic OB WHERE OB.memberid = ?1 AND OB.statusid = ?2", nativeQuery = true)
 	Page<OrderBasic> findOrderBasicByStatus( Integer memberid,  Integer statusid, Pageable pageable);
 
-	OrderBasic findOrderBasicByOrderid(int orderid);
+	//買家找訂單 By 訂單ID
+	OrderBasic findOrderBasicById(int orderid);
 
 
 }

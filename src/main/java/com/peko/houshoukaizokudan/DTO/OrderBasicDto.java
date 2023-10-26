@@ -18,15 +18,15 @@ public class OrderBasicDto {
 	private String seller;
 	private String buyer;
 	private String merchanttradedate;
-	private String choosepayment;
+//	private String choosepayment;
 	private Integer totalamount;
-	private Integer rating;
-	private String reviewcontent; //評價
-	private String merchantid; // 特店編號 必填
-	private String merchanttradenno; // 特店訂單編號 必填  特店訂單編號均為唯一值
-	private String paymenttype; // 交易類型 必填aio
-	private String tradedesc; // 交易描述 必填 請勿帶入特殊字元
-	private String itemname; // 商品名稱 必填 因此建議請固定設定『XX商城商品一批X1』的固定字樣
+//	private Integer rating;
+//	private String reviewcontent; //評價
+//	private String merchantid; // 特店編號 必填
+//	private String merchanttradenno; // 特店訂單編號 必填  特店訂單編號均為唯一值
+//	private String paymenttype; // 交易類型 必填aio
+//	private String tradedesc; // 交易描述 必填 請勿帶入特殊字元
+//	private String itemname; // 商品名稱 必填 因此建議請固定設定『XX商城商品一批X1』的固定字樣
 //	private String returnurl; // 付款完成通知回傳網址 必填 付款結果通知回傳網址，為特店server或主機的URL，用來接收綠界後端
 //	private String checkmacvalue; // 檢查碼 必填 比較複雜 看官網 需URL encode、轉為大小寫、SHA256加密
 //	private Integer encrypttype; // CheckMacValue加密類型 必填 請固定填入1，使用SHA256加密。

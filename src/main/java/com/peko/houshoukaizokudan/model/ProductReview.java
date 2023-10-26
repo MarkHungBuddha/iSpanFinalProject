@@ -2,7 +2,6 @@ package com.peko.houshoukaizokudan.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Nationalized;
@@ -40,5 +39,9 @@ public class ProductReview {
     @Nationalized
     @Column(name = "reviewtime", length = 50)
     private String reviewtime;
+
+    @OneToOne
+    @JoinColumn(name = "orderdetailid")
+    private OrderDetail orderdetail;
 
 }

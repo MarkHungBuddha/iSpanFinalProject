@@ -30,6 +30,7 @@ public class OrderDetailService {
 	// 找到訂單商品
 	@Transactional
 	public List<OrderDetail> findOrderDetailByOrderid(Integer orderid) {
+//		System.out.println("@@@@@ :"+orderid);
 
 		return orderDetailRepo.findOrderDetailByOrderid(orderid);
 	}
@@ -41,7 +42,7 @@ public class OrderDetailService {
 			OrderDetailDto dto = new OrderDetailDto();
 			dto.setProductName(product.getProductid().getProductname());
 			dto.setQuantity(product.getQuantity());
-
+			dto.setUnitprice(product.getUnitprice().intValue());
 			return dto;
 		}).collect(Collectors.toList()); // 将映射后的对象收集到列表中
 		return dtoProductList;

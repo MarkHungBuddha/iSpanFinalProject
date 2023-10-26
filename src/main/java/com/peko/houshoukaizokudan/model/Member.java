@@ -1,27 +1,14 @@
 package com.peko.houshoukaizokudan.model;
 
-import java.util.Set;
-
+import jakarta.persistence.*;
+import lombok.*;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Nationalized;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 @Builder
 @AllArgsConstructor
@@ -74,6 +61,9 @@ public class Member {
     @Column(name = "email", nullable = false, length = 100)
     private String email;
 
+    @Column(name = "resetToken",  length = 50)
+    private String resetToken;
+
     @Nationalized
     @Column(name = "membercreationdate", nullable = false, length = 50)
     private String membercreationdate;
@@ -109,7 +99,6 @@ public class Member {
     private Set<Wishlist> wishlist ;
 
     @OneToMany(mappedBy = "seller")
-    
     private Set<OrderBasic> soldOrders;
 
     @OneToMany(mappedBy = "buyer")

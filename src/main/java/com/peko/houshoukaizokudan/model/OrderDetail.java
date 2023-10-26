@@ -2,6 +2,8 @@ package com.peko.houshoukaizokudan.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import java.math.BigDecimal;
 
@@ -21,10 +23,12 @@ public class OrderDetail {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "orderid")
+    @Fetch(FetchMode.JOIN)
     private OrderBasic orderid;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "productid")
+    @Fetch(FetchMode.JOIN)
     private ProductBasic productid;
 
     @Column(name = "quantity")
@@ -33,5 +37,7 @@ public class OrderDetail {
     @Column(name = "unitprice", nullable = false, precision = 10, scale = 2)
     private BigDecimal unitprice;
 
+    @OneToOne(mappedBy = "orderdetail")
+    private ProductReview productReview;
 
 }
