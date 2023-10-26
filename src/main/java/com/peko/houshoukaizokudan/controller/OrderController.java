@@ -51,10 +51,33 @@ public class OrderController {
 
 
 
-	@PostMapping("/api/order/checkout")
-	public ResponseEntity<?> checkout(@RequestBody checkoutOrderDto orderDto) {
+//	@PostMapping("/api/order/checkout")
+//	public ResponseEntity<checkoutOrderDto> checkout(@RequestBody List<Integer> productIds, HttpSession session) {
+//		Member loginUser = (Member) session.getAttribute("loginUser"); // assuming you stored user ID in session
+//		if(loginUser == null) {
+//			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+//		}
+//
+//		try {
+//			checkoutOrderDto orderDto = orderService.processCheckout(loginUser.getId(), productIds);
+//			return ResponseEntity.ok(orderDto);
+//		} catch (Exception e) {
+//			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+//		}
+//	}
 
-		return ResponseEntity.ok("result");
+	@PostMapping("/api/order/checkout")
+	public ResponseEntity<checkoutOrderDto> checkout(@RequestBody List<ProductItem> productItems, HttpSession session) {
+		Member loginUser = (Member) session.getAttribute("loginUser"); // assuming you stored user ID in session
+		if(loginUser == null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+		}
+		try {
+			checkoutOrderDto orderDto = orderService.processCheckout(loginUser, productItems);
+			return ResponseEntity.ok(orderDto);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+		}
 	}
 
 
