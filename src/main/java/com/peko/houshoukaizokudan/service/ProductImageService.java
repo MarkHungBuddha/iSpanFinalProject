@@ -91,6 +91,67 @@ public class ProductImageService {
         }
     }
     @Transactional
+    public String updateImage(MultipartFile file,Integer id,Integer od) throws IOException, java.io.IOException {
+        RestTemplate restTemplate = new RestTemplate();
+
+        // 检查文件是否存在
+        if (file.isEmpty()) {
+            throw new IllegalArgumentException("請上傳一個文件");
+        }
+
+        try {
+            // 设置请求头
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Authorization", "Client-ID " + CLIENT_ID);
+
+            // 将 MultipartFile 转换为字节数组
+            byte[] fileContent = file.getBytes();
+
+            // 创建请求体
+            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+            body.add("image", new ByteArrayResource(fileContent) {
+                @Override
+                public String getFilename() {
+                    return file.getOriginalFilename();
+                }
+            });
+
+            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+
+            // 发送请求
+            ResponseEntity<String> response = restTemplate.postForEntity(IMGUR_UPLOAD_URL, requestEntity, String.class);
+
+            // 从响应中获取图片网址
+            String imageUrl = response.getBody();
+            String pattern = "https://i.imgur.com/(\\w{7})\\.(?:jpeg|png)";
+            Pattern r = Pattern.compile(pattern);
+            Matcher m = r.matcher(imageUrl);
+
+            String extractedCode = "";
+            if (m.find()) {
+                extractedCode = m.group(1);
+            }
+            
+            String img= productImageRepository.findByProductIdAndOrderId(id,od);
+            
+            if(img==null) { 	
+            saveProductImage(id, extractedCode,od);
+            // 保存 ProductImage 到数据库
+            System.out.println("Link:"+extractedCode);
+            }else {
+            	productImageRepository.deleteProductImage(id,od);
+            	saveProductImage(id, extractedCode,od);
+            }
+
+            // 返回图片网址
+            return imageUrl;
+        } catch (IOException e) {
+            // 处理错误
+            throw new RuntimeException("文件上傳失敗");
+        }
+    }
+   
+	@Transactional
     public void saveProductImage(ProductBasic product,String extractedCode) {
         // 创建 ProductImage 对象并设置相应的字段
         ProductImage productImage = new ProductImage();

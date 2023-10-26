@@ -20,16 +20,7 @@ public class ProductBasicDto {
     private BigDecimal specialPrice;
     private String description;
     private Integer quantity;
-//    private String sellerUsername;
-//    private String sellerFirstName;
-//    private String sellerLastName;
-//    private Set<ProductImage> images;
-//    private Set<QandA> qandAs;
-//    private Set<ProductReview> reviews;
     private String categoryName;
     private String parentCategoryName;
-//    private Integer memberid;
     private Integer sellermemberid;
-//    private Integer membertypeid;
-//    private Integer categoryid;
 }

@@ -133,23 +133,18 @@ public class ProductController {
 	    }
 	}
 
+	@PutMapping("/back/editImg/{id}/{od}")
+	public ResponseEntity<Object> editImage(@RequestPart("file") MultipartFile file,@PathVariable("id") Integer id,@PathVariable("od") Integer od,HttpServletRequest request) throws IOException, java.io.IOException{
+		
+		String pi= piService.updateImage(file, id,od);
+		
+		return new ResponseEntity<>(pi, HttpStatus.OK);
+	}
 
-	// 加鎖ID
-//	@DeleteMapping("/back/delete/{id}")
-//	public <Object> ResponseEntity<Object> deleteProduct(@PathVariable("id") Integer id, HttpSession session) {
-//		Member loginUser = (Member) session.getAttribute("loginUser");
-//		if (loginUser != null) {
-//			prdService.deleteById(id);
-//			return ResponseEntity.ok().build();
-//		}
-//		return null;
-//	}
-//	@DeleteMapping
-	
 
 //加鎖ID
 	@PutMapping("/back/edit/{id}")
-	public ResponseEntity<Object> editPage(@PathVariable("id") Integer id, @RequestPart("file") MultipartFile file, @RequestPart("product") ProductBasic up, HttpServletRequest request) throws java.io.IOException {
+	public ResponseEntity<Object> editPage(@PathVariable("id") Integer id, @RequestPart("product") ProductBasic up, HttpServletRequest request) throws java.io.IOException {
 		HttpSession session = request.getSession();
 		Member loginUser = (Member) session.getAttribute("loginUser");
 		
@@ -157,22 +152,9 @@ public class ProductController {
 	    if (ed == null) {
 	        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	    }
-
-	    // 处理上传的文件，将其保存到数据库或云存储
-	    String imageUrl = null;
-	    try {
-	        imageUrl = piService.uploadImage(file,id);
-	    } catch (IOException e) {
-	        e.printStackTrace();
-	        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-	    }
-
-	    // 设置ProductBasic的图片链接
-//	    ed.setImagepath(imageUrl);
-
 	    // 保存更新后的ProductBasic
 	    ProductBasic updatedProduct = prdService.updateProduct(ed, up);
-	    ProductBasicDto2 nupd = prdService.findNewOne(updatedProduct, imageUrl);
+	    ProductBasicDto2 nupd = prdService.findNewOne(updatedProduct);
 	    if (nupd != null) {
 	        // 传递productId和imageUrl给saveProductImage方法
 //	        piService.saveProductImage(updatedProduct.getId(), imageUrl);
@@ -181,7 +163,7 @@ public class ProductController {
 	        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 	    }
 	}
-//        findProductByPageLikeProductName
+////        findProductByPageLikeProductName
 //        productFindPage
 //        findByCategoryOrderByRating
 //        findProductBasicByID

@@ -303,7 +303,7 @@ public class ProductBasicService {
 		return productBasicRepository.save(ed);
 	}
 
-	public ProductBasicDto2 findNewOne(ProductBasic upd,String imageUrl) {
+	public ProductBasicDto2 findNewOne(ProductBasic upd) {
 
 		ProductBasicDto2 dto = new ProductBasicDto2();
 		dto.setProductId(upd.getId());
@@ -319,7 +319,6 @@ public class ProductBasicService {
 		dto.setSpecialPrice(upd.getSpecialprice());
 		dto.setQuantity(upd.getQuantity());
 		dto.setDescription(upd.getDescription());
-		dto.setImagepath(imageUrl);
 
 		return dto;
 	}
