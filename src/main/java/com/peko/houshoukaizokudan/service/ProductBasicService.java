@@ -1,6 +1,7 @@
 package com.peko.houshoukaizokudan.service;
 
 import com.peko.houshoukaizokudan.DTO.ProductBasicDto;
+import com.peko.houshoukaizokudan.DTO.ProductCategoryDto;
 import com.peko.houshoukaizokudan.DTO.ProductDto;
 import com.peko.houshoukaizokudan.Repository.*;
 import com.peko.houshoukaizokudan.model.*;
@@ -152,13 +153,7 @@ public class ProductBasicService {
 
 
 
-  //頁碼  //1頁3筆
-//    @Transactional
-//    public Page<ProductBasic> findProductByPage(Integer pageNumber, String productname) {
-//	     Pageable pageable = PageRequest.of(pageNumber - 1, 3, Sort.Direction.ASC, "id");
-//	     return productBasicRepository.findProductBasicByproductname(productname, pageable);
-//	    }
-// 
+ 	//頁碼  //1頁3筆
     //模糊搜尋 + ProductBasic欄位 +Image 的圖片路徑
     @Transactional
     public Page<ProductDto> getProductsByPage(Pageable pageable, String productname) {
@@ -172,14 +167,48 @@ public class ProductBasicService {
             dto.setCategoryname(pro.getCategoryid().getCategoryname());
             dto.setQuantity(pro.getQuantity());
             dto.setDescription(pro.getDescription());
-            
-            
+                     
             // 使用 ProductImageRepository 查詢圖像路徑
             String imagepath = productImageRepository.findImagepathByProductid(pro.getId());
             dto.setImagepath(imagepath);
             return dto;
         }).collect(Collectors.toList());
         return new PageImpl<>(dtos, pageable, page.getTotalElements());
+    }
+
+    
+    //價格範圍搜尋 
+    @Transactional
+    public Page<ProductCategoryDto> getCategoryNameByPriceRange(String categoryname, Double minPrice, Double maxPrice, Pageable pageable){
+    	   // 檢查價格範圍的合理性 // 價格不能為負數，處理相應的錯誤邏輯，最小價格不能大於最大價格，處理相應的錯誤邏輯
+        if (minPrice < 0 || maxPrice < 0 || minPrice > maxPrice) {
+            // 如果價格範圍無效，返回包含錯誤訊息的結果
+        }    	
+    	Integer categoryid = productCategoryRepository.findCategoryIdByCategoryName(categoryname);        
+    	Page<ProductBasic> productBasics = productCategoryRepository.findProductBasicsByCategoryIdAndPriceRange(categoryid, minPrice, maxPrice, pageable); 
+        // 使用之前的查詢方法來找到符合價格範圍的產品
+        
+        // 將 ProductBasic 資料映射到 ProductCategoryDto 中
+        List<ProductCategoryDto> result = productBasics.stream().map(pb -> {
+                ProductCategoryDto dto = new ProductCategoryDto();
+                dto.setCategoryid(pb.getCategoryid().getId());
+                dto.setProductname(pb.getProductname());
+                dto.setPrice(pb.getPrice());
+                dto.setSpecialprice(pb.getSpecialprice());
+                dto.setCategoryname(pb.getCategoryid().getCategoryname());
+                dto.setParentid(pb.getCategoryid().getParentid().getId());
+                dto.setParentname(pb.getCategoryid().getParentid().getParentname());
+                // 你可能需要添加更多的映射適應你的資料結構
+                return dto;
+            })
+            .collect(Collectors.toList());
+
+        // 使用PageHelper來建立分頁結果
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), result.size());
+        Page<ProductCategoryDto> page = new PageImpl<>(result.subList(start, end), pageable, result.size());
+
+        return page;
     }
 
     

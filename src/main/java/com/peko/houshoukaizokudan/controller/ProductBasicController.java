@@ -8,6 +8,7 @@ import java.util.List;
 import com.peko.houshoukaizokudan.DTO.ProductBasicDto;
 import com.peko.houshoukaizokudan.DTO.ProductCategoryDto;
 import com.peko.houshoukaizokudan.DTO.ProductDto;
+import com.peko.houshoukaizokudan.handler.InvalidPriceRangeException;
 import com.peko.houshoukaizokudan.model.Member;
 import com.peko.houshoukaizokudan.model.ProductCategory;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,7 +32,7 @@ import com.peko.houshoukaizokudan.service.ProductCategoryService;
 
 @RestController
 @Controller
-public class ProductCategoryController {
+public class ProductBasicController {
 
     @Autowired
     private ProductBasicService prdService;
@@ -61,14 +62,37 @@ public class ProductCategoryController {
 	//搜尋類別id
 	@ResponseBody
 	@GetMapping("/api/productCategories")
-	   public Page<ProductCategoryDto> getCategoryId(
-	       @RequestParam(value = "categoryid") Integer categoryid,
-	       @RequestParam(name = "p", defaultValue = "1") Integer pageNumber) {
-	       Pageable pageable = PageRequest.of(pageNumber - 1, 10); // 每頁 3 項
-	       Page<ProductCategoryDto> page = productCategoryService.getCategoryId(pageable, categoryid);
-	       return page;
-	    }
+    public Page<ProductCategoryDto> getCategoryId(
+       @RequestParam(value = "categoryid") Integer categoryid,
+       @RequestParam(name = "p", defaultValue = "1") Integer pageNumber) {
+		Pageable pageable = PageRequest.of(pageNumber - 1, 10); // 每頁 3 項
+		Page<ProductCategoryDto> page = productCategoryService.getCategoryId(pageable, categoryid);
+		return page;
+	}
+	
+	
+	//價格範圍搜尋
+	@GetMapping("/search")
+	public ResponseEntity<Page<ProductCategoryDto>> getCategoryNameByPriceRange(
+	        @RequestParam(value = "categoryname", required = true) String categoryname,
+	        @RequestParam(value = "minPrice", required = false, defaultValue = "0.0") Double minPrice,
+	        @RequestParam(value = "maxPrice", required = false, defaultValue = "999999.99") Double maxPrice,
+	        @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+	        @RequestParam(value = "size", required = false, defaultValue = "10") int size) {
 
+	    Pageable pageable = PageRequest.of(page, size);
+
+	    try {
+	        Page<ProductCategoryDto> result = prdService.getCategoryNameByPriceRange(categoryname, minPrice, maxPrice, pageable);
+	        return new ResponseEntity<>(result, HttpStatus.OK);
+	    } catch (InvalidPriceRangeException e) {
+	        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+	    }
+	}
+
+
+	
+	
 
 //	@GetMapping("product/{id}")
 //	public String findProduct(@PathVariable("id") Integer productid, Model model) {

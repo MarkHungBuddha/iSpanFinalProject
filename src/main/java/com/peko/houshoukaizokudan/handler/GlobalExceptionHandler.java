@@ -16,7 +16,7 @@ public class GlobalExceptionHandler {
         model.addAttribute("errorMsg", "sjhgsj");
         return null;
     }
-
+    
 
     // 捕獲所有其他異常
     @ExceptionHandler(value = {Exception.class})
