@@ -17,4 +17,5 @@ public interface ProductBasicRepository  extends JpaRepository<ProductBasic,Inte
             "WHERE p.id = :id")
     Optional<ProductBasic> findByIdWithRelationships(@Param("id") Integer id);
 
+
 }
