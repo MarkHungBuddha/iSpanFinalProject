@@ -135,10 +135,15 @@ public class ProductController {
 
 	@PutMapping("/back/editImg/{id}/{od}")
 	public ResponseEntity<Object> editImage(@RequestPart("file") MultipartFile file,@PathVariable("id") Integer id,@PathVariable("od") Integer od,HttpServletRequest request) throws IOException, java.io.IOException{
-		
+		HttpSession session = request.getSession();
+		Member loginUser = (Member) session.getAttribute("loginUser");
+		 if (loginUser != null) {
 		String pi= piService.updateImage(file, id,od);
 		
 		return new ResponseEntity<>(pi, HttpStatus.OK);
+		} else {
+	        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+	    }
 	}
 
 
@@ -163,6 +168,33 @@ public class ProductController {
 	        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 	    }
 	}
+	
+	@PutMapping("/back/editQ/{id}")
+	public ResponseEntity<Object> editQuntity(@PathVariable("id") Integer id,HttpServletRequest request){
+		HttpSession session = request.getSession();
+		Member loginUser = (Member) session.getAttribute("loginUser");
+		if (loginUser != null) {
+			ProductBasic qu = prdService.findById(id);
+			if (qu == null) {
+		        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		    }
+			prdService.removePd(qu);			
+		}	
+		return new ResponseEntity<>( HttpStatus.OK);
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 ////        findProductByPageLikeProductName
 //        productFindPage
 //        findByCategoryOrderByRating

@@ -336,9 +336,13 @@ public class ProductBasicService {
 
 	    return new PageImpl<>(Collections.emptyList(), pageable, 0);
 	}
-	}
 
-	// 请确保有适当的 convertToProductBasicDto 方法，用于将 ProductBasic 转换为 ProductBasicDto
+	@Transactional
+	public void removePd(ProductBasic qu) {
+		qu.setQuantity(0);
+		productBasicRepository.save(qu);
+	}
+}
 
 
 //
