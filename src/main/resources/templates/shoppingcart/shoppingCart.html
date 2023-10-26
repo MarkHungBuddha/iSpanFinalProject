@@ -12,11 +12,13 @@
 <table>
 			<tr>
         <th>商品id</th>
+        <th>商品圖片</th>
         <th>名稱</th>
         <th>價格</th>
    </tr>
 			 <tr th:each="product : ${products}">
 				<td th:text="${product.id}"></td>
+				<td><img src="https://imgur.com/27QsAyb.jpg" style="height:80px;width:80px"/></td>
 				<td th:text="${product.productname}"></td>
 				<td th:text="${product.price}"></td>
 				<td><a th:href="@{/shoppingcart/addproduct?productId={id}(id=${product.id})}"><input type="button" value="加入購物車"/></a></td>

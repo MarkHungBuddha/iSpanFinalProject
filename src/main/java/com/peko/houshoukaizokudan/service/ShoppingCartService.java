@@ -16,11 +16,8 @@ import java.util.Optional;
 public class ShoppingCartService {
 
     @Autowired
-    private  ShoppingCartRepository shoppingCartRepository;
-
+    private  ShoppingCartRepository shoppingCartRepository;    
     
-    
-     // 新增商品進購物車
     public void addProductToCart(Member member,ProductBasic product) {
     	Integer checkcart = shoppingCartRepository.CheckProductByMemberId(member.getId(),product.getId());
     	if (checkcart > 0) {
@@ -31,26 +28,42 @@ public class ShoppingCartService {
         cartItem.setMemberid(member);
         cartItem.setProductid(product);
         cartItem.setQuantity(1);
+        cartItem.setPrice(product.getPrice());
+        cartItem.setProductname(product.getProductname());
         shoppingCartRepository.save(cartItem);
     	}
     }
 
-    // 更新購物車
-    public void updateCart(ShoppingCart cartItem) {
-
-        // 更新購物車項目
-        shoppingCartRepository.save(cartItem);
+    public List<ShoppingCart> GetCartItem(Member member) {
+        List<ShoppingCart> CartItem = shoppingCartRepository.GetCartItem(member.getId());
+        return CartItem;
     }
 
-    // 移除商品
-    public void removeProductFromCart(Integer productId) {
-        // 根據商品ID查找購物車項目並刪除
-        shoppingCartRepository.deleteById(productId);
+    public void PlusCartItem(Member member,Integer transactionid) {
+        shoppingCartRepository.PlusCartItem(member.getId(),transactionid);
+    }
+    
+    public void MinusCartItem(Member member,Integer transactionid) {
+        shoppingCartRepository.MinusCartItem(member.getId(),transactionid);
+    }
+    
+    public void ClearCartItem(Member member,Integer transactionid) {
+        shoppingCartRepository.ClearCartItem(member.getId(),transactionid);
+    }
+    
+    public Integer CheckQuantityByMember(Integer memberid,Integer productid) {
+        Integer result = shoppingCartRepository.CheckQuantityByMember(memberid,productid);
+        return result;
+    }
+    
+    public Integer CheckCartItem(Integer transactionid) {
+        Integer result = shoppingCartRepository.CheckCartItem(transactionid);
+        return result;
+    }
+    
+    public Integer GetProductId(Integer transactionid) {
+    	Integer result = shoppingCartRepository.GetProductId(transactionid);
+        return result;
     }
 
-    // 清空購物車
-    public void clearCart() {
-        // 刪除購物車中的所有項目
-        shoppingCartRepository.deleteAll();
-    }
 }

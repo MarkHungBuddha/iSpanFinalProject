@@ -1,5 +1,7 @@
 package com.peko.houshoukaizokudan.model;
 
+import java.math.BigDecimal;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,7 +29,12 @@ public class ShoppingCart {
 
     @Column(name = "quantity")
     private Integer quantity;
-
+    
+    @Column(name = "price")
+    private BigDecimal price;
+    
+    @Column(name = "productname")
+    private String productname;
 }
 
 
