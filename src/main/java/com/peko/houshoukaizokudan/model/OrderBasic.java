@@ -2,6 +2,8 @@ package com.peko.houshoukaizokudan.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Nationalized;
 
 import java.util.LinkedHashSet;
@@ -24,10 +26,12 @@ public class OrderBasic {
 
     @ManyToOne
     @JoinColumn(name = "sellerid")
+    @Fetch(FetchMode.JOIN)
     private Member seller; // 對應到 sellerid
 
     @ManyToOne
     @JoinColumn(name = "memberid")
+    @Fetch(FetchMode.JOIN)
     private Member buyer; // 對應到 memberid
 
     @Nationalized
@@ -49,6 +53,7 @@ public class OrderBasic {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "statusid")
+    @Fetch(FetchMode.JOIN)
     private OrderStatus statusid;
 
 

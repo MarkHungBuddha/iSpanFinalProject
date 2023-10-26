@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.peko.houshoukaizokudan.DTO.ProductItem;
 import com.peko.houshoukaizokudan.DTO.checkoutOrderDto;
@@ -45,15 +46,27 @@ public class OrderBasicService {
     }
 
     public checkoutOrderDto processCheckout(Member member, List<ProductItem> productItems) throws Exception {
+        System.out.println("checkoutOrderDto orderDto");
+
+            // 1. 將 productItems 轉換為 Stream
+        Stream<ProductItem> productItemStream = productItems.stream();
+
+            // 2. 使用 map 取得每個 ProductBasic 的 ID
+        Stream<Integer> productIdsStream = productItemStream.map(item -> item.getProduct().getId());
+
+            // 3. 將 Stream 轉換為 List
+        List<Integer> productIdsList = productIdsStream.collect(Collectors.toList());
+        System.out.println("member.getId()="+member.getId());
+        System.out.println(productIdsList.toString());
 
         // 1. Check if the products are in the user's cart.
-        List<ProductBasic> cartProducts = shoppingCartRepo.findProductsByUserIdAndProductIds(member.getId(), productItems.stream().map(item -> item.getProduct().getId()).collect(Collectors.toList()));
-
+        List<ProductBasic> cartProducts = shoppingCartRepo.findProductsByUserIdAndProductIds(member.getId(), productIdsList);
+        System.out.println("checkoutOrderDto orderDto");
         // Ensure the products from the request are all in the cart.
         if (cartProducts.size() != productItems.size()) {
             throw new Exception("部分商品不存在購物車內");
         }
-
+        System.out.println("checkoutOrderDto orderDto");
         // 2. Check if all products belong to the same seller.
         Integer sellerId = cartProducts.get(0).getSellermemberid().getId();
         for (ProductBasic product : cartProducts) {

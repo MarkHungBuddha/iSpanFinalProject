@@ -4,6 +4,8 @@ import com.peko.houshoukaizokudan.model.Member;
 import com.peko.houshoukaizokudan.model.ProductBasic;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Nationalized;
 import org.hibernate.proxy.HibernateProxy;
 
@@ -22,17 +24,17 @@ public class QandA {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "productid")
-    @ToString.Exclude
+    @Fetch(FetchMode.JOIN)
     private ProductBasic productid;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sellermemberid")
-    @ToString.Exclude
+    @Fetch(FetchMode.JOIN)
     private Member sellerMember;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "buyermemberid")
-    @ToString.Exclude
+    @Fetch(FetchMode.JOIN)
     private Member buyerMember;
 
     @Nationalized
