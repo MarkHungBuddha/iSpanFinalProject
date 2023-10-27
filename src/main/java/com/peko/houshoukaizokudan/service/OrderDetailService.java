@@ -16,16 +16,21 @@ import com.peko.houshoukaizokudan.model.OrderBasic;
 import com.peko.houshoukaizokudan.model.OrderDetail;
 import com.peko.houshoukaizokudan.model.OrderStatus;
 import com.peko.houshoukaizokudan.model.ProductBasic;
+import com.peko.houshoukaizokudan.model.ProductImage;
 import com.peko.houshoukaizokudan.DTO.OrderBasicDto;
 import com.peko.houshoukaizokudan.DTO.OrderDetailDto;
 import com.peko.houshoukaizokudan.Repository.OrderBasicRepository;
 import com.peko.houshoukaizokudan.Repository.OrderDetailRepository;
+import com.peko.houshoukaizokudan.Repository.ProductImageRepository;
 
 @Service
 public class OrderDetailService {
 
 	@Autowired
 	private OrderDetailRepository orderDetailRepo;
+
+	@Autowired
+	private ProductImageRepository productImageRepo;
 
 	// 找到訂單商品
 	@Transactional
@@ -40,6 +45,11 @@ public class OrderDetailService {
 	public List<OrderDetailDto> getProducts(List<OrderDetail> products) {
 		List<OrderDetailDto> dtoProductList = products.stream().map(product -> {
 			OrderDetailDto dto = new OrderDetailDto();
+			// 找圖片7碼
+			Integer productId = product.getProductid().getId();
+			String imagepath = productImageRepo.findProductImagebyproductid(productId);
+			dto.setImagepath(imagepath);
+
 			dto.setProductName(product.getProductid().getProductname());
 			dto.setQuantity(product.getQuantity());
 			dto.setUnitprice(product.getUnitprice().intValue());

@@ -1,9 +1,14 @@
 package com.peko.houshoukaizokudan.service;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +22,12 @@ import com.peko.houshoukaizokudan.DTO.OrderBasicDto;
 import com.peko.houshoukaizokudan.DTO.OrderDetailDto;
 import com.peko.houshoukaizokudan.DTO.ProductIDandQuentity;
 import com.peko.houshoukaizokudan.DTO.checkoutOrderDto;
+import com.peko.houshoukaizokudan.Repository.MemberRepository;
 import com.peko.houshoukaizokudan.Repository.OrderBasicRepository;
 import com.peko.houshoukaizokudan.Repository.OrderDetailRepository;
+import com.peko.houshoukaizokudan.Repository.OrderStatusRepository;
+import com.peko.houshoukaizokudan.Repository.ProductBasicRepository;
+import com.peko.houshoukaizokudan.Repository.ProductImageRepository;
 import com.peko.houshoukaizokudan.Repository.ShoppingCartRepository;
 import com.peko.houshoukaizokudan.model.Member;
 import com.peko.houshoukaizokudan.model.OrderBasic;
@@ -35,6 +44,14 @@ public class OrderBasicService {
 	private OrderDetailRepository OrderDetailRepo;
 	@Autowired
 	private ShoppingCartRepository shoppingCartRepo;
+	@Autowired
+	private ProductImageRepository productImageRepo;
+	@Autowired
+	private ProductBasicRepository productBasicrRepo;
+	@Autowired
+	private MemberRepository memberRepo;
+	@Autowired
+	private OrderStatusRepository orderStatusRepo;
 
 	@Transactional
 	public List<OrderBasic> findOrderBasicBymemberOrderid(Member buyer) {
@@ -45,7 +62,7 @@ public class OrderBasicService {
 		return orders;
 	}
 
-	//修改訂單dto 重複使用
+	// 修改訂單dto (重複使用)
 	public OrderBasicDto updateOrderDto(OrderBasic order) {
 		OrderBasicDto dto = new OrderBasicDto();
 		dto.setOrderid(order.getId());
@@ -55,28 +72,32 @@ public class OrderBasicService {
 		dto.setTotalamount(order.getTotalamount());
 		dto.setStatusname(order.getStatusid().getStatusname());
 		dto.setOrderaddess(order.getOrderaddress());
-		//存商品內容
+		// 存商品內容
 		Integer orderid = order.getId();
 		List<OrderDetail> products = OrderDetailRepo.findOrderDetailByOrderid(orderid);
-				
-		List<OrderDetailDto> productDtos = products.stream()
-	            .map(product -> convertToProductDto(product))
-	            .collect(Collectors.toList());
-		
+
+		List<OrderDetailDto> productDtos = products.stream().map(product -> convertToProductDto(product))
+				.collect(Collectors.toList());
+
 		dto.setProducts(productDtos);
 		//////
 		return dto;
 	}
-	
-	//商品 dto
-    private OrderDetailDto convertToProductDto(OrderDetail product) {
-    	OrderDetailDto productDto = new OrderDetailDto();
-//    	productDto.setImage(product.getProductid().getProductImage());
-    	productDto.setProductName(product.getProductid().getProductname());
-    	productDto.setQuantity(product.getQuantity());
-    	productDto.setUnitprice(product.getUnitprice().intValue());
-        return productDto;
-    }
+
+	// 商品 dto (重複使用)
+	private OrderDetailDto convertToProductDto(OrderDetail product) {
+		OrderDetailDto productDto = new OrderDetailDto();
+
+		// 找圖片7碼
+		Integer productId = product.getProductid().getId();
+		String imagepath = productImageRepo.findProductImagebyproductid(productId);
+		productDto.setImagepath(imagepath);
+
+		productDto.setProductName(product.getProductid().getProductname());
+		productDto.setQuantity(product.getQuantity()); // 買的商品數量
+		productDto.setUnitprice(product.getUnitprice().intValue()); // 單價
+		return productDto;
+	}
 
 	// 買家找訂單 包含商品內容
 	@Transactional
@@ -180,78 +201,74 @@ public class OrderBasicService {
 		order.setStatusid(orderStatus);
 		return orderRepo.save(order);
 	}
-	
-	//送出購物車內容
+
+	// 送出購物車內容
 	@Transactional
-    public checkoutOrderDto processCheckout(Member member, List<ProductIDandQuentity> productItems) throws Exception {
-        System.out.println(productItems.toString());
+	public checkoutOrderDto processCheckout(Member member, List<ProductIDandQuentity> productItems) throws Exception {
+		System.out.println(productItems.toString());
 
-        List<Integer> productIdsList = productItems.stream()
-                .map(ProductIDandQuentity::getProductID)
-                .collect(Collectors.toList());
+		List<Integer> productIdsList = productItems.stream().map(ProductIDandQuentity::getProductID)
+				.collect(Collectors.toList());
 
+		List<ProductBasic> cartProducts = shoppingCartRepo.findProductsByUserIdAndProductIds(member.getId(),
+				productIdsList);
+		System.out.println("cartProducts=" + cartProducts.toString());
 
-        List<ProductBasic> cartProducts = shoppingCartRepo.findProductsByUserIdAndProductIds(
-                member.getId(), productIdsList);
-        System.out.println("cartProducts=" + cartProducts.toString());
+		if (cartProducts.size() != productItems.size()) {
+			throw new Exception("部分商品不存在購物車內");
+		}
 
-        if (cartProducts.size() != productItems.size()) {
-            throw new Exception("部分商品不存在購物車內");
-        }
+		List<ProductIDandQuentity> productDtos = new ArrayList<>();
 
-        List<ProductIDandQuentity> productDtos = new ArrayList<>();
+		// 遍历每一个购物车里的产品
+		for (ProductBasic product : cartProducts) {
 
-        // 遍历每一个购物车里的产品
-        for (ProductBasic product : cartProducts) {
+			// 1. 检查请求的商品是否都在用户的购物车内
+			if (!productItems.stream().anyMatch(item -> item.getProductID().equals(product.getId()))) {
+				throw new Exception("部分商品不存在購物車內");
+			}
 
-            // 1. 检查请求的商品是否都在用户的购物车内
-            if (!productItems.stream().anyMatch(item -> item.getProductID().equals(product.getId()))) {
-                throw new Exception("部分商品不存在購物車內");
-            }
+			// 获取这个产品的数量
+			int quantity = 0;
+			for (ProductIDandQuentity item : productItems) {
+				if (item.getProductID().equals(product.getId())) {
+					quantity = item.getQuantity();
+					break;
+				}
+			}
 
-            // 获取这个产品的数量
-            int quantity = 0;
-            for (ProductIDandQuentity item : productItems) {
-                if (item.getProductID().equals(product.getId())) {
-                    quantity = item.getQuantity();
-                    break;
-                }
-            }
+			// 2. 检查所有商品是否都属于同一卖家。
+			if (!product.getSellermemberid().getId().equals(cartProducts.get(0).getSellermemberid().getId())) {
+				throw new Exception("結帳商品需要是同賣家");
+			}
 
-            // 2. 检查所有商品是否都属于同一卖家。
-            if (!product.getSellermemberid().getId().equals(cartProducts.get(0).getSellermemberid().getId())) {
-                throw new Exception("結帳商品需要是同賣家");
-            }
+			// 3. 检查商品库存。
+			if (product.getQuantity() <= 0) {
+				throw new Exception("商品: " + product.getProductname() + " 已售完");
+			}
 
-            // 3. 检查商品库存。
-            if (product.getQuantity() <= 0) {
-                throw new Exception("商品: " + product.getProductname() + " 已售完");
-            }
+			// 确定产品的价格
+			BigDecimal effectivePrice;
+			if (product.getSpecialprice() != null && product.getSpecialprice().compareTo(BigDecimal.ZERO) > 0) {
+				effectivePrice = product.getSpecialprice();
+			} else {
+				effectivePrice = product.getPrice();
+			}
 
-            // 确定产品的价格
-            BigDecimal effectivePrice;
-            if (product.getSpecialprice() != null && product.getSpecialprice().compareTo(BigDecimal.ZERO) > 0) {
-                effectivePrice = product.getSpecialprice();
-            } else {
-                effectivePrice = product.getPrice();
-            }
+			// 创建一个新的ProductIDandQuentity DTO并添加到列表中
+			ProductIDandQuentity dto = new ProductIDandQuentity(product.getId(), quantity, effectivePrice,
+					product.getProductname());
+			productDtos.add(dto);
+		}
 
-            // 创建一个新的ProductIDandQuentity DTO并添加到列表中
-            ProductIDandQuentity dto = new ProductIDandQuentity(product.getId(), quantity, effectivePrice, product.getProductname());
-            productDtos.add(dto);
-        }
+		double totalPrice = productDtos.stream().mapToDouble(dto -> dto.getPrice().doubleValue() * dto.getQuantity())
+				.sum();
 
+		checkoutOrderDto orderDto = new checkoutOrderDto(member.getId(), new HashSet<>(productDtos),
+				BigDecimal.valueOf(totalPrice));
 
-        double totalPrice = productDtos.stream().mapToDouble(dto -> dto.getPrice().doubleValue() * dto.getQuantity()).sum();
-
-        checkoutOrderDto orderDto = new checkoutOrderDto(
-                member.getId(),
-                new HashSet<>(productDtos),
-                BigDecimal.valueOf(totalPrice)
-        );
-
-        return orderDto;
-    }
+		return orderDto;
+	}
 	// 產生訂單
 //	@Transactional
 //	public List<OrderBasic> save(List<ProductBasic> buyProducts, Member loginUser) {
@@ -270,6 +287,44 @@ public class OrderBasicService {
 //		List<OrderBasic>order=orderRepo.saveAll(buyProducts);
 //		return order;
 //	}
+
+	// 產生訂單
+	@Transactional
+	public OrderBasicDto placeOrder(Member loginUser, checkoutOrderDto orderDto, String orderAddress) {
+		OrderBasic orderBasic = new OrderBasic();
+		OrderDetail orderDetail = new OrderDetail();
+
+		Set<ProductIDandQuentity> productIDandQuentities = orderDto.getProductIDandQuentities();
+		ProductIDandQuentity firstProduct = productIDandQuentities.iterator().next(); // 取得商品賣家id
+		Integer productID = firstProduct.getProductID();
+		Integer sellerId = productBasicrRepo.findProductBasicSellerIdByproductId(productID);
+		Member seller = memberRepo.findmemberBymemberid(sellerId);
+
+		orderBasic.setSeller(seller);
+		orderBasic.setBuyer(loginUser);
+
+		Date currentDate = new Date();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+		String formattedDate = sdf.format(currentDate);
+		orderBasic.setMerchanttradedate(formattedDate);
+
+		BigDecimal totalPrice = orderDto.getTotalPrice();
+		orderBasic.setTotalamount(totalPrice.intValue());
+		orderBasic.setOrderaddress(orderAddress); // 設定訂單地址
+
+		int statusId = 1; // 設定訂單狀態為1
+		OrderStatus orderStatus = orderStatusRepo.findById(statusId).orElse(null);
+		orderBasic.setStatusid(orderStatus);
+		OrderBasic order = orderRepo.save(orderBasic);
+
+		/* 寫存入的商品資料 */
+		/* .... */
+
+		OrderBasicDto orderBasicDto = updateOrderDto(order);
+
+		return orderBasicDto;
+
+	}
 
 //	public List<OrderBasic> getMemberOrders(Integer memberId) {
 //		List<OrderBasic> orders=orderRepo.findOrderBasicBybuyer(memberId);

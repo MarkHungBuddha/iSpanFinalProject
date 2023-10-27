@@ -15,7 +15,7 @@ import java.util.Set;
 @NoArgsConstructor
 public class OrderDetailDto {
 	
-//	private String image;		//商品圖片 7碼
+	private String imagepath;		//商品圖片 7碼
 	private String productName;	//商品名稱
 	private Integer quantity;  	//買的商品數量
 	private Integer unitprice; 	//單價

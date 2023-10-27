@@ -129,7 +129,7 @@ public class OrderController {
 
 		if (optional == null)
 			return new ResponseEntity<>("沒有這筆資料", null, HttpStatus.NOT_FOUND);
-		// 確認訂單人且訂單狀態碼是 待付款 待出貨 才可以改變地址
+		// 確認訂單人且訂單狀態碼是 待付款(1) 待出貨(2) 才可以改變地址
 		if (loginUser.getId() == optional.getBuyer().getId() && optional.getStatusid().getId() == 1
 				|| optional.getStatusid().getId() == 2) {
 
@@ -238,12 +238,13 @@ public class OrderController {
 		} else
 			return new ResponseEntity<>("訂單狀態碼錯誤或者不是你的訂單", null, HttpStatus.BAD_REQUEST);
 	}
-	
-	//送出購物車內容
+
+	// 送出購物車內容
 	@PostMapping("/api/order/checkout")
-	public ResponseEntity<checkoutOrderDto> checkout(@RequestBody List<ProductIDandQuentity> productItems, HttpSession session) {
+	public ResponseEntity<checkoutOrderDto> checkout(@RequestBody List<ProductIDandQuentity> productItems,
+			HttpSession session) {
 		Member loginUser = (Member) session.getAttribute("loginUser"); // assuming you stored user ID in session
-		if(loginUser == null) {
+		if (loginUser == null) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
 		}
 		System.out.println(productItems.toString());
@@ -255,19 +256,21 @@ public class OrderController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 	}
-		
-	
+
 	// 新增訂單
 	@PostMapping("/order/addOrder")
-	public ResponseEntity<?> placeOrder(HttpSession session,@RequestBody checkoutOrderDto orderDto){
-		
+	public ResponseEntity<OrderBasicDto> placeOrder(HttpSession session, @RequestBody checkoutOrderDto orderDto,
+			@RequestParam String orderAddress) {
+
 		Member loginUser = (Member) session.getAttribute("loginUser");
-		if(loginUser == null) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+		if (loginUser != null) {
+
+			OrderBasicDto order = orderService.placeOrder(loginUser, orderDto, orderAddress);
+
+			return new ResponseEntity<>(order, null, HttpStatus.OK);
 		}
-		
-		
-		return null;
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+
 	}
 
 }

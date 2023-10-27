@@ -25,6 +25,10 @@ public interface ProductBasicRepository extends JpaRepository<ProductBasic, Inte
 	@Query("SELECT p FROM ProductBasic p JOIN FETCH p.productImage JOIN FETCH p.qandA JOIN FETCH p.productReview WHERE p.id = :id")
 	Optional<ProductBasic> findByIdWithRelationships(@Param("id") Integer id);
 
+	//找商品賣家id
+	@Query(value ="SELECT sellermemberid FROM ProductBasic WHERE productid = ?1", nativeQuery = true)
+	Integer findProductBasicSellerIdByproductId(Integer productID);
+
 
 
 
