@@ -36,16 +36,16 @@ public class OrderBasic {
 
     @Nationalized
     @Column(name = "merchanttradedate", length = 20)
-    private String merchanttradedate;
-
+    private String merchanttradedate; //下訂單時間
+ 
 
     @Column(name = "totalamount")
-    private Integer totalamount;
+    private Integer totalamount; //總金額
 
 
     @Nationalized
     @Column(name = "orderaddress", length = 200) // 訂單地址
-    private String orderaddress;
+    private String orderaddress; //訂單地址
 
 
     @OneToMany(mappedBy = "orderid")

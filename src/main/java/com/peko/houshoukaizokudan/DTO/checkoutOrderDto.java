@@ -13,11 +13,12 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderDetailDto {
-	
-//	private String image;		//商品圖片 7碼
-	private String productName;	//商品名稱
-	private Integer quantity;  	//買的商品數量
-	private Integer unitprice; 	//單價
-		
+@ToString
+@Builder
+public class checkoutOrderDto {
+
+	private Integer memberID;
+	private Set<ProductIDandQuentity> productIDandQuentities; // 一個列表，包含多個商品和相關的資訊
+	private BigDecimal totalPrice; // 總價
+
 }
