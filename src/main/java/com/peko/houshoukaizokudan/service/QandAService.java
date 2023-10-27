@@ -108,6 +108,11 @@ public class QandAService {
         if (!qanda.getProductid().getSellermemberid().getId().equals(memberId)) {
             throw new RuntimeException("Unauthorized to answer this question");
         }
+
+        Instant now = Instant.now();
+        String iso8601Time = DateTimeFormatter.ISO_INSTANT.format(now);
+        qanda.setAnswertime(iso8601Time);
+
         qanda.setAnswer(answer);
         qandARepository.save(qanda);
         return convertToDTO(qanda);
