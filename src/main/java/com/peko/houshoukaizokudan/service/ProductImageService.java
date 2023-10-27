@@ -67,7 +67,7 @@ public class ProductImageService {
 
             // 从响应中获取图片网址
             String imageUrl = response.getBody();
-            String pattern = "https://i.imgur.com/(\\w{7})\\.(?:jpeg|png)";
+            String pattern = "https://i.imgur.com/(\\w{7})\\.(?:jpeg|png|webp)";
             Pattern r = Pattern.compile(pattern);
             Matcher m = r.matcher(imageUrl);
 
