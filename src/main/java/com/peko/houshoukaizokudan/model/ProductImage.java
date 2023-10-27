@@ -1,10 +1,9 @@
 package com.peko.houshoukaizokudan.model;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 @Builder
 @AllArgsConstructor
@@ -26,5 +25,8 @@ public class ProductImage {
 
     @Column(name = "imagepath", nullable = false, length = 200)
     private String imagepath;
+
+    @Column(name = "orderID", nullable = false)
+    private Integer orderID;
 
 }

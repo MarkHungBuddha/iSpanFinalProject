@@ -52,36 +52,22 @@ public class ProductBasicController {
 	@ResponseBody
 	@GetMapping("/api/products")
 	public Page<ProductDto> getProductsByPage(
-	    @RequestParam(name = "p", defaultValue = "1") Integer pageNumber,
-	    @RequestParam(name = "productname", required = false) String productname) {
-	    Pageable pageable = PageRequest.of(pageNumber - 1, 3); // 每頁 3 項
-	    Page<ProductDto> page = prdService.getProductsByPage(pageable, productname);
-	    return page;
+		@RequestParam(name = "productname", required = false) String productname,
+	    @RequestParam(name = "p", defaultValue = "1") Integer page) {
+	    Pageable pageable = PageRequest.of(page -1, 5); // 每頁 5 項
+	    Page<ProductDto> result = prdService.getProductsByPage(pageable, productname);
+	    return result;
 	}
-	
-	//搜尋類別id
-	@ResponseBody
-	@GetMapping("/api/productCategories")
-    public Page<ProductCategoryDto> getCategoryId(
-       @RequestParam(value = "categoryid") Integer categoryid,
-       @RequestParam(name = "p", defaultValue = "1") Integer pageNumber) {
-		Pageable pageable = PageRequest.of(pageNumber - 1, 10); // 每頁 3 項
-		Page<ProductCategoryDto> page = productCategoryService.getCategoryId(pageable, categoryid);
-		return page;
-	}
-	
-	
-	//價格範圍搜尋
-	@GetMapping("/search")
+
+	//價格範圍搜尋 + 分類名稱(categoryname)搜尋
+	@GetMapping("/api/categoryname")
 	public ResponseEntity<Page<ProductCategoryDto>> getCategoryNameByPriceRange(
-	        @RequestParam(value = "categoryname", required = true) String categoryname,
+	        @RequestParam(value = "categoryname", required = true) String categoryname, //categoryname(分類名稱)必填
 	        @RequestParam(value = "minPrice", required = false, defaultValue = "0.0") Double minPrice,
 	        @RequestParam(value = "maxPrice", required = false, defaultValue = "999999.99") Double maxPrice,
-	        @RequestParam(value = "page", required = false, defaultValue = "0") int page,
-	        @RequestParam(value = "size", required = false, defaultValue = "10") int size) {
-
-	    Pageable pageable = PageRequest.of(page, size);
-
+	        @RequestParam(value = "page", required = false, defaultValue = "1") Integer page) {
+			Pageable pageable = PageRequest.of(page -1, 5); //第一頁是0 所以-1 ，每頁 5 項
+			
 	    try {
 	        Page<ProductCategoryDto> result = prdService.getCategoryNameByPriceRange(categoryname, minPrice, maxPrice, pageable);
 	        return new ResponseEntity<>(result, HttpStatus.OK);
@@ -90,6 +76,17 @@ public class ProductBasicController {
 	    }
 	}
 
+	
+//	//搜尋類別id 沒有加價格範圍的
+//	@ResponseBody
+//	@GetMapping("/api/productCategories")
+//    public Page<ProductCategoryDto> getCategoryId(
+//       @RequestParam(value = "categoryid") Integer categoryid,
+//       @RequestParam(name = "p", defaultValue = "1") Integer pageNumber) {
+//		Pageable pageable = PageRequest.of(pageNumber - 1, 10); // 每頁 3 項
+//		Page<ProductCategoryDto> page = productCategoryService.getCategoryId(pageable, categoryid);
+//		return page;
+//	}
 
 	
 	

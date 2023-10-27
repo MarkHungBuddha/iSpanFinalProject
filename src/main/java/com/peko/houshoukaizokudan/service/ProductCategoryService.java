@@ -40,28 +40,28 @@ public class ProductCategoryService {
 
 	}
 	
-	
-	//搜尋產品分類的類別id
-	@Transactional
-	public Page<ProductCategoryDto> getCategoryId(Pageable pageable, Integer categoryid) {
-	    Page<ProductBasic> page = productCategoryRepository.findProductBasicByCategoryId(categoryid, pageable);
-	    
-	    List<ProductCategoryDto> dtos = page.getContent().stream().map(pro -> {
-	        ProductCategoryDto dto = new ProductCategoryDto();
-	        // 將 ProductBasic 的信息映射到 ProductCategoryDto	        
-	        dto.setCategoryid(pro.getCategoryid().getId());
-	        dto.setProductname(pro.getProductname());
-	        dto.setPrice(pro.getPrice());
-	        dto.setSpecialprice(pro.getSpecialprice());     
-	        dto.setCategoryname(pro.getCategoryid().getCategoryname());
-	        dto.setParentid(pro.getCategoryid().getParentid().getId());
-	        dto.setParentname(pro.getCategoryid().getParentid().getParentname());	        
-	        String imagepath = productImageRepository.findImagepathByProductid(pro.getId());
-	        dto.setImagepath(imagepath);        
-	        return dto;
-	    }).collect(Collectors.toList());    
-	    // 傳回一個新的 Page 對象，包含 ProductCategoryDto
-	    return new PageImpl<>(dtos, pageable, page.getTotalElements());
-	}	
+//	
+//	//搜尋類別id 沒有加價格範圍的 **目前不使用**
+//	@Transactional
+//	public Page<ProductCategoryDto> getCategoryId(Pageable pageable, Integer categoryid) {
+//	    Page<ProductBasic> page = productCategoryRepository.findProductBasicByCategoryId(categoryid, pageable);
+//	    
+//	    List<ProductCategoryDto> dtos = page.getContent().stream().map(pro -> {
+//	        ProductCategoryDto dto = new ProductCategoryDto();
+//	        // 將 ProductBasic 的信息映射到 ProductCategoryDto	        
+//	        dto.setCategoryid(pro.getCategoryid().getId());
+//	        dto.setProductname(pro.getProductname());
+//	        dto.setPrice(pro.getPrice());
+//	        dto.setSpecialprice(pro.getSpecialprice());     
+//	        dto.setCategoryname(pro.getCategoryid().getCategoryname());
+//	        dto.setParentid(pro.getCategoryid().getParentid().getId());
+//	        dto.setParentname(pro.getCategoryid().getParentid().getParentname());	        
+//	        String imagepath = productImageRepository.findImagepathByProductid(pro.getId());
+//	        dto.setImagepath(imagepath);        
+//	        return dto;
+//	    }).collect(Collectors.toList());    
+//	    // 傳回一個新的 Page 對象，包含 ProductCategoryDto
+//	    return new PageImpl<>(dtos, pageable, page.getTotalElements());
+//	}	
 }
 

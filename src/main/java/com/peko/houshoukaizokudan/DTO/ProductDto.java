@@ -19,7 +19,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductDto {
-
+	// 模糊搜尋產品名稱
+	
 	private Integer productid;
 //	private Integer sellermemberid;
 	private String productname;

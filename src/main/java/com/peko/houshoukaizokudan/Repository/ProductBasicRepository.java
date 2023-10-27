@@ -16,10 +16,11 @@ import org.springframework.stereotype.Repository;
 
 public interface ProductBasicRepository extends JpaRepository<ProductBasic, Integer> {
 
-	// 模糊搜尋產品名稱
-
+	// 模糊搜尋產品名稱  **此功能目前已不使用  看其他人有沒有用到**
 	List<ProductBasic> findProductBasicDataByproductnameLike(String productname);
 
+	// 模糊搜尋產品名稱
+	//ProductBasic 表搜模糊尋 productname 存入產品名稱+頁碼
 	@Query("FROM ProductBasic WHERE productname LIKE %:productname%")
 	Page<ProductBasic> findProductBasicByproductname(@Param("productname") String productname, Pageable Pageable);
 	

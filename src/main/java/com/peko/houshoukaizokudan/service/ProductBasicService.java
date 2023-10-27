@@ -153,7 +153,7 @@ public class ProductBasicService {
 
 
 
- 	//頁碼  //1頁3筆
+ 	
     //模糊搜尋 + ProductBasic欄位 +Image 的圖片路徑
     @Transactional
     public Page<ProductDto> getProductsByPage(Pageable pageable, String productname) {
@@ -183,32 +183,32 @@ public class ProductBasicService {
     	   // 檢查價格範圍的合理性 // 價格不能為負數，處理相應的錯誤邏輯，最小價格不能大於最大價格，處理相應的錯誤邏輯
         if (minPrice < 0 || maxPrice < 0 || minPrice > maxPrice) {
             // 如果價格範圍無效，返回包含錯誤訊息的結果
+        	throw new IllegalArgumentException("無效的價格範圍");
         }    	
     	Integer categoryid = productCategoryRepository.findCategoryIdByCategoryName(categoryname);        
     	Page<ProductBasic> productBasics = productCategoryRepository.findProductBasicsByCategoryIdAndPriceRange(categoryid, minPrice, maxPrice, pageable); 
         // 使用之前的查詢方法來找到符合價格範圍的產品
         
         // 將 ProductBasic 資料映射到 ProductCategoryDto 中
-        List<ProductCategoryDto> result = productBasics.stream().map(pb -> {
+        List<ProductCategoryDto> result = productBasics.stream().map(pro -> {
                 ProductCategoryDto dto = new ProductCategoryDto();
-                dto.setCategoryid(pb.getCategoryid().getId());
-                dto.setProductname(pb.getProductname());
-                dto.setPrice(pb.getPrice());
-                dto.setSpecialprice(pb.getSpecialprice());
-                dto.setCategoryname(pb.getCategoryid().getCategoryname());
-                dto.setParentid(pb.getCategoryid().getParentid().getId());
-                dto.setParentname(pb.getCategoryid().getParentid().getParentname());
+                dto.setCategoryid(pro.getCategoryid().getId());
+                dto.setProductname(pro.getProductname());
+                dto.setPrice(pro.getPrice());
+                dto.setSpecialprice(pro.getSpecialprice());
+                dto.setCategoryname(pro.getCategoryid().getCategoryname());
+                dto.setParentid(pro.getCategoryid().getParentid().getId());
+                dto.setParentname(pro.getCategoryid().getParentid().getParentname());
+                
+                // 使用 ProductImageRepository 查詢圖像路徑
+                String imagepath = productImageRepository.findImagepathByProductid(pro.getId());
+                dto.setImagepath(imagepath);
                 // 你可能需要添加更多的映射適應你的資料結構
                 return dto;
             })
-            .collect(Collectors.toList());
-
-        // 使用PageHelper來建立分頁結果
-        int start = (int) pageable.getOffset();
-        int end = Math.min((start + pageable.getPageSize()), result.size());
-        Page<ProductCategoryDto> page = new PageImpl<>(result.subList(start, end), pageable, result.size());
-
-        return page;
+            .collect(Collectors.toList()); //收集dto的數據s
+        	return new PageImpl<>(result, pageable, productBasics.getTotalElements()); 
+      
     }
 
     

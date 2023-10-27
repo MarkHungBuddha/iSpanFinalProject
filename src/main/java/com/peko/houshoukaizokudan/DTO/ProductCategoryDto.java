@@ -19,19 +19,19 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductCategoryDto {
-	//以搜尋類別(categoryid)id
+	//以搜尋categoryname(分類名稱) 取得categoryid(類別ID)
 	
-	//ProductBasic 欄位
+	//ProductBasic 表
 	private Integer categoryid;
 	private String productname;
 	private BigDecimal price;
 	private BigDecimal specialprice;
-	//ProductCategory 欄位
+	//ProductCategory 表
 	private String categoryname;
 	private Integer parentid;
-	//ProductBasic 欄位
+	//ProductBasic 表
 	private String parentname;
-	//ProductImage 欄位
+	//ProductImage 表
 	private String imagepath;
 	
 }
