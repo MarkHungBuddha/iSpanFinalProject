@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.peko.houshoukaizokudan.DTO.ProductBasicDto;
 import com.peko.houshoukaizokudan.model.Member;
 import com.peko.houshoukaizokudan.model.ProductBasic;
 
@@ -43,7 +44,12 @@ public interface ProductBasicRepository extends JpaRepository<ProductBasic, Inte
     	       nativeQuery = true)
 	Page<ProductBasic> findProductBasicBySellermemberidAndProductnameContaining(Integer memberIdd, String productname,
 			Pageable pageable);
-	
+
+
+
+    @Query("SELECT pb FROM ProductBasic pb WHERE pb.id = :id AND pb.sellermemberid.id = :memberIdd")
+    Optional<ProductBasic> findByIdAndSellerId(@Param("id") Integer id, @Param("memberIdd") Integer memberIdd);
+
 }
 
 

@@ -21,7 +21,9 @@ public interface ProductImageRepository extends JpaRepository<ProductImage, Inte
 	@Modifying
 	@Query("DELETE FROM ProductImage pi WHERE pi.productid.id = :id AND pi.orderID = :od")
 	void deleteProductImage(@Param("id") Integer id, @Param("od") Integer od);
-
-
+	
+	@Modifying
+	@Query("DELETE FROM ProductImage pi WHERE pi.productid.id = :id AND pi.orderID = :od")
+	void deleteById(@Param("id") Integer id, @Param("od") Integer od);
 
 }

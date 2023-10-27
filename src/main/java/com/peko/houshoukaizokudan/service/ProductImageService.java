@@ -184,6 +184,11 @@ public class ProductImageService {
     	        return null;
     	    }
 	}
+    @Transactional
+	public void deleteImgByod(Integer id, Integer od) {
+		productImageRepository.deleteById(id,od);
+		
+	}
 
 
 }

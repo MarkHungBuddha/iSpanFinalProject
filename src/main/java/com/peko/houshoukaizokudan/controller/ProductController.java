@@ -2,6 +2,7 @@ package com.peko.houshoukaizokudan.controller;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -45,6 +46,7 @@ public class ProductController {
 	@Autowired
 	private ProductImageService piService;
 
+	//分頁顯示上傳商品(搜尋)
 	@GetMapping("/back/products")
 	public ResponseEntity<Page<ProductDto>> getProductsByPage(
 			@RequestParam(name = "p", defaultValue = "1") Integer pageNumber,
@@ -75,12 +77,12 @@ public class ProductController {
 //		return "background/uploadPage";
 //	}
 
+	//新增商品跟圖片(編碼ORDERID)
 	@PostMapping("/back/add/{od}")
 	private ResponseEntity<Object> uploadPage(@RequestParam String productname, @RequestParam BigDecimal price,
 			@RequestParam BigDecimal specialprice, @RequestParam Integer categoryid, @RequestParam Integer quantity,
-			@RequestParam String description, HttpServletRequest request, @RequestPart("file") MultipartFile file
-			,@PathVariable("od") Integer od
-	) throws java.io.IOException {
+			@RequestParam String description, HttpServletRequest request, @RequestPart("file") MultipartFile file,
+			@PathVariable("od") Integer od) throws java.io.IOException {
 		// 获取 HttpSession 对象
 		HttpSession session = request.getSession();
 
@@ -107,7 +109,7 @@ public class ProductController {
 			// 圖片s
 			String imageUrl = null;
 			try {
-				imageUrl = piService.uploadImage(file, id,od);
+				imageUrl = piService.uploadImage(file, id, od);
 			} catch (IOException e) {
 				e.printStackTrace();
 				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -118,79 +120,107 @@ public class ProductController {
 		}
 	}
 
-	// 加PAGE
+	// 顯示所有上傳
 	@GetMapping("/back/show")
-	public ResponseEntity<Page<ProductBasicDto>> showPage(@RequestParam(name = "p", defaultValue = "1") Integer pageNumber, HttpSession session) {
-	    Member loginUser = (Member) session.getAttribute("loginUser");
-	    if (loginUser != null) {
-	        Integer memberIdd = loginUser.getId();
-	        System.out.println("Member ID: " + memberIdd);
-	        Pageable pageable = PageRequest.of(pageNumber - 1, 3); // 3 items per page
-	        Page<ProductBasicDto> page = prdService.getAllProductByPage(pageable, memberIdd);
-	        return new ResponseEntity<>(page, HttpStatus.OK);
-	    } else {
-	        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-	    }
-	}
-
-	@PutMapping("/back/editImg/{id}/{od}")
-	public ResponseEntity<Object> editImage(@RequestPart("file") MultipartFile file,@PathVariable("id") Integer id,@PathVariable("od") Integer od,HttpServletRequest request) throws IOException, java.io.IOException{
-		HttpSession session = request.getSession();
+	public ResponseEntity<Page<ProductBasicDto>> showPage(
+			@RequestParam(name = "p", defaultValue = "1") Integer pageNumber, HttpSession session) {
 		Member loginUser = (Member) session.getAttribute("loginUser");
-		 if (loginUser != null) {
-		String pi= piService.updateImage(file, id,od);
-		
-		return new ResponseEntity<>(pi, HttpStatus.OK);
+		if (loginUser != null) {
+			Integer memberIdd = loginUser.getId();
+			System.out.println("Member ID: " + memberIdd);
+			Pageable pageable = PageRequest.of(pageNumber - 1, 3); // 3 items per page
+			Page<ProductBasicDto> page = prdService.getAllProductByPage(pageable, memberIdd);
+			return new ResponseEntity<>(page, HttpStatus.OK);
 		} else {
-	        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-	    }
+			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+		}
 	}
 
-
-//加鎖ID
-	@PutMapping("/back/edit/{id}")
-	public ResponseEntity<Object> editPage(@PathVariable("id") Integer id, @RequestPart("product") ProductBasic up, HttpServletRequest request) throws java.io.IOException {
+	//更新商品圖片
+	@PutMapping("/back/editImg/{id}/{od}")
+	public ResponseEntity<Object> editImage(@RequestPart("file") MultipartFile file, @PathVariable("id") Integer id,
+			@PathVariable("od") Integer od, HttpServletRequest request) throws IOException, java.io.IOException {
 		HttpSession session = request.getSession();
 		Member loginUser = (Member) session.getAttribute("loginUser");
-		
-		ProductBasic ed = prdService.findById(id);
-	    if (ed == null) {
-	        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-	    }
-	    // 保存更新后的ProductBasic
-	    ProductBasic updatedProduct = prdService.updateProduct(ed, up);
-	    ProductBasicDto2 nupd = prdService.findNewOne(updatedProduct);
-	    if (nupd != null) {
-	        // 传递productId和imageUrl给saveProductImage方法
-//	        piService.saveProductImage(updatedProduct.getId(), imageUrl);
-	        return new ResponseEntity<>(nupd, HttpStatus.OK);
-	    } else {
-	        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-	    }
+		if (loginUser != null) {
+			String pi = piService.updateImage(file, id, od);
+
+			return new ResponseEntity<>(pi, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+		}
 	}
-	
+
+//更新商品資料
+	@PutMapping("/back/edit/{id}")
+	public ResponseEntity<Object> editPage(@PathVariable("id") Integer id, @RequestPart("product") ProductBasic up,
+			HttpServletRequest request) throws java.io.IOException {
+		HttpSession session = request.getSession();
+		Member loginUser = (Member) session.getAttribute("loginUser");
+		if (loginUser != null) {
+			ProductBasic ed = prdService.findById(id);
+			if (ed == null) {
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			}
+			// 保存更新后的ProductBasic
+			ProductBasic updatedProduct = prdService.updateProduct(ed, up);
+			ProductBasicDto nupd = prdService.findNewOne(updatedProduct);
+			if (nupd != null) {
+				return new ResponseEntity<>(nupd, HttpStatus.OK);
+			} else {
+				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+		} else {
+			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+		}
+	}
+//商品下架
 	@PutMapping("/back/editQ/{id}")
-	public ResponseEntity<Object> editQuntity(@PathVariable("id") Integer id,HttpServletRequest request){
+	public ResponseEntity<Object> editQuntity(@PathVariable("id") Integer id, HttpServletRequest request) {
 		HttpSession session = request.getSession();
 		Member loginUser = (Member) session.getAttribute("loginUser");
 		if (loginUser != null) {
 			ProductBasic qu = prdService.findById(id);
 			if (qu == null) {
-		        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		    }
-			prdService.removePd(qu);			
-		}	
-		return new ResponseEntity<>( HttpStatus.OK);
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			}
+			prdService.removePd(qu);
+		}
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+
+	//刪除圖片
+	@DeleteMapping("/back/deleteEachImg/{id}/{od}")
+	public ResponseEntity<Object> deleteImg(@PathVariable("id")Integer id,@PathVariable("od")Integer od,HttpServletRequest request){
+		HttpSession session = request.getSession();
+		Member loginUser = (Member) session.getAttribute("loginUser");
+		if (loginUser != null) {
+			piService.deleteImgByod(id,od);
+			return new ResponseEntity<>(HttpStatus.OK);
+		}
+		return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 	}
 	
 	
-	
-	
-	
-	
-	
-	
-	
+	@GetMapping("/back/showOne")
+	public ResponseEntity<ProductBasicDto2> showOne(
+			@RequestParam("id") Integer id ,HttpSession session) {
+		Member loginUser = (Member) session.getAttribute("loginUser");
+		if (loginUser != null) {
+			Integer memberIdd = loginUser.getId();
+			System.out.println("Member ID: " + memberIdd);
+			Optional<ProductBasicDto2> pb=prdService.findByIdAndSellerId(id,memberIdd);
+			
+			if(pb.isPresent()) {
+			return new ResponseEntity<>(pb.get(),HttpStatus.OK);
+			}
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		
+		} else {
+			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+		}
+	}
+//	
 	
 	
 	
@@ -204,7 +234,5 @@ public class ProductController {
 //        增QandA
 //        編輯QandA
 //        刪除QandA
-
-	
 
 }

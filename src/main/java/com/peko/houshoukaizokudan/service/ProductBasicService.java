@@ -1,10 +1,8 @@
 package com.peko.houshoukaizokudan.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,7 +10,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import com.peko.houshoukaizokudan.DTO.ProductBasicDto;
 import com.peko.houshoukaizokudan.DTO.ProductBasicDto2;
@@ -198,6 +195,20 @@ public class ProductBasicService {
         
         return productBasicDto;
     }
+	public ProductBasicDto2 convertToProductBasicDto2(ProductBasic productBasic) {
+        ProductBasicDto2 productBasicDto = new ProductBasicDto2();
+        // 执行属性赋值
+        productBasicDto.setProductId(productBasic.getId());
+        productBasicDto.setProductName(productBasic.getProductname());
+        productBasicDto.setPrice(productBasic.getPrice());
+        productBasicDto.setSpecialPrice(productBasic.getSpecialprice());
+        productBasicDto.setDescription(productBasic.getDescription());
+        productBasicDto.setQuantity(productBasic.getQuantity());
+        productBasicDto.setCategoryName(productBasic.getCategoryid().getCategoryname());
+        productBasicDto.setParentCategoryName(productBasic.getParentid().getParentname());
+        
+        return productBasicDto;
+    }
 
 //	public ProductBasic findLastest() {
 //		return prdRepo.findFirstByOrderIdDesc();
@@ -303,9 +314,9 @@ public class ProductBasicService {
 		return productBasicRepository.save(ed);
 	}
 
-	public ProductBasicDto2 findNewOne(ProductBasic upd) {
+	public ProductBasicDto findNewOne(ProductBasic upd) {
 
-		ProductBasicDto2 dto = new ProductBasicDto2();
+		ProductBasicDto dto = new ProductBasicDto();
 		dto.setProductId(upd.getId());
 		dto.setProductName(upd.getProductname());
 		dto.setPrice(upd.getPrice());
@@ -342,6 +353,27 @@ public class ProductBasicService {
 		qu.setQuantity(0);
 		productBasicRepository.save(qu);
 	}
+
+	public Optional<ProductBasicDto2> findByIdAndSellerId(Integer id, Integer memberIdd) {
+	    Optional<ProductBasic> productBasic = productBasicRepository.findByIdAndSellerId(id, memberIdd);
+
+	    if (productBasic.isPresent()) {
+	        ProductBasicDto2 productBasicDto = convertToProductBasicDto2(productBasic.get());
+	        return Optional.of(productBasicDto);
+	    } else {
+	        return Optional.empty();
+	    }
+	}
+
+	
+	
+
+
+	
+	
+	
+	
+	
 }
 
 

@@ -23,6 +23,6 @@ public class ProductBasicDto2 {
     private Integer quantity;
     private String categoryName;
     private String parentCategoryName;
-    private Integer sellermemberid;
+//    private Integer sellermemberid;
 //    private String imagepath;
 }
