@@ -24,4 +24,6 @@ public class checkoutOrderDto {
     private BigDecimal totalPrice; // 總價
 
 
+
+
 }
