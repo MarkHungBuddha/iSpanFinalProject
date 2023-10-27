@@ -53,61 +53,99 @@ public class OrderBasicService {
     public checkoutOrderDto processCheckout(Member member, List<ProductIDandQuentity> productItems) throws Exception {
         System.out.println(productItems.toString());
 
-        // 1. 將 productItems 轉換為 Stream
-        Stream<ProductIDandQuentity> productItemStream = productItems.stream();
-
-        // 2. 使用 map 取得每個 ProductBasic 的 ID
-        Stream<Integer> productIdsStream = productItemStream.map(item -> item.getProductID());
-
-        // 3. 將 Stream 轉換為 List
-        List<Integer> productIdsList = productIdsStream.collect(Collectors.toList());
+        List<Integer> productIdsList = productItems.stream()
+                .map(ProductIDandQuentity::getProductID)
+                .collect(Collectors.toList());
 
 
-        System.out.println("!!!!!!!!!!!!!!!!!!");
-        System.out.println("!!!!!!!shoppingCartRepo.findProductsByUserIdAndProductIds");
-
-        // 1. Check if the products are in the user's cart.
         List<ProductBasic> cartProducts = shoppingCartRepo.findProductsByUserIdAndProductIds(
                 member.getId(), productIdsList);
         System.out.println("cartProducts=" + cartProducts.toString());
 
-        // Ensure the products from the request are all in the cart.
         if (cartProducts.size() != productItems.size()) {
             throw new Exception("部分商品不存在購物車內");
         }
-        System.out.println("// 1. Check if the products are in the user's cart.");
-        // 2. Check if all products belong to the same seller.
-        Integer sellerId = cartProducts.get(0).getSellermemberid().getId();
+
+        List<ProductIDandQuentity> productDtos = new ArrayList<>();
+
+// 遍历每一个购物车里的产品
         for (ProductBasic product : cartProducts) {
-            if (!product.getSellermemberid().getId().equals(sellerId)) {
+
+            // 1. 检查请求的商品是否都在用户的购物车内
+            if (!productItems.stream().anyMatch(item -> item.getProductID().equals(product.getId()))) {
+                throw new Exception("部分商品不存在购物車內");
+            }
+
+            // 获取这个产品的数量
+            int quantity = 0;
+            for (ProductIDandQuentity item : productItems) {
+                if (item.getProductID().equals(product.getId())) {
+                    quantity = item.getQuantity();
+                    break;
+                }
+            }
+
+            // 2. 检查所有商品是否都属于同一卖家。
+            if (!product.getSellermemberid().getId().equals(cartProducts.get(0).getSellermemberid().getId())) {
                 throw new Exception("結帳商品需要是同賣家");
             }
-        }
 
-        // 3. Check product stock.
-        for (ProductBasic product : cartProducts) {
+            // 3. 检查商品库存。
             if (product.getQuantity() <= 0) {
                 throw new Exception("商品: " + product.getProductname() + " 已售完");
             }
+
+            // 确定产品的价格
+            BigDecimal effectivePrice;
+            if (product.getSpecialprice() != null && product.getSpecialprice().compareTo(BigDecimal.ZERO) > 0) {
+                effectivePrice = product.getSpecialprice();
+            } else {
+                effectivePrice = product.getPrice();
+            }
+
+            // 创建一个新的ProductIDandQuentity DTO并添加到列表中
+            ProductIDandQuentity dto = new ProductIDandQuentity(product.getId(), quantity, effectivePrice, product.getProductname());
+            productDtos.add(dto);
         }
 
-        // 4. Calculate the total price.
-        double totalPrice = 0.0;
-        for (ProductBasic product : cartProducts) {
-            BigDecimal effectivePrice = (product.getSpecialprice() != null && product.getSpecialprice().compareTo(BigDecimal.ZERO) > 0) ? product.getSpecialprice() : product.getPrice();
-            int quantity = productItems.stream().filter(item -> item.getProductID().equals(product.getId())).findFirst().get().getQuantity();
-            totalPrice += effectivePrice.doubleValue() * quantity;
-        }
 
-        // Create the checkoutOrderDto
+        double totalPrice = productDtos.stream().mapToDouble(dto -> dto.getPrice().doubleValue() * dto.getQuantity()).sum();
+
         checkoutOrderDto orderDto = new checkoutOrderDto(
                 member.getId(),
-                new HashSet<>(productItems), // Directly use the productItems list
+                new HashSet<>(productDtos),
                 BigDecimal.valueOf(totalPrice)
         );
 
         return orderDto;
     }
+//    List<ProductIDandQuentity> productDtos = new ArrayList<>();
+//
+//// 遍历每一个购物车里的产品
+//for (ProductBasic product : cartProducts) {
+//
+//        // 获取这个产品的数量。这是从提交的购买产品列表中找到的。
+//        int quantity = 0;
+//        for (ProductIDandQuentity item : productItems) {
+//            if (item.getProductID().equals(product.getId())) {
+//                quantity = item.getQuantity();
+//                break;
+//            }
+//        }
+//
+//        // 确定产品的价格：如果有特殊价格且大于0，则使用它；否则，使用常规价格。
+//        BigDecimal effectivePrice;
+//        if (product.getSpecialprice() != null && product.getSpecialprice().compareTo(BigDecimal.ZERO) > 0) {
+//            effectivePrice = product.getSpecialprice();
+//        } else {
+//            effectivePrice = product.getPrice();
+//        }
+//
+//        // 创建一个新的ProductIDandQuentity DTO并添加到列表中
+//        ProductIDandQuentity dto = new ProductIDandQuentity(product.getId(), quantity, effectivePrice, product.getProductname());
+//        productDtos.add(dto);
+//    }
+
 
 
 }

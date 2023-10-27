@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -61,12 +62,16 @@ public class ProductController {
 //		return "product/productView";
 //	}
 
-//	@GetMapping("/product/{productId}")
-//	public String viewProduct(@PathVariable Integer productId, Model model) {
-//		ProductBasicDto productDTO = prdService.getProductDTOById(productId).orElse(null);
-//		model.addAttribute("product", productDTO);
-//		return "product/productView";
-//	}
+	@GetMapping("/product/{productId}")
+	public ResponseEntity<ProductBasicDto> viewProduct(@PathVariable Integer productId) {
+		ProductBasicDto productDTO = prdService.getProductDTOById(productId).orElse(null);
+
+		if(productDTO == null) {
+			return ResponseEntity.notFound().build();
+		}
+
+		return ResponseEntity.ok(productDTO);
+	}
 
 
 
