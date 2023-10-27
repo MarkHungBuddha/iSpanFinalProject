@@ -28,4 +28,16 @@ public class OrderBasicService {
 
 		return orders;
 	}
+
+	public Integer findTotalByYear(Integer memberIdd, Integer year) {
+		Integer obb=orderRepo.findTotalAmountByYearAndSeller(memberIdd, year);
+		
+		return obb;
+	}
+
+	public Integer findTotalByMonth(Integer memberIdd, Integer month, Integer year) {
+Integer obb=orderRepo.findTotalAmountByYearAndMonthAndSeller(year,memberIdd, month);
+		
+		return obb;
+	}
 }
