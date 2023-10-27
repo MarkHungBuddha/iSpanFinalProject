@@ -9,4 +9,7 @@ import java.util.List;
 public interface QandARepository extends JpaRepository<QandA, Integer> {
 
     List<QandA> findByProductid_Id(Integer productId);
+    List<QandA> findBySellerMember_IdAndAnswerIsNull(Integer memberId);
+
+    void deleteByIdAndSellerMember_Id(Integer qandaId, Integer memberId);
 }
