@@ -17,7 +17,6 @@ public class ProductCategoryService {
     @Autowired
     private ParentCategoryRepository parentCategoryRepository;
 
-    //新增商品分類
 
 
 

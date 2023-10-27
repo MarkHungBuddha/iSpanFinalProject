@@ -1,10 +1,14 @@
 package com.peko.houshoukaizokudan.controller;
 
 import java.math.BigDecimal;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,9 +29,10 @@ import com.peko.houshoukaizokudan.DTO.ProductBasicDto;
 import com.peko.houshoukaizokudan.DTO.ProductBasicDto2;
 import com.peko.houshoukaizokudan.DTO.ProductDto;
 import com.peko.houshoukaizokudan.model.Member;
+import com.peko.houshoukaizokudan.model.ParentCategory;
 import com.peko.houshoukaizokudan.model.ProductBasic;
 import com.peko.houshoukaizokudan.model.ProductCategory;
-import com.peko.houshoukaizokudan.model.ProductImage;
+import com.peko.houshoukaizokudan.service.ParentCategoryService;
 import com.peko.houshoukaizokudan.service.ProductBasicService;
 import com.peko.houshoukaizokudan.service.ProductCategoryService;
 import com.peko.houshoukaizokudan.service.ProductImageService;
@@ -41,12 +46,14 @@ public class ProductController {
 
 	@Autowired
 	private ProductBasicService prdService;
-
 	@Autowired
 	private ProductCategoryService pcService;
 	@Autowired
 	private ProductImageService piService;
-
+	@Autowired
+	private ParentCategoryService paService;
+	
+	
 	//分頁顯示上傳商品(搜尋)
 	@GetMapping("/back/products")
 	public ResponseEntity<Page<ProductDto>> getProductsByPage(
@@ -225,6 +232,48 @@ public class ProductController {
 	
 	
 	
+	 @PostMapping("/csv")
+	    public ResponseEntity<String> uploadCSV(@RequestParam("file") MultipartFile file) {
+	        try {
+	        	CSVParser csvParser = CSVParser.parse(file.getInputStream(), Charset.defaultCharset(), CSVFormat.DEFAULT);
+	        	List<ProductBasic> products = new ArrayList<>();
+
+	        	for (CSVRecord record : csvParser) {
+	        	    // 从CSV记录中提取字段并创建ProductBasic对象
+	        	    ProductBasic product = new ProductBasic();
+	        	    String a = record.get(3);
+	        	    int b = Integer.parseInt(a);
+	        	    ProductCategory c =pcService.findById(b);
+	        	    String d =c.getParentid().toString();
+	        	    int e =Integer.parseInt(d);
+	        	    ParentCategory f = paService.findbyid(e);
+	        	    String g = record.get(5);
+	        	    int h = Integer.parseInt(g);
+	        	    product.setProductname(record.get(0));  // 例如，第一个字段是产品名称
+	        	    product.setPrice(new BigDecimal(record.get(1)));
+	        	    product.setSpecialprice(new BigDecimal(record.get(2)));
+	        	    product.setCategoryid(c);
+	        	    product.setParentid(f);
+	        	    product.setQuantity(h);
+	        	    product.setDescription(new String(record.get(6)));
+	        	    
+	        	    // 将ProductBasic对象添加到列表
+	        	    products.add(product);
+	        	}
+
+//	            List<ProductBasic> products = CSVParser.parse(file.getInputStream(),Charset.defaultCharset(), CSVFormat.DEFAULT); // 自行实现CSVParser
+
+	            // 将提取的数据映射到ProductBasic实体类对象并保存到数据库
+	            prdService.saveProducts(products);
+
+	            return ResponseEntity.ok("CSV data uploaded and saved.");
+	        } catch (Exception e) {
+	            return ResponseEntity.badRequest().body("Error uploading and saving CSV data.");
+	        }
+	    }
+	
+	// Import the necessary libraries for CSV parsing, database operations, and error handling.
+
 	
 	
 	

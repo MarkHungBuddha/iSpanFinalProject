@@ -365,6 +365,11 @@ public class ProductBasicService {
 	    }
 	}
 
+	public void saveProducts(List<ProductBasic> products) {
+		productBasicRepository.saveAll(products);
+		
+	}
+
 	
 
 	
