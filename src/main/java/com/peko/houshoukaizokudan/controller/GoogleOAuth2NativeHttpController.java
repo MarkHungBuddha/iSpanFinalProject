@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.peko.houshoukaizokudan.config.*;
+import com.peko.houshoukaizokudan.service.MemberService;
 
 import jakarta.servlet.http.HttpServletResponse;
 import okhttp3.FormBody;
@@ -26,6 +27,8 @@ public class GoogleOAuth2NativeHttpController {
 	@Autowired
 	private GoogleOAuth2Config googleOauth2Config;
 	
+	@Autowired
+	private MemberService memberService;
 	
 	private final String scope = "https://www.googleapis.com/auth/userinfo.email";
 	
@@ -101,18 +104,19 @@ public class GoogleOAuth2NativeHttpController {
 //	            		}
 	            	
 	            	JsonNode payloadJsonNode = new ObjectMapper().readTree(payloadResponse);
+	            	System.out.println(payloadJsonNode);
 	            	String payloadGoogleId = payloadJsonNode.get("id").asText();
 	            	String payloadEmail = payloadJsonNode.get("email").asText();
-	            	String payloadName = payloadJsonNode.get("name").asText();
+//	            	String payloadName = payloadJsonNode.get("name").asText();
 	            	String payloadPicture = payloadJsonNode.get("picture").asText();
-	            	String payloadLocale = payloadJsonNode.get("locale").asText();
-	            	
-	            	
+//	            	String payloadLocale = payloadJsonNode.get("locale").asText();
+//	            	
+//	            	
 	            	System.out.println("payloadGoogleId: "+ payloadGoogleId);
 	            	System.out.println("payloadEmail: "+ payloadEmail);
-	            	System.out.println("payloadName: "+ payloadName);
+//	            	System.out.println("payloadName: "+ payloadName);
 	            	System.out.println("payloadPicture: "+ payloadPicture);
-	            	System.out.println("payloadLocale: "+ payloadLocale);
+//	            	System.out.println("payloadLocale: "+ payloadLocale);
 
 	            	
 	            }

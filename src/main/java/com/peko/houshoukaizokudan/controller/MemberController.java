@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.peko.houshoukaizokudan.model.Member;
 import com.peko.houshoukaizokudan.service.MemberService;
+import com.peko.houshoukaizokudan.service.ProductImageService;
 
 import jakarta.servlet.http.HttpSession;
 import java.util.Map;
@@ -19,6 +20,8 @@ public class MemberController {
 	
 	@Autowired
 	private MemberService userUservice;
+	@Autowired
+	private ProductImageService imageUservice;
 	
 
 	    @GetMapping("/test")

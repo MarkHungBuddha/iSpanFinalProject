@@ -62,6 +62,9 @@ public class MemberService {
     public void deleteMember(Integer memberId) {
         usersRepo.deleteById(memberId);
     }
+    public Member findByUsername(String username) {
+        return usersRepo.findByUsername(username);
+    }
     
     
 }
