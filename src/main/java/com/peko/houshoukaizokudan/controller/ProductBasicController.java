@@ -46,18 +46,41 @@ public class ProductBasicController {
 	public String productFindPage() {
 		return "product/productFindPage";
 	}
-    
-	//模糊搜尋 存頁碼跟關鍵字
+//    
+//	//模糊搜尋 存頁碼跟關鍵字 ** 此功能目前已不使用 **
+//	//未給頁碼 預設第一頁
+//	@ResponseBody
+//	@GetMapping("/products")
+//	public Page<ProductDto> getProductsByPage(
+//		@RequestParam(name = "productname", required = false) String productname,
+//	    @RequestParam(name = "p", defaultValue = "1") Integer page) {
+//	    Pageable pageable = PageRequest.of(page -1, 5); // 每頁 5 項
+//	    Page<ProductDto> result = prdService.getProductsByPage(pageable, productname);
+//	    return result;
+//	}
+	
+	//模糊搜尋 + 價格範圍
 	//未給頁碼 預設第一頁
-	@ResponseBody
 	@GetMapping("/api/products")
-	public Page<ProductDto> getProductsByPage(
+	public ResponseEntity<Page<ProductDto>> getProductsByPage(
 		@RequestParam(name = "productname", required = false) String productname,
-	    @RequestParam(name = "p", defaultValue = "1") Integer page) {
+		@RequestParam(value = "minPrice", required = false, defaultValue = "0.0") Double minPrice,
+	    @RequestParam(value = "maxPrice", required = false, defaultValue = "999999.99") Double maxPrice,
+	    @RequestParam(name = "page", required = false,defaultValue = "1") Integer page) {
 	    Pageable pageable = PageRequest.of(page -1, 5); // 每頁 5 項
-	    Page<ProductDto> result = prdService.getProductsByPage(pageable, productname);
-	    return result;
+	    
+	    
+	    try {
+	    	Page<ProductDto> result = prdService.getProductsByPage(productname, minPrice, maxPrice, pageable);
+        	return new ResponseEntity<>(result, HttpStatus.OK);
+	    } catch (InvalidPriceRangeException e) {
+	        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+	    }
 	}
+	
+	
+	
+	
 
 	//價格範圍搜尋 + 分類名稱(categoryname)搜尋
 	@GetMapping("/api/categoryname")

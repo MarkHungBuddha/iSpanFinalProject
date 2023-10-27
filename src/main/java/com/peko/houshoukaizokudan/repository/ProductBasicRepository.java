@@ -19,11 +19,16 @@ public interface ProductBasicRepository extends JpaRepository<ProductBasic, Inte
 	// 模糊搜尋產品名稱  **此功能目前已不使用  看其他人有沒有用到**
 	List<ProductBasic> findProductBasicDataByproductnameLike(String productname);
 
-	// 模糊搜尋產品名稱
-	//ProductBasic 表搜模糊尋 productname 存入產品名稱+頁碼
-	@Query("FROM ProductBasic WHERE productname LIKE %:productname%")
-	Page<ProductBasic> findProductBasicByproductname(@Param("productname") String productname, Pageable Pageable);
-	
+//	// 模糊搜尋產品名稱    ** 此功能目前已不使用 **
+//	//ProductBasic 表搜模糊尋 productname 存入產品名稱+頁碼
+//	@Query("FROM ProductBasic WHERE productname LIKE %:productname%")
+//	Page<ProductBasic> findProductBasicByproductname(@Param("productname") String productname, Pageable Pageable);
+//	
+	// 模糊搜尋 + 價格範圍
+	//ProductBasic 表 模糊搜尋 productname 存入產品名稱+頁碼+價格範圍
+	@Query("FROM ProductBasic WHERE productname LIKE %:productname% AND (price >= :minPrice AND price <= :maxPrice)")
+	Page<ProductBasic> findProductBasicByProductNameAndPriceRange(@Param("productname") String productname, @Param("minPrice") Double minPrice, @Param("maxPrice") Double maxPrice, Pageable pageable);
+
 	
 	
 	@Query("SELECT p FROM ProductBasic p JOIN FETCH p.sellermemberid WHERE p.id = :id")
