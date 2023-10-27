@@ -3,6 +3,7 @@ import com.peko.houshoukaizokudan.model.ShoppingCart;
 
 import java.util.List;
 
+import com.peko.houshoukaizokudan.DTO.ShoppingCartDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -19,9 +20,8 @@ public interface ShoppingCartRepository extends JpaRepository<ShoppingCart, Inte
     @Query(value = "Update ShoppingCart set quantity = ?3 WHERE memberid = ?1 and productid = ?2", nativeQuery = true)
     void UpdateCartQuantity(Integer memberid,Integer productid,Integer quantity);
     
-    
     @Query(value = "select SC.transactionid,SC.productid,SC.memberid,PB.productname,SC.quantity,PB.price from ShoppingCart SC left join ProductBasic PB on SC.productid = PB.productid where SC.memberid = ?1",nativeQuery = true)
-    List<ShoppingCart> GetCartItem(Integer memberid);
+    List<Object[]> GetCartItem(Integer memberid);
     
     @Query(value = "select quantity from ShoppingCart where transactionid = ?1",nativeQuery = true)
     Integer CheckCartItem(Integer transactionid);

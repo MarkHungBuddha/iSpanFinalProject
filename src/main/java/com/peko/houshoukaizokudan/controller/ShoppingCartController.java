@@ -7,7 +7,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.peko.houshoukaizokudan.Repository.MemberRepository;
 import com.peko.houshoukaizokudan.Repository.ShoppingCartRepository;
-import com.peko.houshoukaizokudan.handler.NotEnoughProductsInStockException;
 import com.peko.houshoukaizokudan.model.Member;
 import com.peko.houshoukaizokudan.model.OrderBasic;
 import com.peko.houshoukaizokudan.model.ProductBasic;
@@ -19,129 +18,70 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.peko.houshoukaizokudan.DTO.ShoppingCartDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-
-@Controller
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+@RestController
+@RequestMapping("/api/shoppingcart")
 public class ShoppingCartController {
 
-	@Autowired
+    @Autowired
     private ShoppingCartService shoppingCartService;
 
     @Autowired
     private ProductBasicService productBasicService;
-    
-	@Autowired
-	private MemberRepository usersRepo;
 
-    @GetMapping("/shoppingcart/view")
-    public String shoppingCart(Model model) {
+    @GetMapping("/products")
+    public ResponseEntity<List<ProductBasic>> getAllProducts() {
         List<ProductBasic> products = productBasicService.listAllProducts();
-        model.addAttribute("products", products);
-        return "shoppingcart/shoppingCart";
-    }
-    
-    @GetMapping("/shoppingcart/viewCart")
-    public String viewCart(Model model,HttpSession session) {
-    	Member dbUser = usersRepo.findByUsername("Elian11");
-    	session.setAttribute("loginUser", dbUser);
-    	Member loginUser = (Member) session.getAttribute("loginUser");
-    	if (loginUser != null) {
-    		List<ShoppingCart> CartItems = shoppingCartService.GetCartItem(loginUser);
-    		model.addAttribute("CartItems", CartItems);
-    		return "shoppingcart/viewCart";
-    	}
-    	else {
-	        return "shoppingcart/shoppingCart";
-	    }
-    	
-    }
-    
-    
-    @GetMapping("/shoppingcart/MinusCartItem")
-    public String MinusCartItem(@RequestParam("transactionId") Integer transactionId,Model model,HttpSession session) {
-    	Member loginUser = (Member) session.getAttribute("loginUser");
-    	if (loginUser != null) {
-    		Integer quantity = shoppingCartService.CheckCartItem(transactionId); 
-    		if (quantity == 1) {
-    			shoppingCartService.ClearCartItem(loginUser,transactionId);
-    		}
-    		else {
-    			shoppingCartService.MinusCartItem(loginUser,transactionId);
-    		}
-    		List<ShoppingCart> CartItems = shoppingCartService.GetCartItem(loginUser);
-    		model.addAttribute("CartItems", CartItems);
-    		return "shoppingcart/viewCart";
-    	}
-    	else {
-	        return "shoppingcart/shoppingCart";
-	    }
-    	
-    }
-    
-    @GetMapping("/shoppingcart/PlusCartItem")
-    public String PlusCartItem(@RequestParam("transactionId") Integer transactionId,Model model,HttpSession session) {
-    	Member loginUser = (Member) session.getAttribute("loginUser");
-    	if (loginUser != null) {
-    		Integer ProductId = shoppingCartService.GetProductId(transactionId);
-    		Integer CartQuantity = shoppingCartService.CheckQuantityByMember(loginUser.getId(),ProductId);
-    		ProductBasic product = productBasicService.findById(ProductId);
-	    	if (CartQuantity == product.getQuantity()) {
-	    		model.addAttribute("title","不可購買超出庫存上限");
-	    	}
-	    	else {
-    		shoppingCartService.PlusCartItem(loginUser,transactionId);
-	    	}
-    		List<ShoppingCart> CartItems = shoppingCartService.GetCartItem(loginUser);
-    		model.addAttribute("CartItems", CartItems);
-    		model.addAttribute("title","");
-    		return "shoppingcart/viewCart";
-    	}
-    	else {
-	        return "shoppingcart/shoppingCart";
-	    }
-    	
-    }
-    
-    @GetMapping("/shoppingcart/ClearCartItem")
-    public String ClearCartItem(@RequestParam("transactionId") Integer transactionId,Model model,HttpSession session) {
-    	Member loginUser = (Member) session.getAttribute("loginUser");
-    	if (loginUser != null) {
-    		shoppingCartService.ClearCartItem(loginUser,transactionId);
-    		List<ShoppingCart> CartItems = shoppingCartService.GetCartItem(loginUser);
-    		model.addAttribute("CartItems", CartItems);
-    		return "shoppingcart/viewCart";
-    	}
-    	else {
-	        return "shoppingcart/shoppingCart";
-	    }
-    	
+        return ResponseEntity.ok(products);
     }
 
-    @GetMapping("/shoppingcart/addproduct")
-    public String addProductToCart(@RequestParam("productId") Integer productId,HttpSession session, Model model) {
-    	Member dbUser = usersRepo.findByUsername("Elian11");
-    	
-    	session.setAttribute("loginUser", dbUser);
-    	    Member loginUser = (Member) session.getAttribute("loginUser");
-    	    if (loginUser != null) {
-    	    	Integer Quantity = shoppingCartService.CheckQuantityByMember(loginUser.getId(),productId);
-    	    	ProductBasic product = productBasicService.findById(productId);
-    	    	if (Quantity == product.getQuantity()) {
-    	    		model.addAttribute("title","不可購買超出庫存上限");
-    	    	}
-    	    	else {
-    	    		shoppingCartService.addProductToCart(loginUser,product);
-    	    		model.addAttribute("title",loginUser.getId() + "已新增" + productId + "商品");
-    	    	}
-    	    	List<ProductBasic> products = productBasicService.listAllProducts();
-    	        model.addAttribute("products", products);
-    	        return "shoppingcart/shoppingCart";
-    	    } else {
-    	    	model.addAttribute("title","尚未登入");
-    	        return "shoppingcart/shoppingCart";
-    	    }
+    @GetMapping("/cart")
+    public List<ShoppingCartDto> getShoppingCart(HttpSession session) {
+        Member loginUser = (Member) session.getAttribute("loginUser");
+        if (loginUser != null) {
+        	Integer memberId = loginUser.getId();
+        	List<ShoppingCartDto> cartItems = shoppingCartService.GetCartItem(memberId);
+            return cartItems;
+        } 
+        else {
+        	return new ArrayList<>();
+        }
     }
-    
+
+    @PostMapping("/add")
+    public ResponseEntity<String> addProductToCart(@RequestParam("productId") Integer productId, HttpSession session) {
+        Member loginUser = (Member) session.getAttribute("loginUser");
+        if (loginUser != null) {
+            Integer quantity = shoppingCartService.CheckQuantityByMember(loginUser.getId(), productId);
+            ProductBasic product = productBasicService.findById(productId);
+            if (quantity == product.getQuantity()) {
+                return ResponseEntity.badRequest().body("庫存不足！");
+            } else {
+                shoppingCartService.addProductToCart(loginUser, product);
+                return ResponseEntity.ok(loginUser.getId() + " 已新增 " + productId + " 商品");
+            }
+        } else {
+            return ResponseEntity.badRequest().body("尚未登入");
+        }
+    }
+
+    @PostMapping("/remove")
+    public ResponseEntity<String> removeProductFromCart(@RequestParam("transactionId") Integer transactionId, HttpSession session) {
+        Member loginUser = (Member) session.getAttribute("loginUser");
+        if (loginUser != null) {
+            shoppingCartService.ClearCartItem(loginUser, transactionId);
+            return ResponseEntity.ok("商品已從購物車中移除");
+        } else {
+            return ResponseEntity.badRequest().body("尚未登入");
+        }
+    }
+
+
 }

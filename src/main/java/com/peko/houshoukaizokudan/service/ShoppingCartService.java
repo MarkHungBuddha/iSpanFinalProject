@@ -5,11 +5,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 
+import com.peko.houshoukaizokudan.DTO.ShoppingCartDto;
 import com.peko.houshoukaizokudan.model.Member;
 import com.peko.houshoukaizokudan.model.ProductBasic;
 import com.peko.houshoukaizokudan.model.ShoppingCart;
 
 import java.util.List;
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Optional;
 
 @Service
@@ -28,15 +31,27 @@ public class ShoppingCartService {
         cartItem.setMemberid(member);
         cartItem.setProductid(product);
         cartItem.setQuantity(1);
-        cartItem.setPrice(product.getPrice());
-        cartItem.setProductname(product.getProductname());
         shoppingCartRepository.save(cartItem);
     	}
     }
 
-    public List<ShoppingCart> GetCartItem(Member member) {
-        List<ShoppingCart> CartItem = shoppingCartRepository.GetCartItem(member.getId());
-        return CartItem;
+    public List<ShoppingCartDto> GetCartItem(Integer memberid) {
+        List<Object[]> results = shoppingCartRepository.GetCartItem(memberid);
+
+        List<ShoppingCartDto> cartItems = new ArrayList<>();
+        for (Object[] result : results) {
+        	ShoppingCartDto cartItem = new ShoppingCartDto();
+            cartItem.setTransactionId((Integer) result[0]);
+            cartItem.setProductId((Integer) result[1]);
+            cartItem.setMemberid((Integer) result[2]);
+            cartItem.setProductname((String) result[3]);
+            cartItem.setQuantity((Integer) result[4]);
+            cartItem.setPrice((BigDecimal) result[5]);
+
+            cartItems.add(cartItem);
+        }
+
+        return cartItems;
     }
 
     public void PlusCartItem(Member member,Integer transactionid) {
