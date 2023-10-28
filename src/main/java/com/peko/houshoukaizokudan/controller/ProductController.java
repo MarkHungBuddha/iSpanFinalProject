@@ -36,9 +36,9 @@ public class ProductController {
     
     @PostMapping("/product/productFind")
     public String productFind(@RequestParam("productName") String productname, Model model) {
-        List<ProductBasic> products = prdService.findProductBasicDataByproductname(productname);
+//        List<ProductBasic> products = prdService.findProductBasicDataByproductname(productname);
         
-        model.addAttribute("products", products);
+//        model.addAttribute("products", products);
         return "product/productFindPage"; 
     }
     
@@ -67,8 +67,8 @@ public class ProductController {
 
 	@GetMapping("/product/{productId}")
 	public String viewProduct(@PathVariable Integer productId, Model model) {
-		ProductBasicDto productDTO = prdService.getProductDTOById(productId).orElse(null);
-		model.addAttribute("product", productDTO);
+//		ProductBasicDto productDTO = prdService.getProductDTOById(productId).orElse(null);
+//		model.addAttribute("product", productDTO);
 		return "product/productView";
 	}
 

@@ -94,54 +94,54 @@ public class ProductBasicService {
     public List<ProductBasic> listAllProducts() {
         return productBasicRepository.findAll();
     }
+//
+//    @Transactional
+//    //商品like搜尋
+//    public List<ProductBasic> searchProductsByName(String keyword) {
+//        return productBasicRepository.findProductBasicDataByproductnameLike(keyword);
+//    }
+//
+//
+//    @Transactional
+//    public List<ProductBasic> findProductBasicDataByproductname(String productname) {
+//
+//
+//        List<ProductBasic> products = productBasicRepository.findProductBasicDataByproductnameLike("%" + productname + "%");
+//
+//        if (products.isEmpty()) {
+//            return null;
+//        }
+//        return products;
+//    }
 
-    @Transactional
-    //商品like搜尋
-    public List<ProductBasic> searchProductsByName(String keyword) {
-        return productBasicRepository.findProductBasicDataByproductnameLike(keyword);
-    }
-
-
-    @Transactional
-    public List<ProductBasic> findProductBasicDataByproductname(String productname) {
-
-
-        List<ProductBasic> products = productBasicRepository.findProductBasicDataByproductnameLike("%" + productname + "%");
-
-        if (products.isEmpty()) {
-            return null;
-        }
-        return products;
-    }
-
-    @Transactional
-    public Optional<ProductBasicDto> getProductDTOById(Integer productId) {
-//        Optional<ProductBasic> productOptional = productBasicRepository.findById(productId);
-        Optional<ProductBasic> productOptional = productBasicRepository.findByIdWithRelationships(productId);
-
-        if (!productOptional.isPresent()) {
-            return Optional.empty();
-        }
-
-        ProductBasic productBasic = productOptional.get();
-        ProductBasicDto productDTO = new ProductBasicDto();
-
-        // Map entity to DTO
-        productDTO.setProductId(productBasic.getId());
-        productDTO.setProductName(productBasic.getProductname());
-        productDTO.setPrice(productBasic.getPrice());
-        productDTO.setSpecialPrice(productBasic.getSpecialprice());
-        productDTO.setDescription(productBasic.getDescription());
-        productDTO.setQuantity(productBasic.getQuantity());
-        productDTO.setCategoryName(productBasic.getCategoryid().getCategoryname());
-        productDTO.setParentCategoryName(productBasic.getCategoryid().getParentid().getParentname());
-        productDTO.setSellerUsername(productBasic.getSellermemberid().getUsername());
-        productDTO.setImages(productBasic.getProductImage());
-        productDTO.setReviews(productBasic.getProductReview());
-        productDTO.setQandAs(productBasic.getQandA());
-
-        return Optional.of(productDTO);
-    }
+//    @Transactional
+//    public Optional<ProductBasicDto> getProductDTOById(Integer productId) {
+////        Optional<ProductBasic> productOptional = productBasicRepository.findById(productId);
+//        Optional<ProductBasic> productOptional = productBasicRepository.findByIdWithRelationships(productId);
+//
+//        if (!productOptional.isPresent()) {
+//            return Optional.empty();
+//        }
+//
+//        ProductBasic productBasic = productOptional.get();
+//        ProductBasicDto productDTO = new ProductBasicDto();
+//
+//        // Map entity to DTO
+//        productDTO.setProductId(productBasic.getId());
+//        productDTO.setProductName(productBasic.getProductname());
+//        productDTO.setPrice(productBasic.getPrice());
+//        productDTO.setSpecialPrice(productBasic.getSpecialprice());
+//        productDTO.setDescription(productBasic.getDescription());
+//        productDTO.setQuantity(productBasic.getQuantity());
+//        productDTO.setCategoryName(productBasic.getCategoryid().getCategoryname());
+//        productDTO.setParentCategoryName(productBasic.getCategoryid().getParentid().getParentname());
+//        productDTO.setSellerUsername(productBasic.getSellermemberid().getUsername());
+//        productDTO.setImages(productBasic.getProductImage());
+//        productDTO.setReviews(productBasic.getProductReview());
+//        productDTO.setQandAs(productBasic.getQandA());
+//
+//        return Optional.of(productDTO);
+//    }
 
 
 

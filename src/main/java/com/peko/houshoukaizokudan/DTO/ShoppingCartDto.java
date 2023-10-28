@@ -20,4 +20,5 @@ public class ShoppingCartDto {
     private BigDecimal price;
     private String productname;
     private Integer quantity;
+    private String imagepath;
 }

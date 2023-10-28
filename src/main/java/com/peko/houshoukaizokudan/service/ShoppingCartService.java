@@ -1,9 +1,13 @@
 package com.peko.houshoukaizokudan.service;
 
+import com.peko.houshoukaizokudan.Repository.MemberRepository;
+import com.peko.houshoukaizokudan.Repository.ProductBasicRepository;
+import com.peko.houshoukaizokudan.Repository.ProductImageRepository;
 import com.peko.houshoukaizokudan.Repository.ShoppingCartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.peko.houshoukaizokudan.DTO.ShoppingCartDto;
 import com.peko.houshoukaizokudan.model.Member;
@@ -19,25 +23,33 @@ import java.util.Optional;
 public class ShoppingCartService {
 
     @Autowired
-    private  ShoppingCartRepository shoppingCartRepository;    
+    private  ShoppingCartRepository shoppingCartRepository;  
+    @Autowired
+    private MemberRepository mbRepo;
+    @Autowired
+    private ProductBasicRepository pbRepo;
+    @Autowired
+    private ProductImageRepository piRepo;
     
-    public void addProductToCart(Member member,ProductBasic product) {
-    	Integer checkcart = shoppingCartRepository.CheckProductByMemberId(member.getId(),product.getId());
-    	if (checkcart > 0) {
-    		shoppingCartRepository.UpdateCartQuantity(member.getId(),product.getId(),checkcart + 1);
-    	}
-    	else {
+    
+    
+    @Transactional
+    public void addProductToCart(Integer b,Integer a) {
+    	
         ShoppingCart cartItem = new ShoppingCart();
-        cartItem.setMemberid(member);
-        cartItem.setProductid(product);
+        Optional<Member> mb = mbRepo.findById(b);
+        Optional<ProductBasic> pb = pbRepo.findById(a);
+        
+        cartItem.setMemberid(mb.get());
+        cartItem.setProductid(pb.get());
         cartItem.setQuantity(1);
         shoppingCartRepository.save(cartItem);
-    	}
+    	
     }
 
     public List<ShoppingCartDto> GetCartItem(Integer memberid) {
         List<Object[]> results = shoppingCartRepository.GetCartItem(memberid);
-
+        
         List<ShoppingCartDto> cartItems = new ArrayList<>();
         for (Object[] result : results) {
         	ShoppingCartDto cartItem = new ShoppingCartDto();
@@ -47,6 +59,8 @@ public class ShoppingCartService {
             cartItem.setProductname((String) result[3]);
             cartItem.setQuantity((Integer) result[4]);
             cartItem.setPrice((BigDecimal) result[5]);
+            String a = piRepo.findImagepathByProductid((Integer) result[1]);
+            cartItem.setImagepath(a);
 
             cartItems.add(cartItem);
         }
@@ -66,10 +80,10 @@ public class ShoppingCartService {
         shoppingCartRepository.ClearCartItem(member.getId(),transactionid);
     }
     
-    public Integer CheckQuantityByMember(Integer memberid,Integer productid) {
-        Integer result = shoppingCartRepository.CheckQuantityByMember(memberid,productid);
-        return result;
-    }
+//    public Integer CheckQuantityByMember(Integer memberid,Integer productid) {
+//        Integer result = shoppingCartRepository.CheckQuantityByMember(memberid,productid);
+//        return result;
+    
     
     public Integer CheckCartItem(Integer transactionid) {
         Integer result = shoppingCartRepository.CheckCartItem(transactionid);
@@ -80,5 +94,18 @@ public class ShoppingCartService {
     	Integer result = shoppingCartRepository.GetProductId(transactionid);
         return result;
     }
+    @Transactional
+	public ShoppingCart changeQuantity(Integer c, Integer transactionId, Integer quantity) throws Exception {
+    	Integer sb = shoppingCartRepository.GetProductId(transactionId);
+    	Integer pb = pbRepo.findQuantityById(sb);
+    	
+    	if(quantity<pb) {			
+    	ShoppingCart sc = shoppingCartRepository.findByIdAndUser(c,transactionId);
+//		sc.setQuantity(quantity);
+		shoppingCartRepository.update(quantity,transactionId);
+		return sc;
+		}
+    	throw new Exception("數量超過庫存上限");
+	}
 
 }
