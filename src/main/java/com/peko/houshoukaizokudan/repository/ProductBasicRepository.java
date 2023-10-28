@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.peko.houshoukaizokudan.model.ProductBasic;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -68,6 +69,24 @@ public interface ProductBasicRepository extends JpaRepository<ProductBasic, Inte
 
 	@Query(value = "SELECT quantity FROM ProductBasic WHERE productid = :productId", nativeQuery = true)
 	Integer findQuantityById(@Param("productId") Integer c);
+
+	// 找商品 by 商品id
+	ProductBasic findProductById(int productId);
+
+	// 找商品庫存 by 商品id
+	@Query(value ="SELECT quantity FROM ProductBasic WHERE productid = ?1", nativeQuery = true)
+	Integer findProductByProductid(Integer productid);
+
+
+	//找商品賣家id
+	@Query(value ="SELECT sellermemberid FROM ProductBasic WHERE productid = ?1", nativeQuery = true)
+	Integer findProductBasicSellerIdByproductId(Integer productID);
+
+
+	// 更新庫存數量
+	@Modifying
+	@Query(value = "UPDATE ProductBasic SET quantity = ?2 WHERE productid = ?1", nativeQuery = true)
+	void updateProductQuantity(Integer productid, int stockQuantity);
 }
 
 
