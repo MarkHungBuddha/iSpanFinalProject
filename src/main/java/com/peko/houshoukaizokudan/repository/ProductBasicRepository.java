@@ -65,6 +65,9 @@ public interface ProductBasicRepository extends JpaRepository<ProductBasic, Inte
 	Optional<ProductBasic> findByIdAndSellerId(@Param("id") Integer id, @Param("memberIdd") Integer memberIdd);
 
 
+
+	@Query(value = "SELECT quantity FROM ProductBasic WHERE productid = :productId", nativeQuery = true)
+	Integer findQuantityById(@Param("productId") Integer c);
 }
 
 

@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
@@ -32,6 +33,41 @@ public interface ShoppingCartRepository extends JpaRepository<ShoppingCart, Inte
     void saveProductFromShoppingCart(Integer productid, Integer memberid, int carQuantity);
 
 
+    @Query(value = "select SC.transactionid,SC.productid,SC.memberid,PB.productname,SC.quantity,PB.price from ShoppingCart SC left join ProductBasic PB on SC.productid = PB.productid where SC.memberid = ?1",nativeQuery = true)
+    List<Object[]> GetCartItem(Integer memberid);
+
+    @Query(value = "select quantity from ShoppingCart where transactionid = ?1",nativeQuery = true)
+    Integer CheckCartItem(Integer transactionid);
+
+    @Query(value = "select productid from ShoppingCart where transactionid = :transactionid",nativeQuery = true)
+    Integer GetProductId(Integer transactionid);
+
+//    @Query(value = "SELECT PB.quantity FROM ProductBasic PB WHERE PB.productid = ?2 PB.memberid=?1",nativeQuery = true)
+//    Integer CheckQuantityByMember(Integer memberid,Integer productid);
+//
+
+    @Transactional
+    @Modifying
+    @Query(value = "Update ShoppingCart set quantity = quantity - 1 where memberid = ?1 and transactionid = ?2",nativeQuery = true)
+    void MinusCartItem(Integer memberid,Integer transactionid);
+
+    @Transactional
+    @Modifying
+    @Query(value = "Update ShoppingCart set quantity = quantity + 1 where memberid = ?1 and transactionid = ?2",nativeQuery = true)
+    void PlusCartItem(Integer memberid,Integer transactionid);
+
+    @Transactional
+    @Modifying
+    @Query(value = "Delete ShoppingCart where memberid = ?1 and transactionid = ?2",nativeQuery = true)
+    void ClearCartItem(Integer memberid,Integer transactionid);
+
+    @Query(value = "select quantity from ShoppingCart where memberid = ?1 and transactionid = ?2",nativeQuery = true)
+    ShoppingCart findByIdAndUser(Integer c, Integer transactionId);
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE ShoppingCart s SET s.quantity = :newQuantity WHERE s.memberid.id = :memberId AND s.productid.id = :productId")
+    void updateQuantityByMemberIdAndProductId(Integer memberId, Integer productId, Integer newQuantity);
 
 
 
