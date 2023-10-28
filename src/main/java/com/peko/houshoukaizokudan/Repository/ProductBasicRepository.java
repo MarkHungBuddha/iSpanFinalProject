@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 
 import com.peko.houshoukaizokudan.model.ProductBasic;
 import org.springframework.data.jpa.repository.Query;
@@ -28,6 +29,18 @@ public interface ProductBasicRepository extends JpaRepository<ProductBasic, Inte
 	//找商品賣家id
 	@Query(value ="SELECT sellermemberid FROM ProductBasic WHERE productid = ?1", nativeQuery = true)
 	Integer findProductBasicSellerIdByproductId(Integer productID);
+
+	// 找商品 by 商品id
+	ProductBasic findProductById(int productId);
+
+	// 找商品庫存 by 商品id
+	@Query(value ="SELECT quantity FROM ProductBasic WHERE productid = ?1", nativeQuery = true)
+	Integer findProductByProductid(Integer productid);
+
+	// 更新庫存數量
+	@Modifying
+	@Query(value = "UPDATE ProductBasic SET quantity = ?2 WHERE productid = ?1", nativeQuery = true)
+	void updateProductQuantity(Integer productid, int stockQuantity);
 
 
 

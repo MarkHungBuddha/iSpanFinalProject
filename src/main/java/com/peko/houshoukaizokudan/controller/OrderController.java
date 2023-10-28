@@ -163,7 +163,7 @@ public class OrderController {
 			return new ResponseEntity<>("無法取消訂單，訂單狀態碼錯誤或者不是你的訂單", null, HttpStatus.BAD_REQUEST);
 	}
 
-	// 買家訂單按付款按鈕 待付款 > 待出貨
+	// 買家訂單按付款按鈕 待付款(1) > 待出貨(2)  
 	@PutMapping("/payOrder/{id}")
 	public ResponseEntity<?> payOrder(@PathVariable Integer id, HttpSession session) {
 		Member loginUser = (Member) session.getAttribute("loginUser");
@@ -171,7 +171,7 @@ public class OrderController {
 
 		if (optional == null)
 			return new ResponseEntity<>("沒有這筆資料", null, HttpStatus.NOT_FOUND);
-		// 確認訂單人且訂單狀態碼是 待付款 > 待出貨
+		// 確認訂單人且訂單狀態碼是 待付款(1) > 待出貨(2) 
 		if (loginUser.getId() == optional.getBuyer().getId() && optional.getStatusid().getId() == 1) {
 
 			OrderBasic result = orderService.payOrder(optional);
@@ -182,6 +182,26 @@ public class OrderController {
 		} else
 			return new ResponseEntity<>("訂單狀態碼錯誤或者不是你的訂單", null, HttpStatus.BAD_REQUEST);
 	}
+	
+	// 買家訂單按付款按鈕 待收貨(3) > 已完成(4)  
+		@PutMapping("/completeOrder/{id}")
+		public ResponseEntity<?> completeOrder(@PathVariable Integer id, HttpSession session) {
+			Member loginUser = (Member) session.getAttribute("loginUser");
+			OrderBasic optional = orderService.getOrder(id);
+
+			if (optional == null)
+				return new ResponseEntity<>("沒有這筆資料", null, HttpStatus.NOT_FOUND);
+			// 確認訂單人且訂單狀態碼是 待收貨(3) > 已完成(4) 
+			if (loginUser.getId() == optional.getBuyer().getId() && optional.getStatusid().getId() == 3) {
+
+				OrderBasic result = orderService.completeOrder(optional);
+				OrderBasicDto updateOrder = orderService.updateOrderDto(result);
+
+				return new ResponseEntity<>(updateOrder, null, HttpStatus.OK);
+
+			} else
+				return new ResponseEntity<>("訂單狀態碼錯誤或者不是你的訂單", null, HttpStatus.BAD_REQUEST);
+		}
 
 	// 查詢訂單內容的商品
 	@GetMapping("/orders/orderDetail")
@@ -219,7 +239,7 @@ public class OrderController {
 		}
 	}
 
-	// 賣家訂單按出貨按紐 待出貨 > 待收貨
+	// 賣家訂單按出貨按紐 待出貨(2) > 待收貨(3)
 	@PutMapping("/shipOrder/{id}")
 	public ResponseEntity<?> shipOrder(@PathVariable Integer id, HttpSession session) {
 		Member loginUser = (Member) session.getAttribute("loginUser");
@@ -260,7 +280,7 @@ public class OrderController {
 	// 新增訂單
 	@PostMapping("/order/addOrder")
 	public ResponseEntity<OrderBasicDto> placeOrder(HttpSession session, @RequestBody checkoutOrderDto orderDto,
-			@RequestParam String orderAddress) {
+			@RequestParam String orderAddress) throws Exception {
 
 		Member loginUser = (Member) session.getAttribute("loginUser");
 		if (loginUser != null) {

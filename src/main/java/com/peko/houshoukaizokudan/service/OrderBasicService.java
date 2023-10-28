@@ -3,7 +3,11 @@ package com.peko.houshoukaizokudan.service;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -41,13 +45,13 @@ public class OrderBasicService {
 	@Autowired
 	private OrderBasicRepository orderRepo;
 	@Autowired
-	private OrderDetailRepository OrderDetailRepo;
+	private OrderDetailRepository orderDetailRepo;
 	@Autowired
 	private ShoppingCartRepository shoppingCartRepo;
 	@Autowired
 	private ProductImageRepository productImageRepo;
 	@Autowired
-	private ProductBasicRepository productBasicrRepo;
+	private ProductBasicRepository productBasicRepo;
 	@Autowired
 	private MemberRepository memberRepo;
 	@Autowired
@@ -74,7 +78,7 @@ public class OrderBasicService {
 		dto.setOrderaddess(order.getOrderaddress());
 		// 存商品內容
 		Integer orderid = order.getId();
-		List<OrderDetail> products = OrderDetailRepo.findOrderDetailByOrderid(orderid);
+		List<OrderDetail> products = orderDetailRepo.findOrderDetailByOrderid(orderid);
 
 		List<OrderDetailDto> productDtos = products.stream().map(product -> convertToProductDto(product))
 				.collect(Collectors.toList());
@@ -170,11 +174,21 @@ public class OrderBasicService {
 		return orderRepo.save(order);
 	}
 
-	// 修改訂單 (按付款按鈕) 待付款 > 待出貨
+	// 修改訂單 (按付款按鈕) 待付款(1) > 待出貨(2) 
 	@Transactional
 	public OrderBasic payOrder(OrderBasic order) {
 		OrderStatus orderStatus = new OrderStatus();
 		orderStatus.setId(2);
+
+		order.setStatusid(orderStatus);
+		return orderRepo.save(order);
+	}
+	
+	// 修改訂單 (按付款按鈕) 待收貨(3) > 已完成(4)
+	@Transactional
+	public OrderBasic completeOrder(OrderBasic order) {
+		OrderStatus orderStatus = new OrderStatus();
+		orderStatus.setId(4);
 
 		order.setStatusid(orderStatus);
 		return orderRepo.save(order);
@@ -269,66 +283,128 @@ public class OrderBasicService {
 
 		return orderDto;
 	}
-	// 產生訂單
-//	@Transactional
-//	public List<OrderBasic> save(List<ProductBasic> buyProducts, Member loginUser) {
-//		OrderBasic orderBasic = new OrderBasic();
-//		Integer totalamount = orderBasic.getTotalamount();
-//		totalamount=0;
-//		for(ProductBasic product :buyProducts) {
-//			totalamount=+(int)product.getPrice().intValue();
-//		}
-//		
-//		orderBasic.setTotalamount(totalamount);
-//		orderBasic.setSeller(buyProducts.get(0).getSellermemberid());
-//		orderBasic.setmemberid();
-//		
-//		
-//		List<OrderBasic>order=orderRepo.saveAll(buyProducts);
-//		return order;
-//	}
 
 	// 產生訂單
 	@Transactional
-	public OrderBasicDto placeOrder(Member loginUser, checkoutOrderDto orderDto, String orderAddress) {
+	public OrderBasicDto placeOrder(Member loginUser, checkoutOrderDto orderDto, String orderAddress) throws Exception {
+		
+		// 庫存檢查
+	    for (ProductIDandQuentity productInfo : orderDto.getProductIDandQuentities()) {
+	        int productId = productInfo.getProductID();
+	        int purchaseQuantity = productInfo.getQuantity();
+	        ProductBasic product = productBasicRepo.findProductById(productId);
+	        int stockQuantity = productBasicRepo.findProductByProductid(product.getId());
+
+	        if (stockQuantity < purchaseQuantity) {
+	            // 庫存不足，拋出異常
+	            throw new Exception("商品 " + product.getProductname() + " 的庫存不足");
+	        }
+	    }
+		
+		
+		/**** 寫入的訂單資料 ****/
 		OrderBasic orderBasic = new OrderBasic();
-		OrderDetail orderDetail = new OrderDetail();
 
 		Set<ProductIDandQuentity> productIDandQuentities = orderDto.getProductIDandQuentities();
-		ProductIDandQuentity firstProduct = productIDandQuentities.iterator().next(); // 取得商品賣家id
+		ProductIDandQuentity firstProduct = productIDandQuentities.iterator().next(); // 取得第一筆商品
 		Integer productID = firstProduct.getProductID();
-		Integer sellerId = productBasicrRepo.findProductBasicSellerIdByproductId(productID);
-		Member seller = memberRepo.findmemberBymemberid(sellerId);
+		Integer sellerId = productBasicRepo.findProductBasicSellerIdByproductId(productID);
+		Member seller = memberRepo.findmemberBymemberid(sellerId); // 取的商品銷售員資料
 
 		orderBasic.setSeller(seller);
 		orderBasic.setBuyer(loginUser);
 
-		Date currentDate = new Date();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-		String formattedDate = sdf.format(currentDate);
-		orderBasic.setMerchanttradedate(formattedDate);
+		// 設定訂單日期時間
+		Instant now = Instant.now();
+
+		DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern("yyyy-MM-dd'T'HH:mm:ss")
+				.toFormatter().withZone(ZoneId.systemDefault()); // 時區 系統預設
+
+		String iso8601Time = formatter.format(now);
+		orderBasic.setMerchanttradedate(iso8601Time);
 
 		BigDecimal totalPrice = orderDto.getTotalPrice();
 		orderBasic.setTotalamount(totalPrice.intValue());
-		orderBasic.setOrderaddress(orderAddress); // 設定訂單地址
+		// 設定訂單地址
+		orderBasic.setOrderaddress(orderAddress);
 
-		int statusId = 1; // 設定訂單狀態為1
+		int statusId = 1; // 設定訂單狀態為1(待付款)
 		OrderStatus orderStatus = orderStatusRepo.findById(statusId).orElse(null);
 		orderBasic.setStatusid(orderStatus);
-		OrderBasic order = orderRepo.save(orderBasic);
 
-		/* 寫存入的商品資料 */
-		/* .... */
+		orderRepo.save(orderBasic);
 
-		OrderBasicDto orderBasicDto = updateOrderDto(order);
+		/***** 寫入的商品資料 *****/
+
+		if (orderDto.getProductIDandQuentities() != null && !orderDto.getProductIDandQuentities().isEmpty()) {
+			for (ProductIDandQuentity productInfo : orderDto.getProductIDandQuentities()) {
+				OrderDetail orderDetail = new OrderDetail();
+
+				int productId = productInfo.getProductID();
+				ProductBasic product = productBasicRepo.findProductById(productId);
+				orderDetail.setProductid(product);
+				orderDetail.setQuantity(productInfo.getQuantity());
+				orderDetail.setUnitprice(productInfo.getPrice());
+
+				orderDetail.setOrderid(orderBasic); // 設定訂單關聯
+
+				orderDetailRepo.save(orderDetail);// 保存訂單商品資料
+			}
+		}
+
+		// 存入dto
+		OrderBasicDto orderBasicDto = updateOrderDto(orderBasic);
+
+		/***** 清除已購買的購物車商品&庫存 *****/
+
+		// 購物車內的商品列表
+		Set<ProductIDandQuentity> productSet = orderDto.getProductIDandQuentities();
+		List<ProductIDandQuentity> productItems = new ArrayList<>(productSet);
+
+		// 取的購買商品ID 清單
+		List<Integer> productIdsList = productItems.stream().map(ProductIDandQuentity::getProductID)
+				.collect(Collectors.toList());
+		// 取得購買的商品 清單
+		List<ProductBasic> cartProducts = shoppingCartRepo.findProductsByUserIdAndProductIds(loginUser.getId(),
+				productIdsList);
+
+		for (ProductBasic product : cartProducts) {
+
+			// 取得商品庫存數量
+			int stockQuantity = productBasicRepo.findProductByProductid(product.getId());
+
+			// 取得購物車商品的數量
+			int carQuantity = product.getQuantity();
+
+			// 取得購買商品數量
+			Integer purchaseQuantity = orderDetailRepo.getProductQuantityFromorderDetail(orderBasicDto.getOrderid(),
+					product.getId());
+
+			if (stockQuantity < purchaseQuantity) {
+				// 庫存不足，可以拋出異常訊息
+				throw new Exception("商品 " + product.getProductname() + " 的庫存不足");
+			}
+
+			// 庫存充足，更新庫存
+			stockQuantity -= purchaseQuantity;
+			carQuantity -= purchaseQuantity; // 更新購物車數量
+			product.setQuantity(carQuantity); // 更新購物車商品數量
+
+			productBasicRepo.updateProductQuantity(product.getId(), stockQuantity); // 更新庫存數量
+
+			// 如果庫存<=0，購物車移除該商品
+			if (stockQuantity <= 0 || carQuantity <= 0) {
+				shoppingCartRepo.removeProductFromShoppingCart(product.getId(), loginUser.getId());
+			} else {
+				shoppingCartRepo.saveProductFromShoppingCart(product.getId(), loginUser.getId(), carQuantity);
+			}
+
+			//
+			productBasicRepo.save(product);
+		}
 
 		return orderBasicDto;
 
 	}
-
-//	public List<OrderBasic> getMemberOrders(Integer memberId) {
-//		List<OrderBasic> orders=orderRepo.findOrderBasicBybuyer(memberId);
-//		return orders;
-//	}
 
 }
