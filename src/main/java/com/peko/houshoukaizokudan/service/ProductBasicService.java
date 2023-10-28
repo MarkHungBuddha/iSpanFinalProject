@@ -59,6 +59,8 @@ public class ProductBasicService {
     private ParentCategoryRepository parentCategoryRepository;
 
 
+
+
     //建立商品
     @Transactional
     public ProductBasic addProductWithImages(ProductBasic productBasic, ProductCategory category, List<ProductImage> images) {

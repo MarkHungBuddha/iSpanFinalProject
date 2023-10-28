@@ -100,5 +100,23 @@ public class WishListService {
         return wishlistDTO;
     }
 
+    //addProductToWishList
+    public void addProductToWishList(Wishlist wishlist) {
+        wishListRepository.save(wishlist);
+    }
+
+
+
+    //removeProductFromWishList
+    public void removeProductFromWishList(Integer productId) {
+        wishListRepository.deleteById(productId);
+    }
+
+
+    //getWishList
+    public Wishlist getWishList() {
+        return wishListRepository.findAll().get(0); //因為唯一，所以只要取第一個即可
+    }
+
 
 }

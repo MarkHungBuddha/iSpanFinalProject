@@ -33,4 +33,8 @@ public interface ProductImageRepository extends JpaRepository<ProductImage, Inte
     @Modifying
     @Query("DELETE FROM ProductImage pi WHERE pi.productid.id = :id AND pi.orderID = :od")
     void deleteById(@Param("id") Integer id, @Param("od") Integer od);
+
+    // 產品id 找 圖片7碼 (第一張)
+    @Query(value = "SELECT TOP 1 imagepath FROM ProductImage  WHERE productid = ?1 ORDER BY orderID ASC", nativeQuery = true)
+    String findProductImagebyproductid(Integer productid);
 }

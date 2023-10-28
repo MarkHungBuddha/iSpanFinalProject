@@ -34,6 +34,9 @@ public interface ProductReviewRepository extends JpaRepository<ProductReview, In
             "ORDER BY month DESC", nativeQuery = true)
     List<Object[]> findMonthlyReviewsStatsForSeller(Integer sellerId);
 
+    @Query(value = "SELECT * FROM product_review WHERE productid IN ?2", nativeQuery = true)
+    List<ProductReview> findProductReviewsByProductid(Integer productid);
+
 
 
 

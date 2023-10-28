@@ -10,15 +10,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.peko.houshoukaizokudan.model.ProductBasic;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 
 public interface ProductBasicRepository extends JpaRepository<ProductBasic, Integer> {
-	
+
 	//模糊搜尋產品名稱
-	
+
 	List<ProductBasic> findProductBasicDataByproductnameLike(String productname);
 
 	@Query("SELECT p FROM ProductBasic p JOIN FETCH p.sellermemberid WHERE p.id = :id")
@@ -35,7 +36,20 @@ public interface ProductBasicRepository extends JpaRepository<ProductBasic, Inte
 	Page<ProductBasic> findProductBasicByproductname(@Param("productname") String productname, Pageable Pageable);
 
 
+	@Query(value ="SELECT sellermemberid FROM ProductBasic WHERE productid = ?1", nativeQuery = true)
+	Integer findProductBasicSellerIdByproductId(Integer productID);
 
+	// 找商品 by 商品id
+	ProductBasic findProductById(int productId);
+
+	// 找商品庫存 by 商品id
+	@Query(value ="SELECT quantity FROM ProductBasic WHERE productid = ?1", nativeQuery = true)
+	Integer findProductByProductid(Integer productid);
+
+	// 更新庫存數量
+	@Modifying
+	@Query(value = "UPDATE ProductBasic SET quantity = ?2 WHERE productid = ?1", nativeQuery = true)
+	void updateProductQuantity(Integer productid, int stockQuantity);
 
 	List<ProductBasic> findBySellermemberid(Member sellermemberid);
 
@@ -45,7 +59,7 @@ public interface ProductBasicRepository extends JpaRepository<ProductBasic, Inte
 	//    @Query("SELECT pb FROM ProductBasic pb WHERE pb.sellermemberid = :memberId")
 	@Query(value = "SELECT * FROM ProductBasic pb WHERE pb.sellermemberid = :memberId", nativeQuery = true)
 	Page<ProductBasic> findProductBasicBySellermemberid(@Param("memberId") Integer memberId, Pageable pageable);
-//
+
 
 
 	@Query(value = "SELECT * FROM productbasic pb WHERE pb.sellermemberid = :memberIdd AND pb.productname LIKE %:productname%",
