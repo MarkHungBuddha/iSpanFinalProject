@@ -98,7 +98,7 @@ public class ProductBasicService {
     @Transactional
     //商品like搜尋
     public List<ProductBasic> searchProductsByName(String keyword) {
-        return productBasicRepository.findProductBasicDataByproductnameLike(keyword);
+        return productBasicRepository.findByProductnameLike(keyword);
     }
 
 
@@ -106,7 +106,7 @@ public class ProductBasicService {
     public List<ProductBasic> findProductBasicDataByproductname(String productname) {
 
 
-        List<ProductBasic> products = productBasicRepository.findProductBasicDataByproductnameLike("%" + productname + "%");
+        List<ProductBasic> products = productBasicRepository.findByProductnameLike("%" + productname + "%");
 
         if (products.isEmpty()) {
             return null;
@@ -136,9 +136,12 @@ public class ProductBasicService {
         productDTO.setCategoryName(productBasic.getCategoryid().getCategoryname());
         productDTO.setParentCategoryName(productBasic.getCategoryid().getParentid().getParentname());
         productDTO.setSellerUsername(productBasic.getSellermemberid().getUsername());
-        productDTO.setImages(productBasic.getProductImage());
-        productDTO.setReviews(productBasic.getProductReview());
-        productDTO.setQandAs(productBasic.getQandA());
+        productDTO.setSellerFirstName(productBasic.getSellermemberid().getFirstname());
+        productDTO.setSellerLastName(productBasic.getSellermemberid().getLastname());
+
+
+
+
 
         return Optional.of(productDTO);
     }

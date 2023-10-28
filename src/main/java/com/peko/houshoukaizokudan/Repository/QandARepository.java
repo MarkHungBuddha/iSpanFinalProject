@@ -8,7 +8,8 @@ import java.util.List;
 
 public interface QandARepository extends JpaRepository<QandA, Integer> {
 
-    @Query(value = "SELECT * FROM QandA WHERE productid IN ?2", nativeQuery = true)
-    List<QandA> findProductReviewsByProductid(Iterable productId);
+    List<QandA> findByProductid_Id(Integer productId);
+    List<QandA> findBySellerMember_IdAndAnswerIsNull(Integer memberId);
 
+    void deleteByIdAndSellerMember_Id(Integer qandaId, Integer memberId);
 }

@@ -2,6 +2,8 @@ package com.peko.houshoukaizokudan.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 @Builder
 @AllArgsConstructor
@@ -19,10 +21,12 @@ public class UserCoupon {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "memberid")
+    @Fetch(FetchMode.JOIN)
     private Member memberid;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "couponid")
+    @Fetch(FetchMode.JOIN)
     private CouponTicket couponid;
 
     @Column(name = "used", nullable = false, length = 1)

@@ -2,6 +2,8 @@ package com.peko.houshoukaizokudan.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -23,8 +25,9 @@ public class ProductCategory {
     @Column(name = "categoryname", nullable = false, length = 50)
     private String categoryname;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parentid")
+    @Fetch(FetchMode.JOIN)
     private ParentCategory parentid;
 
     @OneToMany(mappedBy = "categoryid")
