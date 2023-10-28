@@ -4,28 +4,31 @@ import com.peko.houshoukaizokudan.model.MemberType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.peko.houshoukaizokudan.model.Member;
 import com.peko.houshoukaizokudan.service.MemberService;
+import com.peko.houshoukaizokudan.service.ProductImageService;
 
 import jakarta.servlet.http.HttpSession;
+import java.util.Map;
+import java.util.HashMap;
 
-@Controller
+@RestController
 public class MemberController {
-	
+
 	@Autowired
 	private MemberService userUservice;
-	
-	@GetMapping("/member/memberRe")
-	public String register() {
-		return "memberRegister";
-	}
-	
+	@Autowired
+	private ProductImageService imageUservice;
+
+
+
+
+
 	@PostMapping("/member/post")
-	public String postRegister(
+	public Map<String, String> postRegister(
 			@RequestParam("username") String username,
 			@RequestParam("passwdbcrypt") String password,
 			@RequestParam("membertypeid") MemberType membertypeid,
@@ -42,13 +45,13 @@ public class MemberController {
 			@RequestParam("region") String region,
 			@RequestParam("street") String street,
 			@RequestParam("postalcode") String postalcode,
-
 			Model model) {
+		Map<String, String> response = new HashMap<>();
 		boolean isExist = userUservice.checkIfUsernameExist(username);
-		
+
 		if(isExist) {
-			model.addAttribute("errorMsg", "此帳號已存在，請用別的");
-		}else {
+			response.put("errorMsg", "此帳號已存在，請用別的");
+		} else {
 			Member u1 = new Member();
 			u1.setUsername(username);
 			u1.setPasswdbcrypt(password);
@@ -67,41 +70,44 @@ public class MemberController {
 			u1.setPostalcode(postalcode);
 			u1.setRegion(region);
 			u1.setStreet(street);
-			
+
 			userUservice.addUser(u1);
-			System.out.println("註冊成功");
-			model.addAttribute("okMsg", "註冊成功");
+			response.put("okMsg", "註冊成功");
 		}
-		
-		return "member/memberLogin";
+
+		return response;
 	}
-	
-	@GetMapping("/member/memberLogin")
-	public String userLoginPage() {
-		return "member/memberLogin";
-	}
-	
+
 	@PostMapping("/member/memberLogin")
-	public String checkUserLogin(
-			@RequestParam("username") String username, 
+	public Map<String, String> checkUserLogin(
+			@RequestParam("username") String username,
 			@RequestParam("passwdbcrypt") String password,
 			HttpSession httpsession,
 			Model model) {
+		Map<String, String> response = new HashMap<>();
 		Member result = userUservice.checkLogin(username, password);
-		
+
 		if(result != null) {
-			System.out.println("登入成功");
 			httpsession.setAttribute("loginUser", result);
-		}else {
-			System.out.println("登入fail");
-			model.addAttribute("loginFail", "帳號密碼錯誤");
+			response.put("success", "登入成功");
+		} else {
+			response.put("error", "帳號密碼錯誤");
 		}
-		
-		return "member/memberLogin";
+
+		return response;
 	}
 
-	//登出
+	@PostMapping("/member/logout")
+	public Map<String, String> logout(HttpSession httpsession) {
+		Map<String, String> response = new HashMap<>();
 
-	//刪除帳號
+		httpsession.removeAttribute("loginUser");
 
+		httpsession.invalidate();
+
+		response.put("success", "登出成功");
+
+		return response;
+	}
+	// 其他控制器方法和功能
 }

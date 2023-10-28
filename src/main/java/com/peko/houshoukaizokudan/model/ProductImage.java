@@ -29,4 +29,6 @@ public class ProductImage {
     @Column(name = "orderID", nullable = false)
     private Integer orderID;
 
+
+
 }
