@@ -18,7 +18,7 @@ import org.springframework.stereotype.Repository;
 public interface ProductBasicRepository extends JpaRepository<ProductBasic, Integer> {
 	
 	//模糊搜尋產品名稱
-	
+
 	List<ProductBasic> findProductBasicDataByproductnameLike(String productname);
 
 	@Query("SELECT p FROM ProductBasic p JOIN FETCH p.sellermemberid WHERE p.id = :id")
@@ -45,7 +45,7 @@ public interface ProductBasicRepository extends JpaRepository<ProductBasic, Inte
 	//    @Query("SELECT pb FROM ProductBasic pb WHERE pb.sellermemberid = :memberId")
 	@Query(value = "SELECT * FROM ProductBasic pb WHERE pb.sellermemberid = :memberId", nativeQuery = true)
 	Page<ProductBasic> findProductBasicBySellermemberid(@Param("memberId") Integer memberId, Pageable pageable);
-//
+
 
 
 	@Query(value = "SELECT * FROM productbasic pb WHERE pb.sellermemberid = :memberIdd AND pb.productname LIKE %:productname%",
