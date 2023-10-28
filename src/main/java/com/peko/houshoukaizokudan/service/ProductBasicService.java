@@ -2,6 +2,7 @@ package com.peko.houshoukaizokudan.service;
 
 import com.peko.houshoukaizokudan.DTO.ProductBasicDto;
 import com.peko.houshoukaizokudan.DTO.ProductBasicDto2;
+import com.peko.houshoukaizokudan.DTO.ProductCategoryDto;
 import com.peko.houshoukaizokudan.DTO.ProductDto;
 import com.peko.houshoukaizokudan.Repository.*;
 import com.peko.houshoukaizokudan.model.*;
@@ -115,29 +116,6 @@ public class ProductBasicService {
         return productBasicRepository.findAll();
     }
 
-    @Transactional
-    //商品like搜尋
-    public List<ProductBasic> searchProductsByName(String keyword) {
-        return productBasicRepository.findByProductnameLike(keyword);
-    }
-
-
-    @Transactional
-    public List<ProductBasic> findProductBasicDataByproductname(String productname) {
-
-
-        List<ProductBasic> products = productBasicRepository.findByProductnameLike("%" + productname + "%");
-
-        if (products.isEmpty()) {
-            return null;
-        }
-        return products;
-    }
-
-
-
-
-
     //頁碼  //1頁2筆
     @Transactional
     public Page<ProductBasic> findProductByPage(Integer pageNumber) {
@@ -192,7 +170,7 @@ public class ProductBasicService {
 
     // 頁碼 //1頁2筆
     @Transactional
-    public Page<ProductDto> getProductByPage(Pageable pageable, String productname, Integer memberIdd) {
+    public Page<ProductDto> getProductByPage2(Pageable pageable, String productname, Integer memberIdd) {
         if (memberIdd != null) {
             // 单次筛选：根据会员ID筛选并根据产品名称模糊搜索
             Page<ProductBasic> pageByMemberId = productBasicRepository.findProductBasicBySellermemberidAndProductnameContaining(memberIdd, productname, pageable);
@@ -206,6 +184,81 @@ public class ProductBasicService {
 
         return new PageImpl<>(Collections.emptyList(), pageable, 0);
     }
+    // 模糊搜尋 + 價格範圍
+    @Transactional
+    public Page<ProductDto> getProductsByPage(String productname, Double minPrice, Double maxPrice, Pageable pageable) {
+        // 檢查價格範圍的合理性 // 價格不能為負數，處理相應的錯誤邏輯，最小價格不能大於最大價格，處理相應的錯誤邏輯
+        if (minPrice < 0 || maxPrice < 0 || minPrice > maxPrice) {
+            // 如果價格範圍無效，返回包含錯誤訊息的結果
+            throw new IllegalArgumentException("無效的價格範圍");
+        }
+
+        Page<ProductBasic> productBasics = productBasicRepository.findProductBasicByProductNameAndPriceRange(productname, minPrice, maxPrice, pageable);
+        List<ProductDto> result = productBasics.getContent().stream().map(pro -> {
+            ProductDto dto = new ProductDto();
+            dto.setProductid(pro.getId());
+            dto.setProductname(pro.getProductname());
+            dto.setPrice(pro.getPrice());
+            dto.setSpecialprice(pro.getSpecialprice());
+            dto.setCategoryname(pro.getCategoryid().getCategoryname());
+            dto.setQuantity(pro.getQuantity());
+            dto.setDescription(pro.getDescription());
+            // 使用 ProductImageRepository 查詢圖像路徑
+            String imagepath = productImageRepository.findImagepathByProductid(pro.getId());
+            dto.setImagepath(imagepath);
+            return dto;
+        }).collect(Collectors.toList());
+        return new PageImpl<>(result, pageable, productBasics.getTotalElements());
+    }
+
+    //價格範圍搜尋
+    @Transactional
+    public Page<ProductCategoryDto> getCategoryNameByPriceRange(String categoryname, Double minPrice, Double maxPrice, Pageable pageable){
+        // 檢查價格範圍的合理性 // 價格不能為負數，處理相應的錯誤邏輯，最小價格不能大於最大價格，處理相應的錯誤邏輯
+        if (minPrice < 0 || maxPrice < 0 || minPrice > maxPrice) {
+            // 如果價格範圍無效，返回包含錯誤訊息的結果
+            throw new IllegalArgumentException("無效的價格範圍");
+        }
+
+        Integer categoryid = productCategoryRepository.findCategoryIdByCategoryName(categoryname);
+        Page<ProductBasic> productBasics = productCategoryRepository.findProductBasicsByCategoryIdAndPriceRange(categoryid, minPrice, maxPrice, pageable);
+        // 將 ProductBasic 資料映射到 ProductCategoryDto 中
+        List<ProductCategoryDto> result = productBasics.stream().map(pro -> {
+                    ProductCategoryDto dto = new ProductCategoryDto();
+                    dto.setCategoryid(pro.getCategoryid().getId());
+                    dto.setProductname(pro.getProductname());
+                    dto.setPrice(pro.getPrice());
+                    dto.setSpecialprice(pro.getSpecialprice());
+                    dto.setCategoryname(pro.getCategoryid().getCategoryname());
+                    dto.setParentid(pro.getCategoryid().getParentid().getId());
+                    dto.setParentname(pro.getCategoryid().getParentid().getParentname());
+                    // 使用 ProductImageRepository 查詢圖像路徑
+                    String imagepath = productImageRepository.findImagepathByProductid(pro.getId());
+                    dto.setImagepath(imagepath);
+                    // 你可能需要添加更多的映射適應你的資料結構
+                    return dto;
+                })
+                .collect(Collectors.toList()); //收集dto的數據s
+        return new PageImpl<>(result, pageable, productBasics.getTotalElements());
+
+    }
+
+
+
+
+
+//	public ProductBasic findLastest() {
+//		return prdRepo.findFirstByOrderIdDesc();
+//	}
+    // 	return 	products;
+
+    // };
+
+    @Transactional
+    public void insert(ProductBasic pb) {
+        productBasicRepository.save(pb);
+    }
+
 
 
 
@@ -248,24 +301,6 @@ public class ProductBasicService {
 
         return productBasicDto;
     }
-
-//	public ProductBasic findLastest() {
-//		return prdRepo.findFirstByOrderIdDesc();
-//	}
-    // return products;
-
-    // };
-
-    @Transactional
-    public void insert(ProductBasic pb) {
-        productBasicRepository.save(pb);
-    }
-
-    // public List<ProductBasic> findBySellerMemberId(Integer sellermemberid) {
-//		List<ProductBasic> pbList = pbRepo.findBySellermemberid(sellermemberid);
-//		return pbList;
-//	}
-
 
 
 
