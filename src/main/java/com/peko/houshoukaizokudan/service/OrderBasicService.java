@@ -119,33 +119,20 @@ public class OrderBasicService {
 
         return orderDto;
     }
-//    List<ProductIDandQuentity> productDtos = new ArrayList<>();
-//
-//// 遍历每一个购物车里的产品
-//for (ProductBasic product : cartProducts) {
-//
-//        // 获取这个产品的数量。这是从提交的购买产品列表中找到的。
-//        int quantity = 0;
-//        for (ProductIDandQuentity item : productItems) {
-//            if (item.getProductID().equals(product.getId())) {
-//                quantity = item.getQuantity();
-//                break;
-//            }
-//        }
-//
-//        // 确定产品的价格：如果有特殊价格且大于0，则使用它；否则，使用常规价格。
-//        BigDecimal effectivePrice;
-//        if (product.getSpecialprice() != null && product.getSpecialprice().compareTo(BigDecimal.ZERO) > 0) {
-//            effectivePrice = product.getSpecialprice();
-//        } else {
-//            effectivePrice = product.getPrice();
-//        }
-//
-//        // 创建一个新的ProductIDandQuentity DTO并添加到列表中
-//        ProductIDandQuentity dto = new ProductIDandQuentity(product.getId(), quantity, effectivePrice, product.getProductname());
-//        productDtos.add(dto);
-//    }
 
+    public Integer findTotalByYear(Integer memberIdd, Integer year) {
+        Integer obb=orderRepo.findTotalAmountByYearAndSeller(memberIdd, year);
 
+        return obb;
+    }
 
+    public Integer findTotalByMonth(Integer memberIdd, Integer month, Integer year) {
+        Integer obb=orderRepo.findTotalAmountByYearAndMonthAndSeller(year,memberIdd, month);
+
+        return obb;
+    }
 }
+
+
+
+

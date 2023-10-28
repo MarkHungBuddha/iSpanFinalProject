@@ -3,8 +3,11 @@ package com.peko.houshoukaizokudan.Repository;
 import java.util.List;
 import java.util.Optional;
 
+import com.peko.houshoukaizokudan.model.Member;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import com.peko.houshoukaizokudan.model.ProductBasic;
 import org.springframework.data.jpa.repository.Query;
@@ -24,6 +27,43 @@ public interface ProductBasicRepository extends JpaRepository<ProductBasic, Inte
 
 	@Query("SELECT p FROM ProductBasic p JOIN FETCH p.productImage JOIN FETCH p.qandA JOIN FETCH p.productReview WHERE p.id = :id")
 	Optional<ProductBasic> findByIdWithRelationships(@Param("id") Integer id);
+
+
+	//模糊搜尋產品名稱
+
+	@Query("FROM ProductBasic WHERE productname LIKE %:productname%")
+	Page<ProductBasic> findProductBasicByproductname(@Param("productname") String productname, Pageable Pageable);
+
+
+
+
+	List<ProductBasic> findBySellermemberid(Member sellermemberid);
+
+	@Query("SELECT pb FROM ProductBasic pb WHERE pb.productname = :productname")
+	Page<ProductBasic> findProductBasicByProductname(@Param("productname") String productname, Pageable pageable);
+
+	//    @Query("SELECT pb FROM ProductBasic pb WHERE pb.sellermemberid = :memberId")
+	@Query(value = "SELECT * FROM ProductBasic pb WHERE pb.sellermemberid = :memberId", nativeQuery = true)
+	Page<ProductBasic> findProductBasicBySellermemberid(@Param("memberId") Integer memberId, Pageable pageable);
+//
+
+
+	@Query(value = "SELECT * FROM productbasic pb WHERE pb.sellermemberid = :memberIdd AND pb.productname LIKE %:productname%",
+			nativeQuery = true)
+	Page<ProductBasic> findProductBasicBySellermemberidAndProductnameContaining(Integer memberIdd, String productname,
+																				Pageable pageable);
+
+
+
+	@Query("SELECT pb FROM ProductBasic pb WHERE pb.id = :id AND pb.sellermemberid.id = :memberIdd")
+	Optional<ProductBasic> findByIdAndSellerId(@Param("id") Integer id, @Param("memberIdd") Integer memberIdd);
+
+
+
+
+
+
+
 
 
 

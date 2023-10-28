@@ -17,4 +17,10 @@ public interface OrderBasicRepository extends JpaRepository<OrderBasic, Integer>
 
     boolean existsByIdAndBuyer_Id(Integer orderId, Integer memberId);
 
+    @Query("SELECT SUM(ob.totalamount) FROM OrderBasic ob WHERE FUNCTION('YEAR', ob.merchanttradedate) = :year AND ob.seller.id = :memberIdd")
+    Integer findTotalAmountByYearAndSeller(@Param("year") Integer year, @Param("memberIdd") Integer memberIdd);
+    @Query("SELECT SUM(ob.totalamount) FROM OrderBasic ob WHERE FUNCTION('YEAR', ob.merchanttradedate) = :year AND FUNCTION('MONTH', ob.merchanttradedate) = :month AND ob.seller.id = :memberIdd")
+    Integer findTotalAmountByYearAndMonthAndSeller(@Param("year") Integer year, @Param("month") Integer month, @Param("memberIdd") Integer memberIdd);
+
+
 }

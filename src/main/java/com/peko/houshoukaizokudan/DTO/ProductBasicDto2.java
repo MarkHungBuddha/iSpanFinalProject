@@ -13,17 +13,16 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductBasicDto {
+@Builder
+public class ProductBasicDto2 {
     private Integer ProductId;
     private String productName;
     private BigDecimal price;
     private BigDecimal specialPrice;
     private String description;
     private Integer quantity;
-    private String sellerUsername;
-    private String sellerFirstName;
-    private String sellerLastName;
     private String categoryName;
     private String parentCategoryName;
-    private Integer sellermemberid;
+//    private Integer sellermemberid;
+//    private String imagepath;
 }
