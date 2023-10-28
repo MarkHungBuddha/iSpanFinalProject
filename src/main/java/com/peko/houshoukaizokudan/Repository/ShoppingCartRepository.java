@@ -46,13 +46,13 @@ public interface ShoppingCartRepository extends JpaRepository<ShoppingCart, Inte
     @Query(value = "select quantity from ShoppingCart where memberid = ?1 and transactionid = ?2",nativeQuery = true)
 	ShoppingCart findByIdAndUser(Integer c, Integer transactionId);
     
-    
+    @Transactional
     @Modifying
-    @Query(value = "Update ShoppingCart set quantity = :quantity where transactionid = :transactionId 	",nativeQuery = true)
-	void update(@Param("quantity") Integer quantity,@Param("transactionId") Integer transactionId);
-     
+    @Query("UPDATE ShoppingCart s SET s.quantity = :newQuantity WHERE s.memberid.id = :memberId AND s.productid.id = :productId")
+    void updateQuantityByMemberIdAndProductId(Integer memberId, Integer productId, Integer newQuantity);
 
-
+    
+    
     
 }
 

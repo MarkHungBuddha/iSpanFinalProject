@@ -95,15 +95,22 @@ public class ShoppingCartService {
         return result;
     }
     @Transactional
-	public ShoppingCart changeQuantity(Integer c, Integer transactionId, Integer quantity) throws Exception {
-    	Integer sb = shoppingCartRepository.GetProductId(transactionId);
+	public ShoppingCart changeQuantity(Integer c, Integer transactionid, Integer quantity) throws Exception {
+    	Integer sb = shoppingCartRepository.GetProductId(transactionid);
     	Integer pb = pbRepo.findQuantityById(sb);
     	
     	if(quantity<pb) {			
-    	ShoppingCart sc = shoppingCartRepository.findByIdAndUser(c,transactionId);
-//		sc.setQuantity(quantity);
-		shoppingCartRepository.update(quantity,transactionId);
+    	ShoppingCart sc = shoppingCartRepository.findByIdAndUser(c,transactionid);
+ 
+		sc.setQuantity(quantity);
+
+//        shoppingCartRepository.save(sc); // 保存更新後的實體
+        
+        shoppingCartRepository.updateQuantityByMemberIdAndProductId(c,sb,quantity);
+
 		return sc;
+		
+	
 		}
     	throw new Exception("數量超過庫存上限");
 	}
