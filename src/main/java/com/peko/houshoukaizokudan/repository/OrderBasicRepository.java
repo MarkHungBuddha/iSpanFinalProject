@@ -15,6 +15,6 @@ public interface OrderBasicRepository extends JpaRepository<OrderBasic, Integer>
 
     List<OrderBasic> findOrderBasicBybuyer(Member buyer);
 
-
+    boolean existsByIdAndBuyer_Id(Integer orderId, Integer memberId);
 
 }
