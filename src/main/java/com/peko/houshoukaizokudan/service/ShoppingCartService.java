@@ -61,11 +61,11 @@ public class ShoppingCartService {
         shoppingCartRepository.deleteById(productId);
     }
 
-    // 清空購物車
-    public void clearCart() {
-        // 刪除購物車中的所有項目
-        shoppingCartRepository.deleteAll();
-    }
+//    // 清空購物車
+//    public void clearCart() {
+//        // 刪除購物車中的所有項目
+//        shoppingCartRepository.deleteAll();
+//    }
 
     @Transactional
     public void addProductToCart(Integer b,Integer a) {

@@ -15,7 +15,7 @@ public class ProductImageController {
     @Autowired
     private ProductImageService productImageService;
 
-    @GetMapping("/productImage/{productid}")
+    @GetMapping("/public/productImage/{productid}")
     public ResponseEntity<List<String>> productImage(@PathVariable Integer productid) {
 
 

@@ -26,8 +26,8 @@ public class QandAController {
 
 
 
-    //session抓memeberid 傳入productid 新增Q
-    @PostMapping("/product/qanda/add/{productid}")
+    //session抓memeberid 傳入productid 買家新增問題
+    @PostMapping("/customer/api/product/qanda/add/{productid}")
     public ResponseEntity<ProductQandADTO> addQandA(@PathVariable Integer productid, HttpSession session, @RequestBody String question) {
         try {
             Member loginUser = (Member) session.getAttribute("loginUser");
@@ -39,21 +39,24 @@ public class QandAController {
         }
     }
 
-    @GetMapping("/qanda/unanswered")
+
+    //賣家查看尚未回答問題
+    @GetMapping("/seller/api/qanda/unanswered")
     public ResponseEntity<List<ProductQandADTO>> getUnansweredQuestions(HttpSession session) {
         Member member = (Member) session.getAttribute("loginUser");
         List<ProductQandADTO> unanswered = qandAService.getUnansweredQuestions(member.getId());
         return ResponseEntity.ok(unanswered);
     }
 
-    @DeleteMapping("/qanda/delete/{qandaId}")
+//買家刪除問題
+    @DeleteMapping("/customer/api/qanda/delete/{qandaId}")
     public ResponseEntity<Void> deleteQuestion(@PathVariable Integer qandaId, HttpSession session) {
         Member member = (Member) session.getAttribute("loginUser");
         qandAService.deleteQuestion(qandaId, member.getId());
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/product/qanda/edit-question/{qandaId}")
+    @PutMapping("/customer/api/product/qanda/edit-question/{qandaId}")
     public ResponseEntity<ProductQandADTO> editQuestionByBuyer(@PathVariable Integer qandaId, HttpSession session, @RequestBody String question) {
         try {
             Member loginUser = (Member) session.getAttribute("loginUser");
@@ -64,8 +67,8 @@ public class QandAController {
             return ResponseEntity.badRequest().build();
         }
     }
-
-    @PutMapping("/product/qanda/answer/{qandaId}")
+//賣家回答問題
+    @PutMapping("/seller/api/product/qanda/answer/{qandaId}")
     public ResponseEntity<ProductQandADTO> answerQuestionBySeller(@PathVariable Integer qandaId, HttpSession session, @RequestBody String answer) {
         try {
             Member loginUser = (Member) session.getAttribute("loginUser");
@@ -79,7 +82,7 @@ public class QandAController {
 
 
 
-    @GetMapping("/product/qanda/{productid}")
+    @GetMapping("/public/api/product/{productid}/qanda")
     public ResponseEntity<List<ProductQandADTO>> findProductQandAsByProductid(@PathVariable Integer productid){
         try{
             List<ProductQandADTO> qandaList = qandAService.findProductQandAsByProductid(productid);

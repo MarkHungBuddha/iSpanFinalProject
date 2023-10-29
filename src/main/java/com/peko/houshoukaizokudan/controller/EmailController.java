@@ -18,7 +18,7 @@ public class EmailController {
     @Autowired
     private EmailService emailService;
 
-    @PostMapping("/sendEmail")
+    @PostMapping("/public/api/sendEmail")
     public String sendEmail(@RequestBody EmailRequest emailRequest) {
         String recipient = emailRequest.getRecipient();
 
@@ -30,7 +30,7 @@ public class EmailController {
 
         return "驗證碼已發送";
     }
-    @PostMapping("/verifyCode")
+    @PostMapping("/public/api/verifyCode")
     public String verifyCode(@RequestParam String userInputCode) {
         boolean isVerified = emailService.verifyVerificationCode(userInputCode);
 

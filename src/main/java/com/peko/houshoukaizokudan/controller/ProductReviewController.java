@@ -26,7 +26,7 @@ public class ProductReviewController {
 //              2.檢查這筆訂單是不是這個會員買的(orderid,memberid)
 //              3.檢查這筆訂單有沒有買這個商品(orderdetailid,productid)
 //              4.建立新的productreview
-    @PostMapping("/api/v1/reviews")
+    @PostMapping("/customer/api//reviews")
     public ResponseEntity<?> createProductReview(@RequestBody ProductReviewDTO productReviewDTO, HttpSession session) {
         Member loginUser = (Member) session.getAttribute("loginUser"); // 从session中获取登录用户
 
@@ -52,7 +52,7 @@ public class ProductReviewController {
 
 
     //    PUT /api/v1/reviews/:id：買家編輯商品評價(只能編輯一個月內的訂單的評論)
-    @PutMapping("/api/v1/reviews/{id}")
+    @PutMapping("/customer/api/reviews/{id}")
     public ResponseEntity<?> updateProductReview(@PathVariable Integer id, @RequestBody ProductReviewDTO productReviewDTO, HttpSession session) {
         Member loginUser = (Member) session.getAttribute("loginUser"); // 从session中获取登录用户
 
@@ -71,8 +71,8 @@ public class ProductReviewController {
         return ResponseEntity.ok().build();
     }
 
-
-    @GetMapping("/api/v1/reviews/recent/{page}")
+//賣家查看最近評論by page
+    @GetMapping("/seller/api/reviews/recent/{page}")
     public ResponseEntity<?> getRecentReviews(HttpSession session, @PathVariable Integer page) {
         Member loginUser = (Member) session.getAttribute("loginUser");
         Integer sellerId = loginUser.getId(); // 从session中获取登录用户的sellerId
@@ -80,13 +80,17 @@ public class ProductReviewController {
         return ResponseEntity.ok().body(recentReviews);
     }
 
-    @GetMapping("/api/v1/reviews/product/{productId}/average")
+
+    //    GET /public/api/reviews/product/{productId}/averag：查看商品平均評價
+    @GetMapping("/public/api/reviews/product/{productId}/average")
     public ResponseEntity<?> getProductAverageReview(@PathVariable Integer productId) {
         Map<String, Object> averageData = productReviewService.getProductAverageReview(productId);
         return ResponseEntity.ok().body(averageData);
     }
 
-    @GetMapping("/api/v1/reviews/seller/{sellerId}/monthly")
+
+    //    GET /api/v1/reviews/seller/:sellerId/monthly：賣家查看月度評論分析
+    @GetMapping("/seller/api/reviews/seller/{sellerId}/monthly")
     public ResponseEntity<?> getSellerMonthlyReview(@PathVariable Integer sellerId, HttpSession session) {
         Member loginUser = (Member) session.getAttribute("loginUser");
         if (loginUser == null || !loginUser.getId().equals(sellerId)) {
@@ -97,8 +101,8 @@ public class ProductReviewController {
     }
 
 
-    //product review by time
-    @GetMapping("/productreview/{productid}")
+    //product review by time 賣家查看最近訂單評論
+    @GetMapping("/seller/api/productreview/{productid}")
     public ResponseEntity<List<ProductReviewDTO>> findProductReviewByProductid(@PathVariable Integer productid) {
         try {
             List<ProductReviewDTO> productReviews = productReviewService.findProductReviewByProductid(productid);

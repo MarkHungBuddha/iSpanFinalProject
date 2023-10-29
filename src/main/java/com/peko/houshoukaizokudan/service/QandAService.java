@@ -84,7 +84,7 @@ public class QandAService {
     @Transactional
     public void deleteQuestion(Integer qandaId, Integer memberId) {
         QandA qanda = qandARepository.findById(qandaId).orElse(null);
-        if(qanda != null && qanda.getSellerMember().getId().equals(memberId)) {
+        if(qanda != null && qanda.getBuyerMember().getId().equals(memberId)) {
             qandARepository.deleteById(qandaId);
         } else {
             throw new RuntimeException("Unauthorized or Question not found");

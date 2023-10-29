@@ -42,7 +42,7 @@ public class ProductBasicController {
 
 
 	//跳頁
-	@GetMapping("/product/productFind")
+	@GetMapping("/public/api/productFind")
 	public String productFindPage() {
 		return "product/productFindPage";
 	}
@@ -61,7 +61,7 @@ public class ProductBasicController {
 	
 	//模糊搜尋 + 價格範圍
 	//未給頁碼 預設第一頁
-	@GetMapping("/api/products")
+	@GetMapping("/public/api/products")
 	public ResponseEntity<Page<ProductDto>> getProductsByPage(
 		@RequestParam(name = "productname", required = false) String productname,
 		@RequestParam(value = "minPrice", required = false, defaultValue = "0.0") Double minPrice,
@@ -83,7 +83,7 @@ public class ProductBasicController {
 	
 
 	//價格範圍搜尋 + 分類名稱(categoryname)搜尋
-	@GetMapping("/api/categoryname")
+	@GetMapping("/public/api/categoryname")
 	public ResponseEntity<Page<ProductCategoryDto>> getCategoryNameByPriceRange(
 	        @RequestParam(value = "categoryname", required = true) String categoryname, //categoryname(分類名稱)必填
 	        @RequestParam(value = "minPrice", required = false, defaultValue = "0.0") Double minPrice,

@@ -55,7 +55,7 @@ public class ProductController {
 
 
 	//分頁顯示上傳商品(搜尋)
-	@GetMapping("/back/products")
+	@GetMapping("/seller/api/products/search")
 	public ResponseEntity<Page<ProductDto>> getProductsByPage(
 			@RequestParam(name = "p", defaultValue = "1") Integer pageNumber,
 			@RequestParam(name = "productname", required = false) String productname, HttpServletRequest request) {
@@ -75,7 +75,7 @@ public class ProductController {
 
 
 	//新增商品跟圖片(編碼ORDERID)
-	@PostMapping("/back/add/{od}")
+	@PostMapping("/seller/api/product/{od}")
 	private ResponseEntity<Object> uploadPage(@RequestParam String productname, @RequestParam BigDecimal price,
 											  @RequestParam BigDecimal specialprice, @RequestParam Integer categoryid, @RequestParam Integer quantity,
 											  @RequestParam String description, HttpServletRequest request, @RequestPart("file") MultipartFile file,
@@ -118,7 +118,7 @@ public class ProductController {
 	}
 
 	// 顯示所有上傳
-	@GetMapping("/back/show")
+	@GetMapping("/seller/api/products")
 	public ResponseEntity<Page<ProductBasicDto>> showPage(
 			@RequestParam(name = "p", defaultValue = "1") Integer pageNumber, HttpSession session) {
 		Member loginUser = (Member) session.getAttribute("loginUser");
@@ -134,8 +134,10 @@ public class ProductController {
 	}
 
 	//更新商品圖片
-	@PutMapping("/back/editImg/{id}/{od}")
-	public ResponseEntity<Object> editImage(@RequestPart("file") MultipartFile file, @PathVariable("id") Integer id,
+	@PutMapping("/seller/api/product/{id}/{od}/editImg")
+
+	public ResponseEntity<Object> editImage(@RequestPart("file") MultipartFile file,
+											@PathVariable("id") Integer id,
 											@PathVariable("od") Integer od, HttpServletRequest request) throws IOException, java.io.IOException {
 		HttpSession session = request.getSession();
 		Member loginUser = (Member) session.getAttribute("loginUser");
@@ -149,7 +151,7 @@ public class ProductController {
 	}
 
 	//更新商品資料
-	@PutMapping("/back/edit/{id}")
+	@PutMapping("/seller/api/product/{od}")
 	public ResponseEntity<Object> editPage(@PathVariable("id") Integer id, @RequestPart("product") ProductBasic up,
 										   HttpServletRequest request) throws java.io.IOException {
 		HttpSession session = request.getSession();
@@ -172,7 +174,7 @@ public class ProductController {
 		}
 	}
 	//商品下架
-	@PutMapping("/back/editQ/{id}")
+	@PutMapping("/seller/api/{id}/remove")
 	public ResponseEntity<Object> editQuntity(@PathVariable("id") Integer id, HttpServletRequest request) {
 		HttpSession session = request.getSession();
 		Member loginUser = (Member) session.getAttribute("loginUser");
@@ -187,7 +189,7 @@ public class ProductController {
 	}
 
 	//刪除圖片
-	@DeleteMapping("/back/deleteEachImg/{id}/{od}")
+	@DeleteMapping("/seller/api/{id}/{od}/deleteEachImg")
 	public ResponseEntity<Object> deleteImg(@PathVariable("id")Integer id,@PathVariable("od")Integer od,HttpServletRequest request){
 		HttpSession session = request.getSession();
 		Member loginUser = (Member) session.getAttribute("loginUser");
@@ -199,7 +201,7 @@ public class ProductController {
 	}
 
 
-	@GetMapping("/back/showOne")
+	@GetMapping("/seller/api/product")
 	public ResponseEntity<ProductBasicDto2> showOne(
 			@RequestParam("id") Integer id ,HttpSession session) {
 		Member loginUser = (Member) session.getAttribute("loginUser");
@@ -221,7 +223,7 @@ public class ProductController {
 
 
 
-	@PostMapping("/csv")
+	@PostMapping("/seller/api/csv")
 	public ResponseEntity<String> uploadCSV(@RequestParam("file") MultipartFile file) {
 		try {
 			CSVParser csvParser = CSVParser.parse(file.getInputStream(), Charset.defaultCharset(), CSVFormat.DEFAULT);
@@ -261,7 +263,7 @@ public class ProductController {
 		}
 	}
 
-	@GetMapping("/product/{productId}")
+	@GetMapping("/public/product/{productId}")
 	public ResponseEntity<ProductBasicDto> viewProduct(@PathVariable Integer productId) {
 		ProductBasicDto productDTO = prdService.getProductDTOById(productId).orElse(null);
 

@@ -18,36 +18,36 @@ public class RevenueController {
 
 	@Autowired
 	private OrderBasicService obService;
-//
-//	@GetMapping
-//	public Integer findByYear(@RequestParam("year") Integer year, HttpServletRequest request) {
-//		HttpSession session = request.getSession();
-//		Member loginUser = (Member) session.getAttribute("loginUser");
-//		if (loginUser != null) {
-//			Integer memberIdd = loginUser.getId();
-//
-//			Integer ob = obService.findTotalByYear(memberIdd, year);
-//
-//			return ob;
-//		}
-//		return null;
-//
-//	}
-//
-//	@GetMapping
-//	public Integer findByMonth(@RequestParam("year") Integer year, @RequestParam("month") Integer month,
-//			HttpServletRequest request) {
-//		HttpSession session = request.getSession();
-//		Member loginUser = (Member) session.getAttribute("loginUser");
-//		if (loginUser != null) {
-//			Integer memberIdd = loginUser.getId();
-//
-//			Integer ob = obService.findTotalByMonth(year, memberIdd, month);
-//
-//			return ob;
-//		}
-//		return null;
-//
-//	}
+
+	@GetMapping("/year")
+	public Integer findByYear(@RequestParam("year") Integer year, HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		Member loginUser = (Member) session.getAttribute("loginUser");
+		if (loginUser != null) {
+			Integer memberIdd = loginUser.getId();
+
+			Integer ob = obService.findTotalByYear(memberIdd, year);
+
+			return ob;
+		}
+		return null;
+
+	}
+
+	@GetMapping("/month")
+	public Integer findByMonth(@RequestParam("year") Integer year, @RequestParam("month") Integer month,
+			HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		Member loginUser = (Member) session.getAttribute("loginUser");
+		if (loginUser != null) {
+			Integer memberIdd = loginUser.getId();
+
+			Integer ob = obService.findTotalByMonth(year, memberIdd, month);
+
+			return ob;
+		}
+		return null;
+
+	}
 
 }

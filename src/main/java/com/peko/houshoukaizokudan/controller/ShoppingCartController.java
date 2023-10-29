@@ -30,43 +30,43 @@ public class ShoppingCartController {
 
 
 
-    @PostMapping("/addProduct")
-    public void addProductToCart(@RequestBody ProductBasic product, HttpSession session) {
-        // 檢查Session中是否已經存在購物車
-        ShoppingCart cart = (ShoppingCart) session.getAttribute("cart");
-        if (cart == null) {
-            cart = new ShoppingCart();
-            session.setAttribute("cart", cart);
-        }
+//    @PostMapping("/customer/api/addProduct")
+//    public void addProductToCart(@RequestBody ProductBasic product, HttpSession session) {
+//        // 檢查Session中是否已經存在購物車
+//        ShoppingCart cart = (ShoppingCart) session.getAttribute("cart");
+//        if (cart == null) {
+//            cart = new ShoppingCart();
+//            session.setAttribute("cart", cart);
+//        }
+//
+//        // 將商品添加到購物車
+//        shoppingCartService.addProductToCart(product);
+//    }
+//    // 更新購物車
+//    @PutMapping("/update")
+//    public void updateCart(@RequestBody ShoppingCart cartItem) {
+//        shoppingCartService.updateCart(cartItem);
+//    }
+//
+//    // 移除商品
+//    @DeleteMapping("/removeProduct/{productId}")
+//    public void removeProductFromCart(@PathVariable Integer productId) {
+//        shoppingCartService.removeProductFromCart(productId);
+//    }
 
-        // 將商品添加到購物車
-        shoppingCartService.addProductToCart(product);
-    }
-    // 更新購物車
-    @PutMapping("/update")
-    public void updateCart(@RequestBody ShoppingCart cartItem) {
-        shoppingCartService.updateCart(cartItem);
-    }
+//    // 清空購物車
+//    @DeleteMapping("/clear")
+//    public void clearCart() {
+//        shoppingCartService.clearCart();
+//    }
 
-    // 移除商品
-    @DeleteMapping("/removeProduct/{productId}")
-    public void removeProductFromCart(@PathVariable Integer productId) {
-        shoppingCartService.removeProductFromCart(productId);
-    }
+//    @GetMapping("/products")
+//    public ResponseEntity<List<ProductBasic>> getAllProducts() {
+//        List<ProductBasic> products = productBasicService.listAllProducts();
+//        return ResponseEntity.ok(products);
+//    }
 
-    // 清空購物車
-    @DeleteMapping("/clear")
-    public void clearCart() {
-        shoppingCartService.clearCart();
-    }
-
-    @GetMapping("/products")
-    public ResponseEntity<List<ProductBasic>> getAllProducts() {
-        List<ProductBasic> products = productBasicService.listAllProducts();
-        return ResponseEntity.ok(products);
-    }
-
-    @GetMapping("/cart")
+    @GetMapping("/customer/api/cart")
     public List<ShoppingCartDto> getShoppingCart(HttpSession session) {
         Member loginUser = (Member) session.getAttribute("loginUser");
         if (loginUser != null) {
@@ -78,7 +78,7 @@ public class ShoppingCartController {
         }
     }
 
-    @PostMapping("/add")
+    @PostMapping("/customer/api/add")
     public ResponseEntity<String> addProductToCart(@RequestParam("productId") Integer productId, HttpSession session) {
         Member loginUser = (Member) session.getAttribute("loginUser");
         try {
@@ -102,7 +102,7 @@ public class ShoppingCartController {
         }
     }
 
-    @DeleteMapping("/remove")
+    @DeleteMapping("/customer/api/remove")
     public ResponseEntity<String> removeProductFromCart(@RequestParam("transactionId") Integer transactionId,
                                                         HttpSession session) {
         Member loginUser = (Member) session.getAttribute("loginUser");
@@ -114,7 +114,7 @@ public class ShoppingCartController {
         }
     }
 
-    @PutMapping("/change")
+    @PutMapping("/customer/api/change")
     public ResponseEntity<ShoppingCartDto> changeQuantity(
             @RequestParam("quantity") Integer quantity,
             @RequestParam("productid") Integer productid,

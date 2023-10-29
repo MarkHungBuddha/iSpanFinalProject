@@ -32,7 +32,7 @@ public class GoogleOAuth2NativeHttpController {
 	
 	private final String scope = "https://www.googleapis.com/auth/userinfo.email";
 	
-	@GetMapping("/google-login")
+	@GetMapping("/public/api/google-login")
 	public String googleLogin(HttpServletResponse response)   {
 		
 		// 直接 redirect 導向 Google OAuth2 API
@@ -46,7 +46,7 @@ public class GoogleOAuth2NativeHttpController {
 	}
 
 	// 這邊要 google 那邊設定 return uri http:xxxxxxxxxxx/google-callback
-    @GetMapping("/google-callback")
+    @GetMapping("/public/api/google-callback")
     public String oauth2Callback(@RequestParam(required = false) String code) throws IOException {
         if (code == null) {
             String authUri = "https://accounts.google.com/o/oauth2/v2/auth?response_type=code" +

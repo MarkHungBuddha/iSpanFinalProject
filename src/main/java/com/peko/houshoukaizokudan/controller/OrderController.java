@@ -37,33 +37,28 @@ public class OrderController {
 	@Autowired
 	private OrderDetailService orderDetailService;
 
-	// 跳頁
-	@GetMapping("/orders/orderBase")
-	public String orderShowPage() {
-		return "order/showOrders";
-	}
 
-	@PostMapping("/orders/orderBase")
-	public List<OrderBasicDto> orderShow(HttpSession session) {
-		Member loginUser = (Member) session.getAttribute("loginUser");
-
-		if (loginUser != null) {
-
-			List<OrderBasic> orders = orderService.findOrderBasicBymemberOrderid(loginUser);
-
-			List<OrderBasicDto> dtoOrderList = orderService.getOrder(orders);
-
-			return dtoOrderList;
-		} else {
-			return null;
-		}
-	}
+//	@PostMapping("/orders/orderBase")
+//	public List<OrderBasicDto> orderShow(HttpSession session) {
+//		Member loginUser = (Member) session.getAttribute("loginUser");
+//
+//		if (loginUser != null) {
+//
+//			List<OrderBasic> orders = orderService.findOrderBasicBymemberOrderid(loginUser);
+//
+//			List<OrderBasicDto> dtoOrderList = orderService.getOrder(orders);
+//
+//			return dtoOrderList;
+//		} else {
+//			return null;
+//		}
+//	}
 
 
 
 
 
-	@PostMapping("/api/order/checkout")
+	@PostMapping("/customer/api/order/checkout")
 	public ResponseEntity<checkoutOrderDto> checkout(@RequestBody List<ProductIDandQuentity> productItems, HttpSession session) {
 		Member loginUser = (Member) session.getAttribute("loginUser"); // assuming you stored user ID in session
 		if(loginUser == null) {
@@ -80,7 +75,7 @@ public class OrderController {
 	}
 
 	// 買家找訂單 (page) 不含商品內容
-	@GetMapping("/findorders")
+	@GetMapping("/customer/api/findorders")
 	public ResponseEntity<?> orderShow(@RequestParam(name = "p", defaultValue = "1") Integer pageNumber,
 									   HttpSession session) {
 
@@ -99,7 +94,7 @@ public class OrderController {
 	}
 
 	// 買家找訂單 (page) 有含商品內容
-	@GetMapping("/findAllOrders")
+	@GetMapping("/customer/api/findAllOrders")
 	public ResponseEntity<?> orderShowAll(@RequestParam(name = "p", defaultValue = "1") Integer pageNumber,
 										  HttpSession session) {
 
@@ -116,7 +111,7 @@ public class OrderController {
 	}
 
 	// 買家找訂單 by 訂單狀態 (page)
-	@GetMapping("/findorders/status")
+	@GetMapping("/customer/api/findorders/Status")
 	public ResponseEntity<?> orderShowByStatus(@RequestParam(name = "p", defaultValue = "1") Integer pageNumber,
 											   HttpSession session, @RequestParam Integer statusid) {
 
@@ -137,7 +132,7 @@ public class OrderController {
 	}
 
 	// 買家修改訂單地址
-	@PutMapping("/order/{id}")
+	@PutMapping("/customer/api/order/{id}")
 	public ResponseEntity<?> changeOrderAddres(@PathVariable Integer id, @RequestBody OrderBasic updateorderaddress,
 											   HttpSession session) {
 		Member loginUser = (Member) session.getAttribute("loginUser");
@@ -159,7 +154,7 @@ public class OrderController {
 	}
 
 	// 買家取消訂單 待付款or待出貨 > 取消
-	@PutMapping("/cancelOrder/{id}")
+	@PutMapping("/customer/api/{id}/cancelOrder")
 	public ResponseEntity<?> cancelOrder(@PathVariable Integer id, HttpSession session) {
 		Member loginUser = (Member) session.getAttribute("loginUser");
 		OrderBasic optional = orderService.getOrder(id);
@@ -180,7 +175,7 @@ public class OrderController {
 	}
 
 	// 買家訂單按付款按鈕 待付款(1) > 待出貨(2)
-	@PutMapping("/payOrder/{id}")
+	@PutMapping("/customer/api/{id}/payOrder")
 	public ResponseEntity<?> payOrder(@PathVariable Integer id, HttpSession session) {
 		Member loginUser = (Member) session.getAttribute("loginUser");
 		OrderBasic optional = orderService.getOrder(id);
@@ -200,7 +195,7 @@ public class OrderController {
 	}
 
 	// 買家訂單按付款按鈕 待收貨(3) > 已完成(4)
-	@PutMapping("/completeOrder/{id}")
+	@PutMapping("/customer/api/{id}/completeOrder")
 	public ResponseEntity<?> completeOrder(@PathVariable Integer id, HttpSession session) {
 		Member loginUser = (Member) session.getAttribute("loginUser");
 		OrderBasic optional = orderService.getOrder(id);
@@ -220,7 +215,7 @@ public class OrderController {
 	}
 
 	// 查詢訂單內容的商品
-	@GetMapping("/orders/orderDetail")
+	@GetMapping("/customer/api/orders/orderDetail")
 	public ResponseEntity<?> getOrderDetail(@RequestParam Integer orderid, HttpSession session) {
 
 		Member loginUser = (Member) session.getAttribute("loginUser");
@@ -237,7 +232,7 @@ public class OrderController {
 	}
 
 	// 賣家查訂單
-	@GetMapping("/findSellerOrders")
+	@GetMapping("/seller/api/findSellerOrders")
 	public ResponseEntity<?> sellerOrderShow(@RequestParam(name = "p", defaultValue = "1") Integer pageNumber,
 											 HttpSession session) {
 
@@ -256,7 +251,7 @@ public class OrderController {
 	}
 
 	// 賣家訂單按出貨按紐 待出貨(2) > 待收貨(3)
-	@PutMapping("/shipOrder/{id}")
+	@PutMapping("/seller/api/{id}/shipOrder")
 	public ResponseEntity<?> shipOrder(@PathVariable Integer id, HttpSession session) {
 		Member loginUser = (Member) session.getAttribute("loginUser");
 		OrderBasic optional = orderService.getOrder(id);
@@ -278,7 +273,7 @@ public class OrderController {
 
 
 	// 新增訂單
-	@PostMapping("/order/addOrder")
+	@PostMapping("/customer/api/order/addOrder")
 	public ResponseEntity<OrderBasicDto> placeOrder(HttpSession session, @RequestBody checkoutOrderDto orderDto,
 													@RequestParam String orderAddress) throws Exception {
 

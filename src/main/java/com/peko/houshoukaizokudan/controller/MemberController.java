@@ -27,7 +27,7 @@ public class MemberController {
 
 	
 	
-	@PostMapping("/member/post")
+	@PostMapping("/public/api/member/post")
 	public Map<String, String> postRegister(
 			@RequestParam("username") String username,
 			@RequestParam("passwdbcrypt") String password,
@@ -78,7 +78,7 @@ public class MemberController {
 		return response;
 	}
 	
-	@PostMapping("/member/memberLogin")
+	@PostMapping("/public/api/member/memberLogin")
 	public Map<String, String> checkUserLogin(
 			@RequestParam("username") String username, 
 			@RequestParam("passwdbcrypt") String password,
@@ -97,7 +97,7 @@ public class MemberController {
 		return response;
 	}
 	
-	@PostMapping("/member/logout")
+	@PostMapping("/customer/member/logout")
 	public Map<String, String> logout(HttpSession httpsession) {
 	    Map<String, String> response = new HashMap<>();
 	    
