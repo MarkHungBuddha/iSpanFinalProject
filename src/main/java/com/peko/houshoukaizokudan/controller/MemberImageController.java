@@ -24,7 +24,7 @@ public class MemberImageController {
     @Autowired
     private MemberService memberService; // 注入MemberService
 
-    @PostMapping("/public//upload")
+    @PostMapping("/public/api/upload")
     public ResponseEntity<String> uploadImage(@RequestPart("file") MultipartFile file, @RequestParam("username") String username) throws java.io.IOException {
         try {
             // 调用ProductImageService的uploadImage方法上传图片

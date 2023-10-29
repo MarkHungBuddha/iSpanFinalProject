@@ -25,7 +25,7 @@ public class WishlistController {
     private ProductBasicService ProductBasicService;
 
     // Add Product API
-    @PostMapping("/customer/api/addProduct/{productId}")
+    @PostMapping("/customer/api/wishlist/{productId}")
     public ResponseEntity<WishlistDTO> addProduct(HttpSession session, @PathVariable Integer productId) {
         try {
             Member member = (Member) session.getAttribute("loginUser");
@@ -41,7 +41,7 @@ public class WishlistController {
     }
 
     // Remove Product API
-    @DeleteMapping("/customer/api/removeProduct/{productId}")
+    @DeleteMapping("/customer/api/wishlist/{productId}")
     public ResponseEntity<WishlistDTO> removeProduct(HttpSession session, @PathVariable Integer productId) {
         Member member = (Member) session.getAttribute("loginUser");
         try {
@@ -54,7 +54,7 @@ public class WishlistController {
     }
 
     //使用者id找商品
-    @GetMapping("/customer/api/getWishList")
+    @GetMapping("/customer/api/wishlist")
     public ResponseEntity<List<WishlistDTO>> getWishList(HttpSession session) {
         Member member = (Member) session.getAttribute("loginUser");
 

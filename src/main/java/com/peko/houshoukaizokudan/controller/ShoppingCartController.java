@@ -66,7 +66,7 @@ public class ShoppingCartController {
 //        return ResponseEntity.ok(products);
 //    }
 
-    @GetMapping("/customer/api/cart")
+    @GetMapping("/customer/api/shoppingCart")
     public List<ShoppingCartDto> getShoppingCart(HttpSession session) {
         Member loginUser = (Member) session.getAttribute("loginUser");
         if (loginUser != null) {
@@ -78,7 +78,7 @@ public class ShoppingCartController {
         }
     }
 
-    @PostMapping("/customer/api/add")
+    @PostMapping("/customer/api/shoppingCart")
     public ResponseEntity<String> addProductToCart(@RequestParam("productId") Integer productId, HttpSession session) {
         Member loginUser = (Member) session.getAttribute("loginUser");
         try {
@@ -102,7 +102,7 @@ public class ShoppingCartController {
         }
     }
 
-    @DeleteMapping("/customer/api/remove")
+    @DeleteMapping("/customer/api/shoppingCart")
     public ResponseEntity<String> removeProductFromCart(@RequestParam("transactionId") Integer transactionId,
                                                         HttpSession session) {
         Member loginUser = (Member) session.getAttribute("loginUser");

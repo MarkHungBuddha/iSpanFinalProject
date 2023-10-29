@@ -32,7 +32,7 @@ public class MemberController {
 			@RequestParam("username") String username,
 			@RequestParam("passwdbcrypt") String password,
 			@RequestParam("membertypeid") MemberType membertypeid,
-			@RequestParam("memberimgpath") String memberimgpath,
+//			@RequestParam("memberimgpath") String memberimgpath,
 			@RequestParam("firstname") String firstname,
 			@RequestParam("lastname") String lastname,
 			@RequestParam("gender") String gender,
@@ -64,7 +64,7 @@ public class MemberController {
 			u1.setGender(gender);
 			u1.setLastname(lastname);
 			u1.setMembercreationdate(membercreationdate);
-			u1.setMemberimgpath(memberimgpath);
+			u1.setMemberimgpath("nnNjLVE");
 			u1.setMembertypeid(membertypeid);
 			u1.setPhone(phone);
 			u1.setPostalcode(postalcode);
