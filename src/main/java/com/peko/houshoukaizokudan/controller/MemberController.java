@@ -24,10 +24,7 @@ public class MemberController {
 	private ProductImageService imageUservice;
 	
 
-	    @GetMapping("/test")
-	    public String home() {
-	        return "Hello, World!";
-	        }
+
 	
 	
 	@PostMapping("/member/post")
