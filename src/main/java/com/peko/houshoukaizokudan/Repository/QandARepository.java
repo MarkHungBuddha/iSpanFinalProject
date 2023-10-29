@@ -11,7 +11,7 @@ public interface QandARepository extends JpaRepository<QandA, Integer> {
     List<QandA> findByProductid_Id(Integer productId);
     List<QandA> findBySellerMember_IdAndAnswerIsNull(Integer memberId);
 
-    void deleteByIdAndSellerMember_Id(Integer qandaId, Integer memberId);
-
-    List<QandA> findProductReviewsByProductid(Iterable productId);
+//    void deleteByIdAndSellerMember_Id(Integer qandaId, Integer memberId);
+//
+//    List<QandA> findProductReviewsByProductid(Iterable productId);
 }

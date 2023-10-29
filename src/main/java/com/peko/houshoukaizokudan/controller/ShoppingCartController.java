@@ -117,22 +117,21 @@ public class ShoppingCartController {
     @PutMapping("/change")
     public ResponseEntity<ShoppingCart> changeQuantity(
             @RequestParam("quantity") Integer quantity,
-            @RequestParam("transactionId") Integer transactionId,
+            @RequestParam("productid") Integer productid,
             HttpSession session)
             throws Exception {
         Member loginUser = (Member) session.getAttribute("loginUser");
 
-        System.out.println("transactionId:"+transactionId);
+        System.out.println("transactionId:"+productid);
         System.out.println("quantity"+quantity);
         if (loginUser != null) {
             if (quantity == 0) {
-
-                shoppingCartService.ClearCartItem(loginUser, transactionId);
+                shoppingCartService.ClearCartItembyProductId(loginUser, productid);
             }
-            int c = loginUser.getId();
-            System.out.println("loginUser.getId"+c);
+            int memberid = loginUser.getId();
+            System.out.println("loginUser.getId"+memberid);
 
-            ShoppingCart updatedCart = shoppingCartService.changeQuantity(c, transactionId,
+            ShoppingCart updatedCart = shoppingCartService.changeQuantity(memberid, productid,
                     quantity);
             return ResponseEntity.ok(updatedCart);
         }

@@ -114,6 +114,10 @@ public class ShoppingCartService {
         shoppingCartRepository.ClearCartItem(member.getId(),transactionid);
     }
 
+    public void ClearCartItembyProductId(Member member,Integer transactionid) {
+        shoppingCartRepository.ClearCartItembyProductId(member.getId(),transactionid);
+    }
+
 //    public Integer CheckQuantityByMember(Integer memberid,Integer productid) {
 //        Integer result = shoppingCartRepository.CheckQuantityByMember(memberid,productid);
 //        return result;
@@ -128,27 +132,22 @@ public class ShoppingCartService {
         Integer result = shoppingCartRepository.GetProductId(transactionid);
         return result;
     }
-    @Transactional
-    public ShoppingCart changeQuantity(Integer c, Integer transactionid, Integer quantity) throws Exception {
-        Integer sb = shoppingCartRepository.GetProductId(transactionid);
-        Integer pb = pbRepo.findQuantityById(sb);
 
-        if(quantity<pb) {
-            ShoppingCart sc = shoppingCartRepository.findByIdAndUser(c,transactionid);
+    //更改購物車數量
+    @Transactional
+    public ShoppingCart changeQuantity(Integer memberid, Integer productid, Integer quantity) throws Exception {
+        Integer productQuantity = pbRepo.findQuantityById(productid);  // Assuming this method retrieves the quantity based on productid
+
+        if(quantity < productQuantity) {
+            ShoppingCart sc = shoppingCartRepository.findByIdAndUser(memberid, productid);
 
             sc.setQuantity(quantity);
 
-//        shoppingCartRepository.save(sc); // 保存更新後的實體
-
-            shoppingCartRepository.updateQuantityByMemberIdAndProductId(c,sb,quantity);
+            shoppingCartRepository.saveProductFromShoppingCart(productid, memberid, quantity);
+            shoppingCartRepository.updateQuantityByMemberIdAndProductId(memberid, productid, quantity);
 
             return sc;
-
-
         }
         throw new Exception("數量超過庫存上限");
     }
-
-
-
 }
