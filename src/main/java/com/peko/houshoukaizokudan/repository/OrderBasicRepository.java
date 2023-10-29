@@ -2,14 +2,12 @@ package com.peko.houshoukaizokudan.Repository;
 
 import java.util.List;
 
-import com.peko.houshoukaizokudan.model.OrderDetail;
-import com.peko.houshoukaizokudan.model.ProductBasic;
+import com.peko.houshoukaizokudan.model.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.peko.houshoukaizokudan.model.Member;
-import com.peko.houshoukaizokudan.model.OrderBasic;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -18,9 +16,9 @@ public interface OrderBasicRepository extends JpaRepository<OrderBasic, Integer>
 
     boolean existsByIdAndBuyer_Id(Integer orderId, Integer memberId);
 
-    @Query("SELECT SUM(ob.totalamount) FROM OrderBasic ob WHERE FUNCTION('YEAR', ob.merchanttradedate) = :year AND ob.seller.id = :memberIdd")
+    @Query("SELECT SUM(ob.totalamount) FROM OrderBasic ob WHERE SUBSTRING(ob.merchanttradedate, 1, 4) = :year AND ob.seller.id = :memberIdd")
     Integer findTotalAmountByYearAndSeller(@Param("year") Integer year, @Param("memberIdd") Integer memberIdd);
-    @Query("SELECT SUM(ob.totalamount) FROM OrderBasic ob WHERE FUNCTION('YEAR', ob.merchanttradedate) = :year AND FUNCTION('MONTH', ob.merchanttradedate) = :month AND ob.seller.id = :memberIdd")
+    @Query("SELECT SUM(ob.totalamount) FROM OrderBasic ob WHERE SUBSTRING(ob.merchanttradedate, 1, 4) = :year AND SUBSTRING(ob.merchanttradedate, 6, 2) = :month AND ob.seller.id = :memberIdd")
     Integer findTotalAmountByYearAndMonthAndSeller(@Param("year") Integer year, @Param("month") Integer month, @Param("memberIdd") Integer memberIdd);
 
     //買家找訂單 By 購買人(List)
@@ -39,5 +37,13 @@ public interface OrderBasicRepository extends JpaRepository<OrderBasic, Integer>
 
     //買家找訂單 By 訂單ID
     OrderBasic findOrderBasicById(int orderid);
+    @Query(value = "select * from ShoppingCart where memberid = ?1 and productid = ?2",nativeQuery = true)
+    ShoppingCart findByIdAndUser(Integer c, Integer productid);
+
+    // 更新購物車商品數量
+    @Modifying
+    @Query(value ="UPDATE ShoppingCart SET quantity = ?3 WHERE productid = ?1 AND memberid = ?2", nativeQuery = true)
+    void saveProductFromShoppingCart(Integer productid, Integer memberid, int carQuantity);
+
 
 }

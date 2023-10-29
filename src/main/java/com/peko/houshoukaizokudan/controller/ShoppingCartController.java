@@ -115,7 +115,7 @@ public class ShoppingCartController {
     }
 
     @PutMapping("/change")
-    public ResponseEntity<ShoppingCart> changeQuantity(
+    public ResponseEntity<ShoppingCartDto> changeQuantity(
             @RequestParam("quantity") Integer quantity,
             @RequestParam("productid") Integer productid,
             HttpSession session)
@@ -131,7 +131,7 @@ public class ShoppingCartController {
             int memberid = loginUser.getId();
             System.out.println("loginUser.getId"+memberid);
 
-            ShoppingCart updatedCart = shoppingCartService.changeQuantity(memberid, productid,
+            ShoppingCartDto updatedCart = shoppingCartService.changeQuantity(memberid, productid,
                     quantity);
             return ResponseEntity.ok(updatedCart);
         }

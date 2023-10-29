@@ -135,19 +135,19 @@ public class ShoppingCartService {
 
     //更改購物車數量
     @Transactional
-    public ShoppingCart changeQuantity(Integer memberid, Integer productid, Integer quantity) throws Exception {
+    public ShoppingCartDto changeQuantity(Integer memberid, Integer productid, Integer quantity) throws Exception {
         Integer productQuantity = pbRepo.findQuantityById(productid);  // Assuming this method retrieves the quantity based on productid
 
-        if(quantity < productQuantity) {
-            ShoppingCart sc = shoppingCartRepository.findByIdAndUser(memberid, productid);
-
-            sc.setQuantity(quantity);
-
-            shoppingCartRepository.saveProductFromShoppingCart(productid, memberid, quantity);
-            shoppingCartRepository.updateQuantityByMemberIdAndProductId(memberid, productid, quantity);
-
-            return sc;
+        if(quantity > productQuantity) {
+            throw new Exception("數量超過庫存上限");
         }
-        throw new Exception("數量超過庫存上限");
+
+        shoppingCartRepository.saveProductFromShoppingCart(productid, memberid, quantity);
+
+        ShoppingCartDto sc = ShoppingCartDto.builder().memberid(memberid).quantity(quantity).ProductId(productid).build();
+//        shoppingCartRepository.updateQuantityByMemberIdAndProductId(memberid, productid, quantity);
+
+        return sc;
+
     }
 }
