@@ -19,7 +19,9 @@ public class RevenueController {
 	@Autowired
 	private OrderBasicService obService;
 
-	@GetMapping("/year")
+
+	//賣家顯示年營收
+	@GetMapping("/seller/api/revenue/year")
 	public Integer findByYear(@RequestParam("year") Integer year, HttpServletRequest request) {
 		HttpSession session = request.getSession();
 		Member loginUser = (Member) session.getAttribute("loginUser");
@@ -34,7 +36,8 @@ public class RevenueController {
 
 	}
 
-	@GetMapping("/month")
+	//賣家顯示月營收
+	@GetMapping("/seller/api/revenue/month")
 	public Integer findByMonth(@RequestParam("year") Integer year, @RequestParam("month") Integer month,
 			HttpServletRequest request) {
 		HttpSession session = request.getSession();

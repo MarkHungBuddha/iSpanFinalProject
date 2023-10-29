@@ -194,7 +194,7 @@ public class OrderController {
 			return new ResponseEntity<>("訂單狀態碼錯誤或者不是你的訂單", null, HttpStatus.BAD_REQUEST);
 	}
 
-	// 買家訂單按付款按鈕 待收貨(3) > 已完成(4)
+	// 買家完成訂單 待收貨(3) > 已完成(4)
 	@PutMapping("/customer/api/{id}/completeOrder")
 	public ResponseEntity<?> completeOrder(@PathVariable Integer id, HttpSession session) {
 		Member loginUser = (Member) session.getAttribute("loginUser");

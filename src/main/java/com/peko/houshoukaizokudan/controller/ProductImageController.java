@@ -15,6 +15,7 @@ public class ProductImageController {
     @Autowired
     private ProductImageService productImageService;
 
+    //公開顯示商品圖片
     @GetMapping("/public/productImage/{productid}")
     public ResponseEntity<List<String>> productImage(@PathVariable Integer productid) {
 

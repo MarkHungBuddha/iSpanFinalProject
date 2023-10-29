@@ -66,6 +66,7 @@ public class ShoppingCartController {
 //        return ResponseEntity.ok(products);
 //    }
 
+    //買家查看購物車
     @GetMapping("/customer/api/shoppingCart")
     public List<ShoppingCartDto> getShoppingCart(HttpSession session) {
         Member loginUser = (Member) session.getAttribute("loginUser");
@@ -78,6 +79,8 @@ public class ShoppingCartController {
         }
     }
 
+
+    //買家新增商品到購物車
     @PostMapping("/customer/api/shoppingCart")
     public ResponseEntity<String> addProductToCart(@RequestParam("productId") Integer productId, HttpSession session) {
         Member loginUser = (Member) session.getAttribute("loginUser");
@@ -102,6 +105,7 @@ public class ShoppingCartController {
         }
     }
 
+    //買家移除商品
     @DeleteMapping("/customer/api/shoppingCart")
     public ResponseEntity<String> removeProductFromCart(@RequestParam("transactionId") Integer transactionId,
                                                         HttpSession session) {
@@ -114,6 +118,8 @@ public class ShoppingCartController {
         }
     }
 
+
+    //買家更改商品數量
     @PutMapping("/customer/api/change")
     public ResponseEntity<ShoppingCartDto> changeQuantity(
             @RequestParam("quantity") Integer quantity,

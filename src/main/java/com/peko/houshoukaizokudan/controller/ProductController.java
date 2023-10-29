@@ -200,7 +200,7 @@ public class ProductController {
 		return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 	}
 
-
+//賣家顯示一個商品資料
 	@GetMapping("/seller/api/product")
 	public ResponseEntity<ProductBasicDto2> showOne(
 			@RequestParam("id") Integer id ,HttpSession session) {
@@ -222,7 +222,7 @@ public class ProductController {
 
 
 
-
+//賣家csv上傳商品(尚未測試)
 	@PostMapping("/seller/api/csv")
 	public ResponseEntity<String> uploadCSV(@RequestParam("file") MultipartFile file) {
 		try {
@@ -263,6 +263,7 @@ public class ProductController {
 		}
 	}
 
+	//顯示商品資料
 	@GetMapping("/public/product/{productId}")
 	public ResponseEntity<ProductBasicDto> viewProduct(@PathVariable Integer productId) {
 		ProductBasicDto productDTO = prdService.getProductDTOById(productId).orElse(null);

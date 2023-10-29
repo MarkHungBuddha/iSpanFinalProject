@@ -56,6 +56,7 @@ public class QandAController {
         return ResponseEntity.ok().build();
     }
 
+    //買家編輯問題
     @PutMapping("/customer/api/product/qanda/edit-question/{qandaId}")
     public ResponseEntity<ProductQandADTO> editQuestionByBuyer(@PathVariable Integer qandaId, HttpSession session, @RequestBody String question) {
         try {
@@ -81,7 +82,7 @@ public class QandAController {
     }
 
 
-
+//顯示商品所有問答
     @GetMapping("/public/api/product/{productid}/qanda")
     public ResponseEntity<List<ProductQandADTO>> findProductQandAsByProductid(@PathVariable Integer productid){
         try{
