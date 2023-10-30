@@ -57,7 +57,7 @@ public class OrderController {
 
 
 
-
+	// 會員 購物車送出訂單
 	@PostMapping("/customer/api/order/checkout")
 	public ResponseEntity<checkoutOrderDto> checkout(@RequestBody List<ProductIDandQuentity> productItems, HttpSession session) {
 		Member loginUser = (Member) session.getAttribute("loginUser"); // assuming you stored user ID in session
