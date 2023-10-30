@@ -168,3 +168,18 @@ iSpan EEIT71 Team1-3c shopping website
 
 @GetMapping("/customer/api/wishlist")
   買家查看願望清單商品
+
+@GetMapping("/customer/api/member/types/{id}")
+查詢會員型別
+
+@PutMapping("/customer/api/member/{userId}/type/{typeId}")  
+修改會員型別
+
+@GetMapping("/customer/api/member/{id}")
+查詢會員資料
+
+@PutMapping("/customer/api/member/update/{id}")
+修改會員資料
+
+@GetMapping("/public/api/checkLoginStatus")
+查詢登入狀態
