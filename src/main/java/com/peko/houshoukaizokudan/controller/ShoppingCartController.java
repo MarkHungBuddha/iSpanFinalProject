@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/cart")
 public class ShoppingCartController {
 
     private final ShoppingCartService shoppingCartService;
