@@ -2,6 +2,7 @@ package com.peko.houshoukaizokudan.controller;
 
 import com.peko.houshoukaizokudan.model.MemberType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -110,4 +111,31 @@ public class MemberController {
 	    return response;
 	}
 	// 其他控制器方法和功能
+	 @GetMapping("/public/api/checkLoginStatus")
+	 public ResponseEntity<Map<String, Object>> checkLoginStatus(HttpSession session) {
+	  Map<String, Object> response = new HashMap<>();
+	  Member loggedInUser = (Member) session.getAttribute("loginUser");
+
+	  if (loggedInUser != null) {
+	   response.put("isLoggedIn", true);
+	   Integer typeId = loggedInUser.getMembertypeid().getId(); // 假設MemberType有一個getId方法來獲取ID
+
+	   switch (typeId) {
+	    case 1:
+	     response.put("role", "超級管理員");
+	     break;
+	    case 2:
+	     response.put("role", "賣家");
+	     break;
+	    case 3:
+	     response.put("role", "買家");
+	     break;
+	    default:
+	     response.put("role", "未知角色");
+	   }
+	  } else {
+	   response.put("isLoggedIn", false);
+	  }
+	  return ResponseEntity.ok(response);
+	 }
 }
