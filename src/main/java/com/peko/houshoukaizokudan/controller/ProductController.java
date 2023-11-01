@@ -65,8 +65,9 @@ public class ProductController {
 		if (loginUser != null) {
 			Integer memberIdd = loginUser.getId();
 			System.out.println("Member ID: " + memberIdd);
-			Pageable pageable = PageRequest.of(pageNumber - 1, 3); // 3 items per page
+			Pageable pageable = PageRequest.of(pageNumber - 1, 10); // 3 items per page
 			Page<ProductDto> page = prdService.getProductByPage2(pageable, productname, memberIdd);
+			
 			return new ResponseEntity<>(page, HttpStatus.OK);
 		} else {
 			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -125,7 +126,7 @@ public class ProductController {
 		if (loginUser != null) {
 			Integer memberIdd = loginUser.getId();
 			System.out.println("Member ID: " + memberIdd);
-			Pageable pageable = PageRequest.of(pageNumber - 1, 3); // 3 items per page
+			Pageable pageable = PageRequest.of(pageNumber - 1, 10); // 3 items per page
 			Page<ProductBasicDto> page = prdService.getAllProductByPage(pageable, memberIdd);
 			return new ResponseEntity<>(page, HttpStatus.OK);
 		} else {

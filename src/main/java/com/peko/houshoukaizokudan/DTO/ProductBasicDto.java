@@ -25,5 +25,6 @@ public class ProductBasicDto {
     private String sellerLastName;
     private String categoryName;
     private String parentCategoryName;
+    private String imagePath;
     private Integer sellermemberid;
 }

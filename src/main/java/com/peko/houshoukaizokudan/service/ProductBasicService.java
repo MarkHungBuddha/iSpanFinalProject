@@ -178,7 +178,7 @@ public class ProductBasicService {
             List<ProductDto> productDtos = pageByMemberId.getContent().stream()
                     .map(this::convertToProductDto)
                     .collect(Collectors.toList());
-
+            System.out.println(productDtos);
             return new PageImpl<>(productDtos, pageable, pageByMemberId.getTotalElements());
         }
 
@@ -269,6 +269,8 @@ public class ProductBasicService {
         productDto.setProductname(productBasic.getProductname());
         productDto.setPrice(productBasic.getPrice());
         productDto.setSpecialprice(productBasic.getSpecialprice());
+        String ip=productImageRepository.findImagepathByProductid(productBasic.getId());
+        productDto.setImagepath(ip);
         // 其他属性的转换
         return productDto;
     }
@@ -284,7 +286,8 @@ public class ProductBasicService {
         productBasicDto.setQuantity(productBasic.getQuantity());
         productBasicDto.setCategoryName(productBasic.getCategoryid().getCategoryname());
         productBasicDto.setParentCategoryName(productBasic.getParentid().getParentname());
-
+        String imagepath = productImageRepository.findImagepathByProductid(productBasic.getId());
+        productBasicDto.setImagePath(imagepath);
         return productBasicDto;
     }
     public ProductBasicDto2 convertToProductBasicDto2(ProductBasic productBasic) {
