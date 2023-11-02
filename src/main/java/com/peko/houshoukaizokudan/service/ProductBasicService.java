@@ -170,13 +170,13 @@ public class ProductBasicService {
 
     // 頁碼 //1頁2筆
     @Transactional
-    public Page<ProductDto> getProductByPage2(Pageable pageable, String productname, Integer memberIdd) {
+    public Page<ProductBasicDto> getProductByPage2(Pageable pageable, String productname, Integer memberIdd) {
         if (memberIdd != null) {
             // 单次筛选：根据会员ID筛选并根据产品名称模糊搜索
             Page<ProductBasic> pageByMemberId = productBasicRepository.findProductBasicBySellermemberidAndProductnameContaining(memberIdd, productname, pageable);
 
-            List<ProductDto> productDtos = pageByMemberId.getContent().stream()
-                    .map(this::convertToProductDto)
+            List<ProductBasicDto> productDtos = pageByMemberId.getContent().stream()
+                    .map(this::convertToProductBasicDto)
                     .collect(Collectors.toList());
             System.out.println(productDtos);
             return new PageImpl<>(productDtos, pageable, pageByMemberId.getTotalElements());
@@ -196,11 +196,11 @@ public class ProductBasicService {
         Page<ProductBasic> productBasics = productBasicRepository.findProductBasicByProductNameAndPriceRange(productname, minPrice, maxPrice, pageable);
         List<ProductDto> result = productBasics.getContent().stream().map(pro -> {
             ProductDto dto = new ProductDto();
-            dto.setProductid(pro.getId());
-            dto.setProductname(pro.getProductname());
+            dto.setProductId(pro.getId());
+            dto.setProductName(pro.getProductname());
             dto.setPrice(pro.getPrice());
-            dto.setSpecialprice(pro.getSpecialprice());
-            dto.setCategoryname(pro.getCategoryid().getCategoryname());
+            dto.setSpecialPrice(pro.getSpecialprice());
+            dto.setCategoryName(pro.getCategoryid().getCategoryname());
             dto.setQuantity(pro.getQuantity());
             dto.setDescription(pro.getDescription());
             // 使用 ProductImageRepository 查詢圖像路徑
@@ -265,10 +265,10 @@ public class ProductBasicService {
     public ProductDto convertToProductDto(ProductBasic productBasic) {
         ProductDto productDto = new ProductDto();
         // 执行转换逻辑，将 productBasic 的属性赋值给 productDto
-        productDto.setProductid(productBasic.getId());
-        productDto.setProductname(productBasic.getProductname());
+        productDto.setProductId(productBasic.getId());
+        productDto.setProductName(productBasic.getProductname());
         productDto.setPrice(productBasic.getPrice());
-        productDto.setSpecialprice(productBasic.getSpecialprice());
+        productDto.setSpecialPrice(productBasic.getSpecialprice());
         String ip=productImageRepository.findImagepathByProductid(productBasic.getId());
         productDto.setImagepath(ip);
         // 其他属性的转换

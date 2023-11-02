@@ -15,6 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -56,7 +57,7 @@ public class ProductController {
 
 	//分頁顯示上傳商品(搜尋)
 	@GetMapping("/seller/api/products/search")
-	public ResponseEntity<Page<ProductDto>> getProductsByPage(
+	public ResponseEntity<Page<ProductBasicDto>> getProductsByPage(
 			@RequestParam(name = "p", defaultValue = "1") Integer pageNumber,
 			@RequestParam(name = "productname", required = false) String productname, HttpServletRequest request) {
 		HttpSession session = request.getSession();
@@ -66,7 +67,7 @@ public class ProductController {
 			Integer memberIdd = loginUser.getId();
 			System.out.println("Member ID: " + memberIdd);
 			Pageable pageable = PageRequest.of(pageNumber - 1, 10); // 3 items per page
-			Page<ProductDto> page = prdService.getProductByPage2(pageable, productname, memberIdd);
+			Page<ProductBasicDto> page = prdService.getProductByPage2(pageable, productname, memberIdd);
 			
 			return new ResponseEntity<>(page, HttpStatus.OK);
 		} else {
@@ -76,11 +77,12 @@ public class ProductController {
 
 
 	//新增商品跟圖片(編碼ORDERID)
-	@PostMapping("/seller/api/product/{od}")
+	@PostMapping("/seller/api/product")
+	@Transactional
 	private ResponseEntity<Object> uploadPage(@RequestParam String productname, @RequestParam BigDecimal price,
 											  @RequestParam BigDecimal specialprice, @RequestParam Integer categoryid, @RequestParam Integer quantity,
-											  @RequestParam String description, HttpServletRequest request, @RequestPart("file") MultipartFile file,
-											  @PathVariable("od") Integer od) throws java.io.IOException {
+											  @RequestParam String description, HttpServletRequest request
+											  ) throws java.io.IOException {
 		// 获取 HttpSession 对象
 		HttpSession session = request.getSession();
 
@@ -105,13 +107,13 @@ public class ProductController {
 			System.out.println("ID:" + id);
 
 			// 圖片s
-			String imageUrl = null;
-			try {
-				imageUrl = piService.uploadImage(file, id, od);
-			} catch (IOException e) {
-				e.printStackTrace();
-				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-			}
+//			String imageUrl = null;
+//			try {
+//				imageUrl = piService.uploadImage(file, id, od);
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+//			}
 			return ResponseEntity.ok().build();
 		} else {
 			return ResponseEntity.notFound().build();
@@ -152,7 +154,7 @@ public class ProductController {
 	}
 
 	//更新商品資料
-	@PutMapping("/seller/api/product/{od}")
+	@PutMapping("/seller/api/product/{id}")
 	public ResponseEntity<Object> editPage(@PathVariable("id") Integer id, @RequestPart("product") ProductBasic up,
 										   HttpServletRequest request) throws java.io.IOException {
 		HttpSession session = request.getSession();

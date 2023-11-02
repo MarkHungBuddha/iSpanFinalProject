@@ -20,13 +20,13 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ProductDto {
 
-	private Integer productid;
+	private Integer productId;
 	private Integer sellermemberid;
-	private String productname;
+	private String productName;
 	private BigDecimal price;
-	private BigDecimal specialprice;
-	private Integer categoryid;
-	private String categoryname;
+	private BigDecimal specialPrice;
+	private Integer categoryId;
+	private String categoryName;
 	private Integer quantity;
 	private String description;
 	private String imagepath; // ProductImage 資料表的imagepath 欄位

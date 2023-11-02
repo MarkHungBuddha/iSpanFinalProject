@@ -14,7 +14,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductBasicDto {
-    private Integer ProductId;
+    private Integer productId;
     private String productName;
     private BigDecimal price;
     private BigDecimal specialPrice;
