@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.peko.houshoukaizokudan.DTO.MemberDTO;
 import com.peko.houshoukaizokudan.model.Member;
 import com.peko.houshoukaizokudan.service.MemberService;
 import com.peko.houshoukaizokudan.service.ProductImageService;
@@ -23,8 +24,6 @@ public class MemberController {
 	private MemberService userUservice;
 	@Autowired
 	private ProductImageService imageUservice;
-	
-
 
 	
 	
@@ -58,19 +57,18 @@ public class MemberController {
 			u1.setPasswdbcrypt(password);
 			u1.setBirthdate(birthdate);
 			u1.setMembertypeid(membertypeid);
-			u1.setCity(city);
-			u1.setCountry(country);
 			u1.setEmail(email);
 			u1.setFirstname(firstname);
-			u1.setGender(gender);
 			u1.setLastname(lastname);
-			u1.setMembercreationdate(membercreationdate);
-			u1.setMemberimgpath("nnNjLVE");
-			u1.setMembertypeid(membertypeid);
-			u1.setPhone(phone);
+			u1.setGender(gender);
+			u1.setCountry(country);
 			u1.setPostalcode(postalcode);
+			u1.setCity(city);
 			u1.setRegion(region);
 			u1.setStreet(street);
+			u1.setPhone(phone);
+			u1.setMemberimgpath("nnNjLVE");
+			u1.setMembercreationdate(membercreationdate);
 			
 			userUservice.addUser(u1);
 			response.put("okMsg", "註冊成功");
@@ -110,11 +108,39 @@ public class MemberController {
 	    
 	    return response;
 	}
-	   @GetMapping("/public/api/member/{id}")
-	    public Member getUserProfile(@PathVariable Integer id) {
-	        Member user = userUservice.findById(id);
-	        return user;
+	@GetMapping("/public/api/member/{id}")
+	public MemberDTO getUserProfile(@PathVariable Integer id) {
+	    Member user = userUservice.findById(id);
+	    
+	    if (user != null) {
+	        MemberDTO userDTO = new MemberDTO();
+	        userDTO.setId(user.getId());
+	        userDTO.setMemberimgpath(user.getMemberimgpath());
+	        userDTO.setUsername(user.getUsername());
+	        userDTO.setFirstname(user.getFirstname());
+	        userDTO.setLastname(user.getLastname());
+	        userDTO.setGender(user.getGender());
+	        userDTO.setBirthdate(user.getBirthdate());
+	        userDTO.setPhone(user.getPhone());
+	        userDTO.setEmail(user.getEmail());
+	        userDTO.setMembercreationdate(user.getMembercreationdate());
+	        userDTO.setCountry(user.getCountry());
+	        userDTO.setCity(user.getCity());
+	        userDTO.setRegion(user.getRegion());
+	        userDTO.setStreet(user.getStreet());
+	        userDTO.setPostalcode(user.getPostalcode());
+	        
+	        // 设置 membertypeid 和相关字段
+	        userDTO.setMembertypeid(user.getMembertypeid().getId());
+	        userDTO.setMembertypename(user.getMembertypeid().getMembertypename());
+	        userDTO.setMemberTypeDescription(user.getMembertypeid().getMemberTypeDescription());
+	        
+	        return userDTO;
+	    } else {
+	        // 处理找不到用户的情况，可以返回 null 或其他适当的响应
+	        return null;
 	    }
+	}
 	   @PutMapping("/public/api/member/update/{id}")
 	    public Map<String, String> updateUserProfile(
 	        @PathVariable Integer id,
@@ -144,30 +170,31 @@ public class MemberController {
 	    }
 	   @GetMapping("/public/api/checkLoginStatus")
 	   public ResponseEntity<Map<String, Object>> checkLoginStatus(HttpSession session) {
-	    Map<String, Object> response = new HashMap<>();
-	    Member loggedInUser = (Member) session.getAttribute("loginUser");
+	       Map<String, Object> response = new HashMap<>();
+	       Member loggedInUser = (Member) session.getAttribute("loginUser");
 
-	    if (loggedInUser != null) {
-	     response.put("isLoggedIn", true);
-	     Integer typeId = loggedInUser.getMembertypeid().getId(); // 假設MemberType有一個getId方法來獲取ID
+	       if (loggedInUser != null) {
+	           response.put("isLoggedIn", true);
+	           response.put("userId", loggedInUser.getId()); // 将用户的ID添加到响应
+	           Integer typeId = loggedInUser.getMembertypeid().getId(); // 假设MemberType有一个getId方法来获取ID
 
-	     switch (typeId) {
-	      case 1:
-	       response.put("role", "超級管理員");
-	       break;
-	      case 2:
-	       response.put("role", "賣家");
-	       break;
-	      case 3:
-	       response.put("role", "買家");
-	       break;
-	      default:
-	       response.put("role", "未知角色");
-	     }
-	    } else {
-	     response.put("isLoggedIn", false);
-	    }
-	    return ResponseEntity.ok(response);
+	           switch (typeId) {
+	               case 1:
+	                   response.put("role", "超级管理员");
+	                   break;
+	               case 2:
+	                   response.put("role", "卖家");
+	                   break;
+	               case 3:
+	                   response.put("role", "买家");
+	                   break;
+	               default:
+	                   response.put("role", "未知角色");
+	           }
+	       } else {
+	           response.put("isLoggedIn", false);
+	       }
+	       return ResponseEntity.ok(response);
 	   }
 	// 其他控制器方法和功能
 }
