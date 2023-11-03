@@ -14,7 +14,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
+
 @Entity
 @Table(name = "CouponTicket", schema = "dbo")
 public class CouponTicket {
@@ -43,6 +43,7 @@ public class CouponTicket {
     private Integer discountAmount;
 
     @OneToMany(mappedBy = "couponid")
+    @ToString.Exclude
     private Set<UserCoupon> userCoupon;
 
 }

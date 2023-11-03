@@ -12,6 +12,8 @@ import com.peko.houshoukaizokudan.DTO.MemberDTO;
 import com.peko.houshoukaizokudan.model.Member;
 import com.peko.houshoukaizokudan.service.MemberService;
 import com.peko.houshoukaizokudan.service.ProductImageService;
+import com.peko.houshoukaizokudan.model.MemberType;
+
 
 import jakarta.servlet.http.HttpSession;
 import java.util.Map;
@@ -29,52 +31,46 @@ public class MemberController {
 	
 	@PostMapping("/public/api/member/post")
 	public Map<String, String> postRegister(
-			@RequestParam("username") String username,
-			@RequestParam("passwdbcrypt") String password,
-			@RequestParam("membertypeid") MemberType membertypeid,
-//			@RequestParam("memberimgpath") String memberimgpath,
-			@RequestParam("firstname") String firstname,
-			@RequestParam("lastname") String lastname,
-			@RequestParam("gender") String gender,
-			@RequestParam("birthdate") String birthdate,
-			@RequestParam("phone") String phone,
-			@RequestParam("email") String email,
-			@RequestParam("membercreationdate") String membercreationdate,
-			@RequestParam("country") String country,
-			@RequestParam("city") String city,
-			@RequestParam("region") String region,
-			@RequestParam("street") String street,
-			@RequestParam("postalcode") String postalcode,
-			Model model) {
-		Map<String, String> response = new HashMap<>();
-		boolean isExist = userUservice.checkIfUsernameExist(username);
-		
-		if(isExist) {
-			response.put("errorMsg", "此帳號已存在，請用別的");
-		} else {
-			Member u1 = new Member();
-			u1.setUsername(username);
-			u1.setPasswdbcrypt(password);
-			u1.setBirthdate(birthdate);
-			u1.setMembertypeid(membertypeid);
-			u1.setEmail(email);
-			u1.setFirstname(firstname);
-			u1.setLastname(lastname);
-			u1.setGender(gender);
-			u1.setCountry(country);
-			u1.setPostalcode(postalcode);
-			u1.setCity(city);
-			u1.setRegion(region);
-			u1.setStreet(street);
-			u1.setPhone(phone);
-			u1.setMemberimgpath("nnNjLVE");
-			u1.setMembercreationdate(membercreationdate);
-			
-			userUservice.addUser(u1);
-			response.put("okMsg", "註冊成功");
-		}
-		
-		return response;
+	        @RequestParam("username") String username,
+	        @RequestParam("passwdbcrypt") String password,
+	        @RequestParam(value = "firstname", required = false, defaultValue = "DefaultFirstName") String firstname,
+	        @RequestParam(value = "lastname", required = false, defaultValue = "DefaultLastName") String lastname,
+	        @RequestParam(value = "gender", required = false, defaultValue = "DefaultGender") String gender,
+	        @RequestParam(value = "birthdate", required = false, defaultValue = "DefaultBirthDate") String birthdate,
+	        @RequestParam(value = "phone", required = false, defaultValue = "DefaultPhone") String phone,
+	        @RequestParam("email") String email,
+	        Model model) {
+	    Map<String, String> response = new HashMap<>();
+	    boolean isExist = userUservice.checkIfUsernameExist(username);
+
+	    if (isExist) {
+	        response.put("errorMsg", "此帳號已存在，請用別的");
+	    } else {
+	        Member u1 = new Member();
+	        MemberType memberType = new MemberType();
+	        memberType.setId(3);
+	        u1.setUsername(username);
+	        u1.setPasswdbcrypt(password);
+	        u1.setBirthdate(birthdate);
+	        u1.setMembertypeid(memberType); // 默认为3
+	        u1.setEmail(email);
+	        u1.setFirstname(firstname);
+	        u1.setLastname(lastname);
+	        u1.setGender(gender);
+	        u1.setCountry("DefaultCountry"); // 设置默认值
+	        u1.setPostalcode("DefaultPostalCode"); // 设置默认值
+	        u1.setCity("DefaultCity"); // 设置默认值
+	        u1.setRegion("DefaultRegion"); // 设置默认值
+	        u1.setStreet("DefaultStreet"); // 设置默认值
+	        u1.setPhone(phone);
+	        u1.setMemberimgpath("nnNjLVE"); // 设置默认值
+	        u1.setMembercreationdate("DefaultCreationDate"); // 设置默认值
+
+	        userUservice.addUser(u1);
+	        response.put("okMsg", "註冊成功");
+	    }
+
+	    return response;
 	}
 	
 	@PostMapping("/public/api/member/memberLogin")

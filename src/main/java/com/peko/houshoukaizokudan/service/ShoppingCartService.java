@@ -81,26 +81,28 @@ public class ShoppingCartService {
 
     }
 
-    public List<ShoppingCartDto> GetCartItem(Integer memberid) {
-        List<Object[]> results = shoppingCartRepository.GetCartItem(memberid);
+    public List<ShoppingCartDto> getCartItemsByMemberId(Integer memberid) {
+        List<ShoppingCart> shoppingCarts = shoppingCartRepository.getCartItemsByMemberId(memberid);
 
         List<ShoppingCartDto> cartItems = new ArrayList<>();
-        for (Object[] result : results) {
+        for (ShoppingCart cart : shoppingCarts) {
             ShoppingCartDto cartItem = new ShoppingCartDto();
-            cartItem.setTransactionId((Integer) result[0]);
-            cartItem.setProductId((Integer) result[1]);
-            cartItem.setMemberid((Integer) result[2]);
-            cartItem.setProductname((String) result[3]);
-            cartItem.setQuantity((Integer) result[4]);
-            cartItem.setPrice((BigDecimal) result[5]);
-            String a = piRepo.findImagepathByProductid((Integer) result[1]);
-            cartItem.setImagepath(a);
+            cartItem.setTransactionId(cart.getId());
+            cartItem.setProductId(cart.getProductid().getId());
+            cartItem.setMemberid(cart.getMemberid().getId());
+            cartItem.setProductname(cart.getProductid().getProductname());
+            cartItem.setQuantity(cart.getQuantity());
+            cartItem.setPrice(cart.getProductid().getPrice());
+            cartItem.setSpecialprice(cart.getProductid().getSpecialprice());
+            // Note: You have to fetch 'specialprice' similarly from ProductBasic if it exists.
+            String imagePath = piRepo.findImagepathByProductid(cart.getProductid().getId());
+            cartItem.setImagepath(imagePath);
 
             cartItems.add(cartItem);
         }
-
         return cartItems;
     }
+
 
     public void PlusCartItem(Member member,Integer transactionid) {
         shoppingCartRepository.PlusCartItem(member.getId(),transactionid);
