@@ -420,11 +420,11 @@ public class ProductBasicService {
         productBasicRepository.save(qu);
     }
 
-    public Optional<ProductBasicDto2> findByIdAndSellerId(Integer id, Integer memberIdd) {
+    public Optional<ProductBasicDto> findByIdAndSellerId(Integer id, Integer memberIdd) {
         Optional<ProductBasic> productBasic = productBasicRepository.findByIdAndSellerId(id, memberIdd);
 
         if (productBasic.isPresent()) {
-            ProductBasicDto2 productBasicDto = convertToProductBasicDto2(productBasic.get());
+            ProductBasicDto productBasicDto = convertToProductBasicDto(productBasic.get());
             return Optional.of(productBasicDto);
         } else {
             return Optional.empty();

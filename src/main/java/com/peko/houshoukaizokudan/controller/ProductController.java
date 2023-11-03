@@ -75,7 +75,7 @@ public class ProductController {
 		}
 	}
 
-	// 新增商品跟圖片(編碼ORDERID)
+	// 新增商品
 	@PostMapping("/seller/api/product")
 	@Transactional
 	private ResponseEntity<Object> uploadPage(@RequestParam String productname, @RequestParam BigDecimal price,
@@ -134,27 +134,7 @@ public class ProductController {
 		}
 	}
 
-	@GetMapping("/seller/api/aproduct")
-	public ResponseEntity<Object> findAProduct(@RequestParam("id") Integer id, HttpServletRequest request){
-		HttpSession session = request.getSession();
-		Member loginUser = (Member) session.getAttribute("loginUser");
-		if (loginUser != null) {
-			ProductBasic ed = prdService.findById(id);
-			ProductImage pi = piService.findImgPathByPid(id);
-			ProductBasicDto dto = new ProductBasicDto();
-			dto.setProductId(ed.getId());
-			dto.setProductName(ed.getProductname());
-	        dto.setPrice(ed.getPrice());
-	        dto.setSpecialPrice(ed.getSpecialprice());
-	        dto.setDescription(ed.getDescription());
-	        dto.setQuantity(ed.getQuantity());
-	        dto.setCategoryName(ed.getCategoryid().getCategoryname());
-	        dto.setParentCategoryName(ed.getParentid().getParentname());
-	        dto.setImagePath(pi.getImagepath());
-	        return new ResponseEntity<>(dto, HttpStatus.OK);
-		}
-		return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-	}
+	
 
 	// 更新商品圖片
 	@PutMapping("/seller/api/product/{id}/{od}/editImg")
@@ -223,14 +203,14 @@ public class ProductController {
 		}
 		return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 	}
-
+//顯示單筆商品
 	@GetMapping("/seller/api/product")
-	public ResponseEntity<ProductBasicDto2> showOne(@RequestParam("id") Integer id, HttpSession session) {
+	public ResponseEntity<ProductBasicDto> showOne(@RequestParam("id") Integer id, HttpSession session) {
 		Member loginUser = (Member) session.getAttribute("loginUser");
 		if (loginUser != null) {
 			Integer memberIdd = loginUser.getId();
 			System.out.println("Member ID: " + memberIdd);
-			Optional<ProductBasicDto2> pb = prdService.findByIdAndSellerId(id, memberIdd);
+			Optional<ProductBasicDto> pb = prdService.findByIdAndSellerId(id, memberIdd);
 
 			if (pb.isPresent()) {
 				return new ResponseEntity<>(pb.get(), HttpStatus.OK);

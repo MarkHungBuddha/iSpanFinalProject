@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ProductImageRepository extends JpaRepository<ProductImage, Integer> {
 
@@ -37,4 +38,5 @@ public interface ProductImageRepository extends JpaRepository<ProductImage, Inte
     // 產品id 找 圖片7碼 (第一張)
     @Query(value = "SELECT TOP 1 imagepath FROM ProductImage  WHERE productid = ?1 ORDER BY orderID ASC", nativeQuery = true)
     String findProductImagebyproductid(Integer productid);
+
 }
