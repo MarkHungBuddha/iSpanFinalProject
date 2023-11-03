@@ -91,8 +91,11 @@ public class ProductBasicController {
 	        @RequestParam(value = "page", required = false, defaultValue = "1") Integer page) {
 			Pageable pageable = PageRequest.of(page -1, 5); //第一頁是0 所以-1 ，每頁 5 項
 			
+			System.out.println("minP" + minPrice);
+			
 	    try {
 	        Page<ProductCategoryDto> result = prdService.getCategoryNameByPriceRange(categoryname, minPrice, maxPrice, pageable);
+//	    	Page<ProductBasic> result = prdService.getCategoryNameByPriceRange(categoryname, minPrice, maxPrice, pageable);
 	        return new ResponseEntity<>(result, HttpStatus.OK);
 	    } catch (InvalidPriceRangeException e) {
 	        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

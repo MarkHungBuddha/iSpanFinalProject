@@ -22,6 +22,7 @@ public class ProductCategoryDto {
 	//以搜尋categoryname(分類名稱) 取得categoryid(類別ID)
 	
 	//ProductBasic 表
+	private Integer productid;
 	private Integer categoryid;
 	private String productname;
 	private BigDecimal price;
