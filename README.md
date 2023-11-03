@@ -186,3 +186,22 @@ iSpan EEIT71 Team1-3c shopping website
 
 @GetMapping("/customer/api/findOneOrder")
 買家找一筆訂單 (page) 有含商品內容
+
+@PostMapping("/public/api/member/upload")
+上傳會員大頭照
+
+@PostMapping("/public/api/member/post")
+更新只需輸入帳號密碼信箱
+
+ @DeleteMapping("/member/api/member/{id}")
+ 刪除會員
+ 
+@GetMapping("/public/api/currentUser")
+已登入會員可獲取ID(無實裝在前端)
+
+ @PostMapping("/public/api/request")
+ 忘記密碼信件寄出
+ key:email value:XXX@XXX.com
+
+@PostMapping("/public/api/reset")
+修改密碼 key: email resetToken newPassword
