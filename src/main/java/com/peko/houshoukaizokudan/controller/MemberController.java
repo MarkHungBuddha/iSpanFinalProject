@@ -141,33 +141,22 @@ public class MemberController {
 	        return null;
 	    }
 	}
-	   @PutMapping("/public/api/member/update/{id}")
-	    public Map<String, String> updateUserProfile(
-	        @PathVariable Integer id,
-	        @RequestBody Member updatedUser) {
-	        Map<String, String> response = new HashMap<>();
-	        try {
-	            Member existingUser = userUservice.findById(id);
-	            // 在这里更新用户详细信息
-	            existingUser.setUsername(updatedUser.getUsername());
-	            existingUser.setFirstname(updatedUser.getFirstname());
-	            existingUser.setLastname(updatedUser.getLastname());
-	            existingUser.setCity(updatedUser.getCity());
-	            existingUser.setCountry(updatedUser.getCountry());
-	            existingUser.setGender(updatedUser.getGender());
-	            existingUser.setPhone(updatedUser.getPhone());
-	            existingUser.setPostalcode(updatedUser.getPostalcode());
-	            existingUser.setRegion(updatedUser.getRegion());
-	            existingUser.setStreet(updatedUser.getStreet());
-	            // 根据需要设置其他字段
-
-	            userUservice.updateMember(existingUser);
+	@PutMapping("/public/api/member/update/{id}")
+	public Map<String, String> updateUserProfile(@PathVariable Integer id, @RequestBody MemberDTO updatedUser) {
+	    Map<String, String> response = new HashMap<>();
+	    try {
+	        updatedUser.setId(id);
+	        Member updatedMember = userUservice.updateMember(updatedUser);
+	        if (updatedMember != null) {
 	            response.put("success", "更新成功");
-	        } catch (Exception e) {
+	        } else {
 	            response.put("error", "更新失敗");
 	        }
-	        return response;
+	    } catch (Exception e) {
+	        response.put("error", "更新失敗");
 	    }
+	    return response;
+	}
 	   @GetMapping("/public/api/checkLoginStatus")
 	   public ResponseEntity<Map<String, Object>> checkLoginStatus(HttpSession session) {
 	       Map<String, Object> response = new HashMap<>();

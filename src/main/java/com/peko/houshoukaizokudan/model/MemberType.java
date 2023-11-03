@@ -32,5 +32,6 @@ public class MemberType {
 
     @OneToMany(mappedBy = "membertypeid")
     private Set<Member> member;
+    
 
 }

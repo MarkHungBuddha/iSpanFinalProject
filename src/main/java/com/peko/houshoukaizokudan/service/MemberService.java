@@ -1,6 +1,5 @@
 package com.peko.houshoukaizokudan.service;
 
-import io.jsonwebtoken.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
@@ -8,15 +7,18 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.peko.houshoukaizokudan.model.Member;
-import com.peko.houshoukaizokudan.Repository.MemberRepository;
-import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.util.LinkedMultiValueMap;
 
+import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.peko.houshoukaizokudan.Repository.MemberRepository;
+import com.peko.houshoukaizokudan.model.Member;
+import com.peko.houshoukaizokudan.DTO.MemberDTO;
 
 @Service
 public class MemberService {
@@ -24,20 +26,16 @@ public class MemberService {
     private final String IMGUR_UPLOAD_URL = "https://api.imgur.com/3/upload";
     private final String CLIENT_ID = "Bearer 9394e99b2cdc13a531746679fe2ded9638bfbd91";  // 替換為你的 Imgur Client ID
 
-
     @Autowired
     private PasswordEncoder pwdEncoder;
 
     @Autowired
     private MemberRepository usersRepo;
 
-    @Autowired
-    private EmailService emailService;
-
-    public Member addUser(Member users) {
-        String encodedPwd = pwdEncoder.encode(users.getPasswdbcrypt()); // 加密
-        users.setPasswdbcrypt(encodedPwd);
-        return usersRepo.save(users);
+    public Member addUser(Member user) {
+        String encodedPwd = pwdEncoder.encode(user.getPasswdbcrypt()); // 加密
+        user.setPasswdbcrypt(encodedPwd);
+        return usersRepo.save(user);
     }
 
     public boolean checkIfUsernameExist(String username) {
@@ -57,33 +55,40 @@ public class MemberService {
         return null;
     }
 
-    public void sendVerificationEmail(String email, String verificationCode) {
-        emailService.sendVerificationEmail(email, verificationCode);
-    }
-
     public Member findById(Integer id) {
         return usersRepo.findById(id)
             .orElseThrow(() -> new RuntimeException("找不到 ID 為 " + id + " 的會員"));
     }
-    public Member findByEmail(String email) {
-        Member member = usersRepo.findByEmail(email);
-        if (member == null) {
-            throw new RuntimeException("找不到 " + email + " 的會員");
-        }
-        return member;
+
+    public Member updateMember(MemberDTO memberDTO) {
+        Member existingMember = usersRepo.findById(memberDTO.getId())
+            .orElseThrow(() -> new RuntimeException("找不到 ID 為 " + memberDTO.getId() + " 的會員"));
+
+        // 在这里更新成员的详细信息
+        existingMember.setUsername(memberDTO.getUsername());
+        existingMember.setFirstname(memberDTO.getFirstname());
+        existingMember.setLastname(memberDTO.getLastname());
+        existingMember.setCity(memberDTO.getCity());
+        existingMember.setCountry(memberDTO.getCountry());
+        existingMember.setGender(memberDTO.getGender());
+        existingMember.setPhone(memberDTO.getPhone());
+        existingMember.setPostalcode(memberDTO.getPostalcode());
+        existingMember.setRegion(memberDTO.getRegion());
+        existingMember.setStreet(memberDTO.getStreet());
+        // 根据需要设置其他字段
+
+        return usersRepo.save(existingMember);
     }
-    public Member updateMember(Member member) {
-        return usersRepo.save(member);
-    }
+
     public void deleteMember(Integer memberId) {
         usersRepo.deleteById(memberId);
     }
+
     public Member findByUsername(String username) {
         return usersRepo.findByUsername(username);
     }
 
-
-    public String uploadImage(MultipartFile file) throws IOException, java.io.IOException {
+    public String uploadImage(MultipartFile file) throws IOException {
         RestTemplate restTemplate = new RestTemplate();
 
         // 检查文件是否存在
@@ -126,9 +131,7 @@ public class MemberService {
 
             System.out.println(extractedCode);
             // 保存 ProductImage 到数据库
-            System.out.println("Link:"+extractedCode);
-
-
+            System.out.println("Link:" + extractedCode);
 
             // 返回图片网址
             return imageUrl;
@@ -137,6 +140,24 @@ public class MemberService {
             throw new RuntimeException("文件上傳失敗");
         }
     }
-    
-    
+    public MemberDTO findDTOByEmail(String email) {
+        Member member = null; // 初始化为 null
+
+        try {
+            member = usersRepo.findByEmail(email);
+        } catch (Exception e) {
+            e.printStackTrace(); // 根据需要处理异常
+        }
+
+        if (member != null) {
+            MemberDTO memberDTO = new MemberDTO();
+            memberDTO.setId(member.getId());
+            memberDTO.setUsername(member.getUsername());
+            // 复制其他属性...
+            return memberDTO;
+        }
+
+        return null;
+    }
+
 }

@@ -33,6 +33,8 @@ public class MemberDTO {
 	    private Integer membertypeid;
 	    private String membertypename;
 	    private String memberTypeDescription;
+	    private String resetToken;
+
 	    // 其他字段
 
 	    // 构造函数、getter 和 setter 省略
