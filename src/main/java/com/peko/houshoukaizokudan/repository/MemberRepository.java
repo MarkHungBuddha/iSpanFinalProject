@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 public interface MemberRepository extends JpaRepository<Member, Integer>{
 
 	Member findByUsername(String username);
+	
+
 
 	@Query(value = "SELECT * FROM Member  WHERE memberid = ?1", nativeQuery = true)
 	Member findmemberBymemberid(Integer sellerId);

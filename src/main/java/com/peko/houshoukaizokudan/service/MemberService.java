@@ -42,6 +42,13 @@ public class MemberService {
         Member dbUser = usersRepo.findByUsername(username);
         return dbUser != null;
     }
+    
+    
+    
+    public boolean checkIfEmailExist(String email) {
+        Member dbUser = usersRepo.findByEmail(email);
+        return dbUser != null;
+    }
 
     public Member checkLogin(String username, String inputPwd) {
         Member dbUser = usersRepo.findByUsername(username);
@@ -75,6 +82,7 @@ public class MemberService {
         existingMember.setPostalcode(memberDTO.getPostalcode());
         existingMember.setRegion(memberDTO.getRegion());
         existingMember.setStreet(memberDTO.getStreet());
+        existingMember.setBirthdate(memberDTO.getBirthdate());
         // 根据需要设置其他字段
 
         return usersRepo.save(existingMember);

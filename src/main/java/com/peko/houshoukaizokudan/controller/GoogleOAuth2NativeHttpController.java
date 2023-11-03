@@ -3,6 +3,8 @@ package com.peko.houshoukaizokudan.controller;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,13 +41,11 @@ public class GoogleOAuth2NativeHttpController {
     }
 
     @GetMapping("/public/api/google-callback")
-    public String oauth2Callback(@RequestParam(required = false) String code) throws IOException {
+    public void oauth2Callback(@RequestParam(required = false) String code, HttpServletResponse httpResponse) throws IOException {
         if (code == null) {
-            String authUri = "https://accounts.google.com/o/oauth2/v2/auth?response_type=code" +
-                    "&client_id=" + googleOauth2Config.getClientId() +
-                    "&redirect_uri=" + googleOauth2Config.getRedirectUri() +
-                    "&scope=" + scope;
-            return "{\"authUri\": \"" + authUri + "\"}";
+            // 如果没有提供 code，重定向用户去登录或者做其他操作
+            httpResponse.sendError(HttpServletResponse.SC_BAD_REQUEST, "授权码缺失");
+            return;
         } else {
             OkHttpClient client = new OkHttpClient();
             RequestBody requestBody = new FormBody.Builder()
@@ -63,29 +63,41 @@ public class GoogleOAuth2NativeHttpController {
 
             try (Response response = client.newCall(request).execute()) {
                 String credentials = response.body().string();
-
                 JsonNode jsonNode = new ObjectMapper().readTree(credentials);
-                String accessToken = jsonNode.get("access_token").asText();
-                String idToken = jsonNode.get("id_token").asText();
 
-                Request request2 = new Request.Builder()
-                        .url("https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=" + accessToken)
-                        .addHeader("Bearer", idToken)
+                String accessToken = jsonNode.has("access_token") ? jsonNode.get("access_token").asText() : null;
+
+                if (accessToken == null) {
+                    httpResponse.sendError(HttpServletResponse.SC_BAD_REQUEST, "获取访问令牌失败");
+                    return;
+                }
+
+                Request requestUserInfo = new Request.Builder()
+                        .url("https://www.googleapis.com/oauth2/v3/userinfo")
+                        .addHeader("Authorization", "Bearer " + accessToken)
                         .get()
                         .build();
 
-                try (Response response2 = client.newCall(request2).execute()) {
-                    String payloadResponse = response2.body().string();
+                try (Response responseUserInfo = client.newCall(requestUserInfo).execute()) {
+                    String userInfoResponse = responseUserInfo.body().string();
+                    JsonNode userInfoJsonNode = new ObjectMapper().readTree(userInfoResponse);
 
-                    JsonNode payloadJsonNode = new ObjectMapper().readTree(payloadResponse);
-                    String payloadGoogleId = payloadJsonNode.get("id").asText();
-                    String payloadEmail = payloadJsonNode.get("email").asText();
-                    String payloadPicture = payloadJsonNode.get("picture").asText();
+                    // ...省略其他字段
 
-                    // 将用户数据返回为JSON
-                    return "{\"googleId\": \"" + payloadGoogleId + "\", \"email\": \"" + payloadEmail + "\", \"picture\": \"" + payloadPicture + "\"}";
+                    // 设置响应内容类型为HTML
+                    httpResponse.setContentType("text/html");
+
+                    // 发送JavaScript代码到客户端
+                    httpResponse.getWriter().write("<script>\n" +
+                            "window.opener.postMessage(" + userInfoResponse + ", '*');\n" +
+                            "window.close();\n" +
+                            "</script>");
                 }
+            } catch (IOException e) {
+                httpResponse.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "服务器错误: " + e.getMessage());
             }
         }
     }
+
+
 }
