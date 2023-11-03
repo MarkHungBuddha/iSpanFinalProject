@@ -287,6 +287,25 @@ public class OrderController {
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
 
 	}
+	
+	//20231103 新增 by昱霖	
+	// 找一筆訂單 (page) 有含商品內容
+	@GetMapping("/customer/api/findOneOrder")
+	public ResponseEntity<?> oneorderShow(@RequestParam Integer orderid,
+										  HttpSession session) {
+
+		Member loginUser = (Member) session.getAttribute("loginUser");
+		if (loginUser != null) {
+
+			OrderBasicDto order = orderService.getOneOrder(orderid,loginUser);
+
+			return new ResponseEntity<>(order, null, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>("使用者未授權", null, HttpStatus.UNAUTHORIZED);
+		}
+	}
+	
+	
 
 
 }

@@ -432,6 +432,23 @@ public class OrderBasicService {
 
     }
 
+    
+    //20231103 新增 by昱霖
+    //找訂單 by 訂單ID 
+    @Transactional
+	public OrderBasicDto getOneOrder(Integer orderid, Member loginUser) {
+    	Integer memberid = loginUser.getId();
+    	OrderBasic oneorder = orderRepo.findOrderBasicByIdandMemberid(orderid,memberid);
+    	
+    	if(oneorder==null) {
+    		return null;
+    	}else {
+    		OrderBasicDto order = updateOrderDto(oneorder);
+            return order;	
+    	}
+        
+	}
+
 }
 
 
