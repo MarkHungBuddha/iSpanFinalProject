@@ -183,3 +183,6 @@ iSpan EEIT71 Team1-3c shopping website
 
 @GetMapping("/public/api/checkLoginStatus")
 查詢登入狀態
+
+@GetMapping("/customer/api/findOneOrder")
+買家找一筆訂單 (page) 有含商品內容
