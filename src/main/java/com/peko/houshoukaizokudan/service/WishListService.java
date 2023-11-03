@@ -80,6 +80,8 @@ public class WishListService {
         List<Wishlist> wishlistList = wishListRepository.findByMemberid_Id(memberid);
         for(Wishlist wishlist:wishlistList){
             WishlistDTO wishlistDTO=new WishlistDTO();
+            wishlistDTO.setId(wishlist.getId());
+            wishlistDTO.setMemberid(wishlist.getMemberid().getId());
             wishlistDTO.setProductid(wishlist.getProductid().getId());
             wishlistDTO.setProductname(wishlist.getProductid().getProductname());
             wishlistDTO.setProductimage(productImageRepository.findImagepathByProductid(wishlist.getProductid().getId()));

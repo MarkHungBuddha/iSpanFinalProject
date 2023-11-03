@@ -71,7 +71,7 @@ public class ShoppingCartController {
         Member loginUser = (Member) session.getAttribute("loginUser");
         if (loginUser != null) {
             Integer memberId = loginUser.getId();
-            List<ShoppingCartDto> cartItems = shoppingCartService.GetCartItem(memberId);
+            List<ShoppingCartDto> cartItems = shoppingCartService.getCartItemsByMemberId(memberId);
             return cartItems;
         } else {
             return new ArrayList<>();

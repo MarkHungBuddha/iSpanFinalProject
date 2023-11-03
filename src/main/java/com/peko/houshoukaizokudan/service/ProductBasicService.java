@@ -160,7 +160,10 @@ public class ProductBasicService {
         productDTO.setQuantity(productBasic.getQuantity());
         productDTO.setCategoryName(productBasic.getCategoryid().getCategoryname());
         productDTO.setParentCategoryName(productBasic.getCategoryid().getParentid().getParentname());
-//		productDTO.setSellerUsername(productBasic.getSellermemberid().getUsername());
+		productDTO.setSellerUsername(productBasic.getSellermemberid().getUsername());
+        productDTO.setSellerLastName(productBasic.getSellermemberid().getLastname());
+        productDTO.setSellerFirstName(productBasic.getSellermemberid().getFirstname());
+        productDTO.setSellermemberid(productBasic.getSellermemberid().getId());
 //		productDTO.setImages(productBasic.getProductImage());
 //		productDTO.setReviews(productBasic.getProductReview());
 //		productDTO.setQandAs(productBasic.getQandA());

@@ -33,8 +33,10 @@ public interface ShoppingCartRepository extends JpaRepository<ShoppingCart, Inte
     void saveProductFromShoppingCart(Integer productid, Integer memberid, int carQuantity);
 
 
-    @Query(value = "select SC.transactionid,SC.productid,SC.memberid,PB.productname,SC.quantity,PB.price from ShoppingCart SC left join ProductBasic PB on SC.productid = PB.productid where SC.memberid = ?1",nativeQuery = true)
-    List<Object[]> GetCartItem(Integer memberid);
+    @Query(value = "select SC from ShoppingCart SC left join fetch SC.productid PB where SC.memberid.id = ?1")
+    List<ShoppingCart> getCartItemsByMemberId(Integer memberid);
+
+
 
     @Query(value = "select quantity from ShoppingCart where transactionid = ?1",nativeQuery = true)
     Integer CheckCartItem(Integer transactionid);

@@ -31,7 +31,6 @@ import com.peko.houshoukaizokudan.service.ProductBasicService;
 import com.peko.houshoukaizokudan.service.ProductCategoryService;
 
 @RestController
-@Controller
 public class ProductBasicController {
 
     @Autowired
