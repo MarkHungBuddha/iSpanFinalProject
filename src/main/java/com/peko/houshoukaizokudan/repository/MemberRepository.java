@@ -18,6 +18,5 @@ public interface MemberRepository extends JpaRepository<Member, Integer>{
 	Member findByEmail(String email);
 
 	
-	MemberDTO findDTOByEmail(String email);
 
 }

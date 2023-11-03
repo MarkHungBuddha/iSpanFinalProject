@@ -18,8 +18,11 @@ import java.util.regex.Pattern;
 
 import com.peko.houshoukaizokudan.Repository.MemberRepository;
 import com.peko.houshoukaizokudan.model.Member;
-import com.peko.houshoukaizokudan.DTO.MemberDTO;
 
+import jakarta.transaction.Transactional;
+
+import com.peko.houshoukaizokudan.DTO.MemberDTO;
+@Transactional
 @Service
 public class MemberService {
 
@@ -83,6 +86,8 @@ public class MemberService {
         existingMember.setRegion(memberDTO.getRegion());
         existingMember.setStreet(memberDTO.getStreet());
         existingMember.setBirthdate(memberDTO.getBirthdate());
+        existingMember.setResetToken(memberDTO.getResetToken());
+        existingMember.setPasswdbcrypt(memberDTO.getPasswdbcrypt());
         // 根据需要设置其他字段
 
         return usersRepo.save(existingMember);
@@ -149,23 +154,85 @@ public class MemberService {
         }
     }
     public MemberDTO findDTOByEmail(String email) {
-        Member member = null; // 初始化为 null
-
-        try {
-            member = usersRepo.findByEmail(email);
-        } catch (Exception e) {
-            e.printStackTrace(); // 根据需要处理异常
-        }
-
+        Member member = usersRepo.findByEmail(email);
+        System.out.println(email+"這邊");
         if (member != null) {
-            MemberDTO memberDTO = new MemberDTO();
-            memberDTO.setId(member.getId());
-            memberDTO.setUsername(member.getUsername());
-            // 复制其他属性...
-            return memberDTO;
+        	System.out.println(convertToDTO(member));
+            return convertToDTO(member);
         }
-
+        System.out.println("沒料");
         return null;
     }
+    private MemberDTO convertToDTO(Member member) {
+        if (member == null) {
+            return null;
+        }
+        MemberDTO userDTO = new MemberDTO();
+        userDTO.setId(member.getId());
+        userDTO.setMemberimgpath(member.getMemberimgpath());
+        userDTO.setUsername(member.getUsername());
+        userDTO.setFirstname(member.getFirstname());
+        userDTO.setLastname(member.getLastname());
+        userDTO.setGender(member.getGender());
+        userDTO.setBirthdate(member.getBirthdate());
+        userDTO.setPhone(member.getPhone());
+        userDTO.setEmail(member.getEmail());
+        userDTO.setMembercreationdate(member.getMembercreationdate());
+        userDTO.setCountry(member.getCountry());
+        userDTO.setCity(member.getCity());
+        userDTO.setRegion(member.getRegion());
+        userDTO.setStreet(member.getStreet());
+        userDTO.setPostalcode(member.getPostalcode());
+        userDTO.setMembertypeid(member.getMembertypeid().getId());
+        userDTO.setMembertypename(member.getMembertypeid().getMembertypename());
+        userDTO.setMemberTypeDescription(member.getMembertypeid().getMemberTypeDescription());
+        userDTO.setPasswdbcrypt(member.getPasswdbcrypt());
+        userDTO.setResetToken(member.getResetToken());
+        return userDTO;
+    }
+    public String uploadImage(MultipartFile file, Integer memberId) throws IOException {
+        if (file.isEmpty()) {
+            throw new IllegalArgumentException("Please upload a file.");
+        }
 
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Client-ID " + CLIENT_ID);
+
+        byte[] fileContent = file.getBytes();
+
+        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        body.add("image", new ByteArrayResource(fileContent) {
+            @Override
+            public String getFilename() {
+                return file.getOriginalFilename();  // Or you might want to generate a new filename
+            }
+        });
+
+        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+
+        ResponseEntity<String> response = restTemplate.postForEntity(IMGUR_UPLOAD_URL, requestEntity, String.class);
+
+        String imageUrl = extractImageUrl(response.getBody());
+
+        Member member = usersRepo.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("Member not found with id: " + memberId));
+
+        member.setMemberimgpath(imageUrl);  // Assume 'member' has a field 'memberimgpath' to store the image URL
+        usersRepo.save(member);
+
+        return imageUrl;
+    }
+
+    private String extractImageUrl(String responseBody) {
+        String pattern = "https://i.imgur.com/(\\w+).(jpg|png|gif)";  // Adjust regex according to the expected URL format
+        Pattern r = Pattern.compile(pattern);
+        Matcher m = r.matcher(responseBody);
+
+        if (m.find()) {
+            return m.group(0);
+        } else {
+            throw new RuntimeException("Failed to extract image URL from response.");
+        }
+    }
 }
