@@ -14,8 +14,6 @@ import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 
 
-
-
 import java.util.List;
 
 @RestController
@@ -25,10 +23,9 @@ public class QandAController {
     private QandAService qandAService;
 
 
-
     //session抓memeberid 傳入productid 買家新增問題
     @PostMapping("/customer/api/product/qanda/add/{productid}")
-    public ResponseEntity<ProductQandADTO> addQandA(@PathVariable Integer productid, HttpSession session, @RequestBody String question) {
+    public ResponseEntity<ProductQandADTO> addQandA(@PathVariable Integer productid, HttpSession session, @RequestParam("question") String question) {
         try {
             Member loginUser = (Member) session.getAttribute("loginUser");
             ProductQandADTO productQandADTO = qandAService.addQuestion(productid, loginUser.getId(), question);
@@ -48,7 +45,7 @@ public class QandAController {
         return ResponseEntity.ok(unanswered);
     }
 
-//買家刪除問題
+    //買家刪除問題
     @DeleteMapping("/customer/api/qanda/delete/{qandaId}")
     public ResponseEntity<Void> deleteQuestion(@PathVariable Integer qandaId, HttpSession session) {
         Member member = (Member) session.getAttribute("loginUser");
@@ -56,6 +53,7 @@ public class QandAController {
         return ResponseEntity.ok().build();
     }
 
+    //買家編輯問題
     @PutMapping("/customer/api/product/qanda/edit-question/{qandaId}")
     public ResponseEntity<ProductQandADTO> editQuestionByBuyer(@PathVariable Integer qandaId, HttpSession session, @RequestBody String question) {
         try {
@@ -67,7 +65,8 @@ public class QandAController {
             return ResponseEntity.badRequest().build();
         }
     }
-//賣家回答問題
+
+    //賣家回答問題
     @PutMapping("/seller/api/product/qanda/answer/{qandaId}")
     public ResponseEntity<ProductQandADTO> answerQuestionBySeller(@PathVariable Integer qandaId, HttpSession session, @RequestBody String answer) {
         try {
@@ -81,13 +80,13 @@ public class QandAController {
     }
 
 
-
+    //顯示商品所有問答
     @GetMapping("/public/api/product/{productid}/qanda")
-    public ResponseEntity<List<ProductQandADTO>> findProductQandAsByProductid(@PathVariable Integer productid){
-        try{
+    public ResponseEntity<List<ProductQandADTO>> findProductQandAsByProductid(@PathVariable Integer productid) {
+        try {
             List<ProductQandADTO> qandaList = qandAService.findProductQandAsByProductid(productid);
             return ResponseEntity.ok(qandaList);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().build();
         }

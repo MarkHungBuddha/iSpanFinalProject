@@ -2,6 +2,7 @@ package com.peko.houshoukaizokudan.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,7 +20,9 @@ public class RevenueController {
 	@Autowired
 	private OrderBasicService obService;
 
-	@GetMapping("/year")
+
+	//賣家顯示年營收
+	@GetMapping("/seller/api/revenue/year")
 	public Integer findByYear(@RequestParam("year") Integer year, HttpServletRequest request) {
 		HttpSession session = request.getSession();
 		Member loginUser = (Member) session.getAttribute("loginUser");
@@ -34,9 +37,10 @@ public class RevenueController {
 
 	}
 
-	@GetMapping("/month")
+	//賣家顯示月營收
+	@GetMapping("/seller/api/revenue/month")
 	public Integer findByMonth(@RequestParam("year") Integer year, @RequestParam("month") Integer month,
-			HttpServletRequest request) {
+							   HttpServletRequest request) {
 		HttpSession session = request.getSession();
 		Member loginUser = (Member) session.getAttribute("loginUser");
 		if (loginUser != null) {

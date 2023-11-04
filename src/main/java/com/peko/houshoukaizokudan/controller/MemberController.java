@@ -2,6 +2,7 @@ package com.peko.houshoukaizokudan.controller;
 
 import com.peko.houshoukaizokudan.model.MemberType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -17,16 +18,16 @@ import java.util.HashMap;
 
 @RestController
 public class MemberController {
-	
+
 	@Autowired
 	private MemberService userUservice;
 	@Autowired
 	private ProductImageService imageUservice;
-	
 
 
-	
-	
+
+
+
 	@PostMapping("/public/api/member/post")
 	public Map<String, String> postRegister(
 			@RequestParam("username") String username,
@@ -48,7 +49,7 @@ public class MemberController {
 			Model model) {
 		Map<String, String> response = new HashMap<>();
 		boolean isExist = userUservice.checkIfUsernameExist(username);
-		
+
 		if(isExist) {
 			response.put("errorMsg", "此帳號已存在，請用別的");
 		} else {
@@ -70,44 +71,65 @@ public class MemberController {
 			u1.setPostalcode(postalcode);
 			u1.setRegion(region);
 			u1.setStreet(street);
-			
+
 			userUservice.addUser(u1);
 			response.put("okMsg", "註冊成功");
 		}
-		
+
 		return response;
 	}
-	
+
 	@PostMapping("/public/api/member/memberLogin")
 	public Map<String, String> checkUserLogin(
-			@RequestParam("username") String username, 
+			@RequestParam("username") String username,
 			@RequestParam("passwdbcrypt") String password,
 			HttpSession httpsession,
 			Model model) {
 		Map<String, String> response = new HashMap<>();
 		Member result = userUservice.checkLogin(username, password);
-		
+
 		if(result != null) {
 			httpsession.setAttribute("loginUser", result);
 			response.put("success", "登入成功");
 		} else {
 			response.put("error", "帳號密碼錯誤");
 		}
-		
+
 		return response;
 	}
-	
+
 	@PostMapping("/customer/member/logout")
 	public Map<String, String> logout(HttpSession httpsession) {
-	    Map<String, String> response = new HashMap<>();
-	    
-	    httpsession.removeAttribute("loginUser");
-	    
-	    httpsession.invalidate();
-	    
-	    response.put("success", "登出成功");
-	    
-	    return response;
+		Map<String, String> response = new HashMap<>();
+
+		httpsession.removeAttribute("loginUser");
+
+		httpsession.invalidate();
+
+		response.put("success", "登出成功");
+
+		return response;
 	}
-	// 其他控制器方法和功能
+
+	//確認登入狀態
+	@GetMapping("/public/api/checkLoginStatus")
+	public ResponseEntity<Map<String, Object>> checkLoginStatus(HttpSession session) {
+		Map<String, Object> response = new HashMap<>();
+		Member loggedInUser = (Member) session.getAttribute("loginUser");
+
+		if (loggedInUser != null) {
+			response.put("isLoggedIn", true);
+			Integer typeId = loggedInUser.getMembertypeid().getId(); // 假設MemberType有一個getId方法來獲取ID
+
+			switch (typeId) {
+				case 1 -> response.put("role", "超級管理員");
+				case 2 -> response.put("role", "賣家");
+				case 3 -> response.put("role", "買家");
+				default -> response.put("role", "未知角色");
+			}
+		} else {
+			response.put("isLoggedIn", false);
+		}
+		return ResponseEntity.ok(response);
+	}
 }

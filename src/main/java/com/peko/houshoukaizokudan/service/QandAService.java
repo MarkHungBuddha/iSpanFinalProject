@@ -66,9 +66,29 @@ public class QandAService {
             productQandADTO.setBuyerMemberid(qandA.getBuyerMember().getId());
             productQandADTO.setQuestion(qandA.getQuestion());
             productQandADTO.setQuestiontime(qandA.getQuestiontime());
-            productQandADTO.setSellerMemberid(qandA.getSellerMember().getId());
-            productQandADTO.setAnswer(qandA.getAnswer());
-            productQandADTO.setAnswertime(qandA.getAnswertime());
+            // 檢查賣家會員是否為 null
+            if (qandA.getSellerMember() != null) {
+                productQandADTO.setSellerMemberid(qandA.getSellerMember().getId());
+            } else {
+                // 賣家會員為 null 的處理
+                productQandADTO.setSellerMemberid(null); // 或設置為預設值
+            }
+
+            // 檢查回答是否為 null
+            if (qandA.getAnswer() != null) {
+                productQandADTO.setAnswer(qandA.getAnswer());
+            } else {
+                // 回答為 null 的處理
+                productQandADTO.setAnswer(null); // 或設置為預設值
+            }
+
+            // 檢查回答時間是否為 null
+            if (qandA.getAnswertime() != null) {
+                productQandADTO.setAnswertime(qandA.getAnswertime());
+            } else {
+                // 回答時間為 null 的處理
+                productQandADTO.setAnswertime(null); // 或設置為預設值
+            }
 
             productQandADTOList.add(productQandADTO);
         }
