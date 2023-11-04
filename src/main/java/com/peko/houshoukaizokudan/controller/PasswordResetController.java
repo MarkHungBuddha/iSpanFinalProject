@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.*;
 import com.peko.houshoukaizokudan.service.PasswordResetService;
 
 @RestController
-
 public class PasswordResetController {
 
     @Autowired

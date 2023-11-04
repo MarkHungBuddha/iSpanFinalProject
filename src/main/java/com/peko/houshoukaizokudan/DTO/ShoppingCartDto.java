@@ -19,6 +19,7 @@ public class ShoppingCartDto {
     private Integer ProductId;
     private Integer memberid;
     private BigDecimal price;
+    private BigDecimal specialprice;
     private String productname;
     private Integer quantity;
     private String imagepath;

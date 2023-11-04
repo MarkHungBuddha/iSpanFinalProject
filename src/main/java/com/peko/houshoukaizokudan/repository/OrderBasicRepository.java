@@ -37,7 +37,6 @@ public interface OrderBasicRepository extends JpaRepository<OrderBasic, Integer>
 
     //買家找訂單 By 訂單ID
     OrderBasic findOrderBasicById(int orderid);
-    
     @Query(value = "select * from ShoppingCart where memberid = ?1 and productid = ?2",nativeQuery = true)
     ShoppingCart findByIdAndUser(Integer c, Integer productid);
 
@@ -45,11 +44,20 @@ public interface OrderBasicRepository extends JpaRepository<OrderBasic, Integer>
     @Modifying
     @Query(value ="UPDATE ShoppingCart SET quantity = ?3 WHERE productid = ?1 AND memberid = ?2", nativeQuery = true)
     void saveProductFromShoppingCart(Integer productid, Integer memberid, int carQuantity);
-
-    //20231103 新增 by昱霖
-    //找訂單 by orderid 與 memberid
+    
+    //20231103 新增 
+    //買家找一筆訂單 by orderid 與 memberid
     @Query(value = "select * from OrderBasic where memberid = ?2 and orderid = ?1",nativeQuery = true)
 	OrderBasic findOrderBasicByIdandMemberid(Integer orderid, int memberid);
+    
+    //20231104 新增 
+    //賣家找訂單 By 賣家與 訂單狀態
+    @Query(value = "SELECT * FROM OrderBasic OB WHERE OB.sellerid = ?1 AND OB.statusid = ?2", nativeQuery = true)
+    Page<OrderBasic> findOrderBasicByStatusAndSeller( Integer sellerid,  Integer statusid, Pageable pageable);
 
+    //20231103 新增 
+    //賣家找一筆訂單 by orderid 與 seller
+    @Query(value = "select * from OrderBasic where sellerid = ?2 and orderid = ?1",nativeQuery = true)
+	OrderBasic findOrderBasicByIdandSellerid(Integer orderid, int sellerid);
 
 }

@@ -10,7 +10,6 @@ import org.hibernate.annotations.FetchMode;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
 @Entity
 @Table(name = "UserCoupon", schema = "dbo")
 public class UserCoupon {

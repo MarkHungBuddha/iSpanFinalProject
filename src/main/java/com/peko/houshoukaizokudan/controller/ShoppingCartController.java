@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/cart")
 public class ShoppingCartController {
 
     private final ShoppingCartService shoppingCartService;
@@ -66,18 +65,21 @@ public class ShoppingCartController {
 //        return ResponseEntity.ok(products);
 //    }
 
+    //買家查看購物車
     @GetMapping("/customer/api/shoppingCart")
     public List<ShoppingCartDto> getShoppingCart(HttpSession session) {
         Member loginUser = (Member) session.getAttribute("loginUser");
         if (loginUser != null) {
             Integer memberId = loginUser.getId();
-            List<ShoppingCartDto> cartItems = shoppingCartService.GetCartItem(memberId);
+            List<ShoppingCartDto> cartItems = shoppingCartService.getCartItemsByMemberId(memberId);
             return cartItems;
         } else {
             return new ArrayList<>();
         }
     }
 
+
+    //買家新增商品到購物車
     @PostMapping("/customer/api/shoppingCart")
     public ResponseEntity<String> addProductToCart(@RequestParam("productId") Integer productId, HttpSession session) {
         Member loginUser = (Member) session.getAttribute("loginUser");
@@ -102,6 +104,7 @@ public class ShoppingCartController {
         }
     }
 
+    //買家移除商品
     @DeleteMapping("/customer/api/shoppingCart")
     public ResponseEntity<String> removeProductFromCart(@RequestParam("transactionId") Integer transactionId,
                                                         HttpSession session) {
@@ -114,6 +117,8 @@ public class ShoppingCartController {
         }
     }
 
+
+    //買家更改商品數量
     @PutMapping("/customer/api/change")
     public ResponseEntity<ShoppingCartDto> changeQuantity(
             @RequestParam("quantity") Integer quantity,

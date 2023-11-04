@@ -15,14 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.peko.houshoukaizokudan.DTO.ProductBasicDto;
@@ -200,7 +193,7 @@ public class ProductController {
 		return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 	}
 
-
+//賣家顯示一個商品資料
 	@GetMapping("/seller/api/product")
 	public ResponseEntity<ProductBasicDto2> showOne(
 			@RequestParam("id") Integer id ,HttpSession session) {
@@ -222,7 +215,7 @@ public class ProductController {
 
 
 
-
+//賣家csv上傳商品(尚未測試)
 	@PostMapping("/seller/api/csv")
 	public ResponseEntity<String> uploadCSV(@RequestParam("file") MultipartFile file) {
 		try {
@@ -263,6 +256,7 @@ public class ProductController {
 		}
 	}
 
+	//顯示商品資料
 	@GetMapping("/public/product/{productId}")
 	public ResponseEntity<ProductBasicDto> viewProduct(@PathVariable Integer productId) {
 		ProductBasicDto productDTO = prdService.getProductDTOById(productId).orElse(null);
