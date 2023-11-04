@@ -136,7 +136,7 @@ public class OrderBasicService {
 		return orderRepo.findTotalAmountByYearAndSeller(yearAsString, memberId);
 	}
 
-	public Integer findTotalByMonth(Integer memberIdd, Integer month, Integer year) {
+	public Integer findTotalByMonth(Integer year, Integer month, Integer memberIdd) {
     	String yearAsString = String.valueOf(year);
     	System.out.println(yearAsString);
     	String monthAsString = String.valueOf(month);
