@@ -163,6 +163,7 @@ public class OrderBasicService {
         dto.setTotalamount(order.getTotalamount());
         dto.setStatusname(order.getStatusid().getStatusname());
         dto.setOrderaddess(order.getOrderaddress());
+        dto.setStatusid(order.getStatusid().getId());
         // 存商品內容
         Integer orderid = order.getId();
         List<OrderDetail> products = orderDetailRepo.findOrderDetailByOrderid(orderid);
