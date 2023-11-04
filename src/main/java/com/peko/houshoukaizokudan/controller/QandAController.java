@@ -25,7 +25,7 @@ public class QandAController {
 
     //session抓memeberid 傳入productid 買家新增問題
     @PostMapping("/customer/api/product/qanda/add/{productid}")
-    public ResponseEntity<ProductQandADTO> addQandA(@PathVariable Integer productid, HttpSession session, @RequestBody String question) {
+    public ResponseEntity<ProductQandADTO> addQandA(@PathVariable Integer productid, HttpSession session, @RequestParam("question") String question) {
         try {
             Member loginUser = (Member) session.getAttribute("loginUser");
             ProductQandADTO productQandADTO = qandAService.addQuestion(productid, loginUser.getId(), question);

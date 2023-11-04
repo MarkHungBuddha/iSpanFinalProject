@@ -121,19 +121,12 @@ public class MemberController {
 			response.put("isLoggedIn", true);
 			Integer typeId = loggedInUser.getMembertypeid().getId(); // 假設MemberType有一個getId方法來獲取ID
 
-			switch (typeId) {
-				case 1:
-					response.put("role", "超級管理員");
-					break;
-				case 2:
-					response.put("role", "賣家");
-					break;
-				case 3:
-					response.put("role", "買家");
-					break;
-				default:
-					response.put("role", "未知角色");
-			}
+            switch (typeId) {
+                case 1 -> response.put("role", "超級管理員");
+                case 2 -> response.put("role", "賣家");
+                case 3 -> response.put("role", "買家");
+                default -> response.put("role", "未知角色");
+            }
 		} else {
 			response.put("isLoggedIn", false);
 		}
