@@ -1,6 +1,7 @@
 package com.peko.houshoukaizokudan.controller;
 
 
+import com.peko.houshoukaizokudan.service.MemberImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,29 +17,17 @@ import io.jsonwebtoken.io.IOException;
 public class MemberImageController {
 
     @Autowired
-    private ProductImageService productImageService; // 注入ProductImageService
+    private MemberImageService memberImageService;
 
-    @Autowired
-    private MemberService memberService; // 注入MemberService
-
-    @PostMapping("/public/api/upload")
-    public ResponseEntity<String> uploadImage(@RequestPart("file") MultipartFile file, @RequestParam("username") String username) throws java.io.IOException {
+    @PostMapping("/public/api/member/upload")
+    public ResponseEntity<String> uploadMemberImage(@RequestPart("file") MultipartFile file,
+                                                    @RequestParam("memberId") Integer memberId) {
         try {
-            // 调用ProductImageService的uploadImage方法上传图片
-            String imageUrl = memberService.uploadImage(file);
-
-            // 如果上传成功，返回图片的URL
-
-            // 更新用户的memberimgpath字段
-            Member user = memberService.findByUsername(username);
-            user.setMemberimgpath(imageUrl);
-            memberService.updateMember(user);
-
-            return ResponseEntity.ok(imageUrl);
-        } catch (IOException e) {
+            String imageCode = memberImageService.uploadImage(file, memberId);
+            return ResponseEntity.ok("https://i.imgur.com/" + imageCode + ".jpeg");
+        } catch (Exception e) {
             e.printStackTrace();
-            // 处理上传失败的情况
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("文件上傳失敗");
+            return ResponseEntity.internalServerError().body("文件上传失败");
         }
     }
 }
