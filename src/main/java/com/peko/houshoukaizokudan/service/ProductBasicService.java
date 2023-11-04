@@ -44,6 +44,7 @@ public class ProductBasicService {
 
     @Autowired
     private ProductCategoryRepository productCategoryRepository;
+
     @Autowired
     private MemberRepository mRepo;
 
@@ -62,9 +63,10 @@ public class ProductBasicService {
 
 
 
-    //建立商品
+    // 建立商品
     @Transactional
-    public ProductBasic addProductWithImages(ProductBasic productBasic, ProductCategory category, List<ProductImage> images) {
+    public ProductBasic addProductWithImages(ProductBasic productBasic, ProductCategory category,
+                                             List<ProductImage> images) {
         // Save the product basic information
         ProductBasic savedProduct = productBasicRepository.save(productBasic);
 
@@ -196,14 +198,15 @@ public class ProductBasicService {
             throw new IllegalArgumentException("無效的價格範圍");
         }
 
-        Page<ProductBasic> productBasics = productBasicRepository.findProductBasicByProductNameAndPriceRange(productname, minPrice, maxPrice, pageable);
+        Page<ProductBasic> productBasics = productBasicRepository
+                .findProductBasicByProductNameAndPriceRange(productname, minPrice, maxPrice, pageable);
         List<ProductDto> result = productBasics.getContent().stream().map(pro -> {
             ProductDto dto = new ProductDto();
-            dto.setProductid(pro.getId());
-            dto.setProductname(pro.getProductname());
+            dto.setProductId(pro.getId());
+            dto.setProductName(pro.getProductname());
             dto.setPrice(pro.getPrice());
-            dto.setSpecialprice(pro.getSpecialprice());
-            dto.setCategoryname(pro.getCategoryid().getCategoryname());
+            dto.setSpecialPrice(pro.getSpecialprice());
+            dto.setCategoryName(pro.getCategoryid().getCategoryname());
             dto.setQuantity(pro.getQuantity());
             dto.setDescription(pro.getDescription());
             // 使用 ProductImageRepository 查詢圖像路徑
@@ -268,10 +271,12 @@ public class ProductBasicService {
     public ProductDto convertToProductDto(ProductBasic productBasic) {
         ProductDto productDto = new ProductDto();
         // 执行转换逻辑，将 productBasic 的属性赋值给 productDto
-        productDto.setProductid(productBasic.getId());
-        productDto.setProductname(productBasic.getProductname());
+        productDto.setProductId(productBasic.getId());
+        productDto.setProductName(productBasic.getProductname());
         productDto.setPrice(productBasic.getPrice());
-        productDto.setSpecialprice(productBasic.getSpecialprice());
+        productDto.setSpecialPrice(productBasic.getSpecialprice());
+        String ip = productImageRepository.findImagepathByProductid(productBasic.getId());
+        productDto.setImagepath(ip);
         // 其他属性的转换
         return productDto;
     }
@@ -420,11 +425,11 @@ public class ProductBasicService {
         productBasicRepository.save(qu);
     }
 
-    public Optional<ProductBasicDto2> findByIdAndSellerId(Integer id, Integer memberIdd) {
+    public Optional<ProductBasicDto> findByIdAndSellerId(Integer id, Integer memberIdd) {
         Optional<ProductBasic> productBasic = productBasicRepository.findByIdAndSellerId(id, memberIdd);
 
         if (productBasic.isPresent()) {
-            ProductBasicDto2 productBasicDto = convertToProductBasicDto2(productBasic.get());
+            ProductBasicDto productBasicDto = convertToProductBasicDto(productBasic.get());
             return Optional.of(productBasicDto);
         } else {
             return Optional.empty();

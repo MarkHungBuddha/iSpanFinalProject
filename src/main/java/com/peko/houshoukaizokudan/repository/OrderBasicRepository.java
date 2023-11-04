@@ -16,11 +16,12 @@ public interface OrderBasicRepository extends JpaRepository<OrderBasic, Integer>
 
     boolean existsByIdAndBuyer_Id(Integer orderId, Integer memberId);
 
-    @Query("SELECT SUM(ob.totalamount) FROM OrderBasic ob WHERE SUBSTRING(ob.merchanttradedate, 1, 4) = :year AND ob.seller.id = :memberIdd")
-    Integer findTotalAmountByYearAndSeller(@Param("year") Integer year, @Param("memberIdd") Integer memberIdd);
-    @Query("SELECT SUM(ob.totalamount) FROM OrderBasic ob WHERE SUBSTRING(ob.merchanttradedate, 1, 4) = :year AND SUBSTRING(ob.merchanttradedate, 6, 2) = :month AND ob.seller.id = :memberIdd")
-    Integer findTotalAmountByYearAndMonthAndSeller(@Param("year") Integer year, @Param("month") Integer month, @Param("memberIdd") Integer memberIdd);
+    @Query(value = "SELECT COALESCE(SUM(ob.totalamount), 0) FROM dbo.OrderBasic ob WHERE YEAR(ob.merchanttradedate) = :year AND ob.sellerid = :memberId", nativeQuery = true)
+    Integer findTotalAmountByYearAndSeller(@Param("year") String yearAsString, @Param("memberId") Integer memberId);
 
+    @Query(value = "SELECT COALESCE(SUM(ob.totalamount), 0) FROM dbo.OrderBasic ob WHERE YEAR(ob.merchanttradedate) = :year AND MONTH(ob.merchanttradedate) = :month AND ob.sellerid = :memberId", nativeQuery = true)
+    Integer findTotalAmountByYearAndMonthAndSeller(@Param("year") Integer year, @Param("month") Integer month,
+                                                   @Param("memberId") Integer memberId);
     //買家找訂單 By 購買人(List)
     List<OrderBasic> findOrderBasicBybuyer(Member buyer);
 
@@ -44,6 +45,22 @@ public interface OrderBasicRepository extends JpaRepository<OrderBasic, Integer>
     @Modifying
     @Query(value ="UPDATE ShoppingCart SET quantity = ?3 WHERE productid = ?1 AND memberid = ?2", nativeQuery = true)
     void saveProductFromShoppingCart(Integer productid, Integer memberid, int carQuantity);
+
+
+    //20231103 新增
+    //買家找一筆訂單 by orderid 與 memberid
+    @Query(value = "select * from OrderBasic where memberid = ?2 and orderid = ?1",nativeQuery = true)
+    OrderBasic findOrderBasicByIdandMemberid(Integer orderid, int memberid);
+
+    //20231104 新增
+    //賣家找訂單 By 賣家與 訂單狀態
+    @Query(value = "SELECT * FROM OrderBasic OB WHERE OB.sellerid = ?1 AND OB.statusid = ?2", nativeQuery = true)
+    Page<OrderBasic> findOrderBasicByStatusAndSeller( Integer sellerid,  Integer statusid, Pageable pageable);
+
+    //20231103 新增
+    //賣家找一筆訂單 by orderid 與 seller
+    @Query(value = "select * from OrderBasic where sellerid = ?2 and orderid = ?1",nativeQuery = true)
+    OrderBasic findOrderBasicByIdandSellerid(Integer orderid, int sellerid);
 
 
 }

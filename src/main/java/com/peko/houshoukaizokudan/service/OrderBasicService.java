@@ -38,20 +38,20 @@ public class OrderBasicService {
     @Autowired
     private ShoppingCartRepository shoppingCartRepo;
 
-
     @Autowired
     private OrderDetailRepository orderDetailRepo;
 
     @Autowired
     private ProductImageRepository productImageRepo;
+
     @Autowired
     private ProductBasicRepository productBasicRepo;
+
     @Autowired
     private MemberRepository memberRepo;
+
     @Autowired
     private OrderStatusRepository orderStatusRepo;
-
-
 
 
     @Transactional
@@ -138,16 +138,19 @@ public class OrderBasicService {
         return orderDto;
     }
 
-    public Integer findTotalByYear(Integer memberIdd, Integer year) {
-        Integer obb=orderRepo.findTotalAmountByYearAndSeller(memberIdd, year);
-
-        return obb;
+    public Integer findTotalByYear(Integer memberId, Integer year) {
+        String yearAsString = String.valueOf(year);
+        System.out.println(yearAsString);
+        System.out.println(memberId);
+        return orderRepo.findTotalAmountByYearAndSeller(yearAsString, memberId);
     }
 
-    public Integer findTotalByMonth(Integer memberIdd, Integer month, Integer year) {
-        Integer obb=orderRepo.findTotalAmountByYearAndMonthAndSeller(year,memberIdd, month);
-
-        return obb;
+    public Integer findTotalByMonth(Integer year, Integer month, Integer memberIdd) {
+        String yearAsString = String.valueOf(year);
+        System.out.println(yearAsString);
+        String monthAsString = String.valueOf(month);
+        System.out.println(monthAsString);
+        return orderRepo.findTotalAmountByYearAndMonthAndSeller(year, month, memberIdd);
     }
 
     // 修改訂單dto (重複使用)
@@ -195,7 +198,7 @@ public class OrderBasicService {
         productDto.setUnitprice(product.getUnitprice().intValue()); // 單價
         productDto.setProductid(productId);
 
-        Integer detailid = orderDetailRepo.findIdByOrderid_IdAndProductid_Id(product.getOrderid().getId(),productId);
+        Integer detailid = orderDetailRepo.findIdByOrderid_IdAndProductid_Id(product.getOrderid().getId(), productId);
         productDto.setOrederDetailid(detailid);
 
         return productDto;
@@ -436,21 +439,23 @@ public class OrderBasicService {
         return orderBasicDto;
 
     }
+
     //20231103 新增
     //買家找一筆訂單 (page) 有含商品內容
     @Transactional
     public OrderBasicDto getOneOrder(Integer orderid, Member loginUser) {
         Integer memberid = loginUser.getId();
-        OrderBasic oneorder = orderRepo.findOrderBasicByIdandMemberid(orderid,memberid);
+        OrderBasic oneorder = orderRepo.findOrderBasicByIdandMemberid(orderid, memberid);
 
-        if(oneorder==null) {
+        if (oneorder == null) {
             return null;
-        }else {
+        } else {
             OrderBasicDto order = updateOrderDto(oneorder);
             return order;
         }
 
     }
+
     //20231104 新增
     // 賣家找訂單 by 訂單狀態 (page)
     @Transactional
@@ -471,11 +476,11 @@ public class OrderBasicService {
     @Transactional
     public OrderBasicDto getOneOrderBySeller(Integer orderid, Member loginUser) {
         Integer sellerid = loginUser.getId();
-        OrderBasic oneorder = orderRepo.findOrderBasicByIdandSellerid(orderid,sellerid);
+        OrderBasic oneorder = orderRepo.findOrderBasicByIdandSellerid(orderid, sellerid);
 
-        if(oneorder==null) {
+        if (oneorder == null) {
             return null;
-        }else {
+        } else {
             OrderBasicDto order = updateOrderDto(oneorder);
             return order;
         }

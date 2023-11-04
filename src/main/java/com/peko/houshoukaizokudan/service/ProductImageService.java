@@ -33,7 +33,7 @@ import java.util.List;
 public class ProductImageService {
 
     private final String IMGUR_UPLOAD_URL = "https://api.imgur.com/3/upload";
-    private final String CLIENT_ID = "Bearer 9394e99b2cdc13a531746679fe2ded9638bfbd91";  // 替換為你的 Imgur Client ID
+    private final String CLIENT_ID = "Bearer 95fe35e9dca4195e698ceba640b42a76eb0b56cb";  // 替換為你的 Imgur Client ID
 
 
     @Autowired
