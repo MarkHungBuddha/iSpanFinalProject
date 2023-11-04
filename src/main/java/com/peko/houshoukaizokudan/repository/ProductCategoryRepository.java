@@ -1,13 +1,15 @@
 package com.peko.houshoukaizokudan.Repository;
 
-import com.peko.houshoukaizokudan.model.ProductBasic;
-import com.peko.houshoukaizokudan.model.ProductCategory;
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
-import java.util.Optional;
+import com.peko.houshoukaizokudan.model.ProductBasic;
+import com.peko.houshoukaizokudan.model.ProductCategory;
 
 public interface ProductCategoryRepository extends JpaRepository<ProductCategory, Integer> {
     Optional<ProductCategory> findById(Integer id);
@@ -22,4 +24,7 @@ public interface ProductCategoryRepository extends JpaRepository<ProductCategory
             "WHERE pb.categoryid.id = :categoryid " +
             "AND pb.price >= :minPrice AND pb.price <= :maxPrice")
     Page<ProductBasic> findProductBasicsByCategoryIdAndPriceRange(Integer categoryid, Double minPrice, Double maxPrice, Pageable pageable);
+
+    @Query("SELECT pc.parentid.id FROM ProductCategory pc WHERE pc.id = :categoryid")
+    Integer findParentIdbyCategoryid(@Param("categoryid") Integer categoryid);
 }

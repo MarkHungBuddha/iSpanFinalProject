@@ -1,7 +1,12 @@
 package com.peko.houshoukaizokudan.Repository;
 
-import com.peko.houshoukaizokudan.model.ParentCategory;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+import org.springframework.data.jpa.repository.Query;
+import com.peko.houshoukaizokudan.model.ParentCategory;
 
 public interface ParentCategoryRepository extends JpaRepository<ParentCategory, Integer> {
+
+
 }
