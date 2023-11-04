@@ -365,8 +365,11 @@ public class ProductBasicService {
         if (up.getCategoryid() != null) {
             // 直接将新的categoryid设置给ProductBasic
             ed.setCategoryid(up.getCategoryid());
-            ed.setParentid(up.getParentid());
+            if(up.getCategoryid().getParentid()!=null){
+            	ed.setParentid(up.getCategoryid().getParentid());
+            }
         }
+        
 
         if (up.getSellermemberid() != null) {
             Integer memberId = up.getSellermemberid().getId(); // 假设 Member 对象有名为 "id" 的属性

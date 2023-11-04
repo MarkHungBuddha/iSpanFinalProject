@@ -29,4 +29,6 @@ public class ParentCategory {
     @OneToMany(mappedBy = "parentid")
     private Set<ProductBasic> productBasic ;
 
+
+
 }
