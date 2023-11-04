@@ -181,7 +181,7 @@ public class OrderBasicService {
         return orders;
     }
 
-    // 商品 dto (重複使用)
+    // 商品 dto (重複使用) 20231104新增setProductid
     private OrderDetailDto convertToProductDto(OrderDetail product) {
         OrderDetailDto productDto = new OrderDetailDto();
 
@@ -193,6 +193,11 @@ public class OrderBasicService {
         productDto.setProductName(product.getProductid().getProductname());
         productDto.setQuantity(product.getQuantity()); // 買的商品數量
         productDto.setUnitprice(product.getUnitprice().intValue()); // 單價
+        productDto.setProductid(productId);
+
+        Integer detailid = orderDetailRepo.findIdByOrderid_IdAndProductid_Id(product.getOrderid().getId(),productId);
+        productDto.setOrederDetailid(detailid);
+
         return productDto;
     }
 
@@ -429,6 +434,51 @@ public class OrderBasicService {
         }
 
         return orderBasicDto;
+
+    }
+    //20231103 新增
+    //買家找一筆訂單 (page) 有含商品內容
+    @Transactional
+    public OrderBasicDto getOneOrder(Integer orderid, Member loginUser) {
+        Integer memberid = loginUser.getId();
+        OrderBasic oneorder = orderRepo.findOrderBasicByIdandMemberid(orderid,memberid);
+
+        if(oneorder==null) {
+            return null;
+        }else {
+            OrderBasicDto order = updateOrderDto(oneorder);
+            return order;
+        }
+
+    }
+    //20231104 新增
+    // 賣家找訂單 by 訂單狀態 (page)
+    @Transactional
+    public Page<OrderBasicDto> getOrderByStatusAndSeller(Pageable pageable, Member loginUser, Integer statusid) {
+
+        Integer sellerid = loginUser.getId();
+        Page<OrderBasic> page = orderRepo.findOrderBasicByStatusAndSeller(sellerid, statusid, pageable);
+
+        List<OrderBasicDto> dtoOrderList = page.getContent().stream().map(order -> {
+            OrderBasicDto dto = updateOrderDto(order);
+            return dto;
+        }).collect(Collectors.toList());
+        return new PageImpl<>(dtoOrderList, pageable, page.getTotalElements());
+    }
+
+    //20231103 新增
+    //賣家找一筆訂單 (page) 有含商品內容
+    @Transactional
+    public OrderBasicDto getOneOrderBySeller(Integer orderid, Member loginUser) {
+        Integer sellerid = loginUser.getId();
+        OrderBasic oneorder = orderRepo.findOrderBasicByIdandSellerid(orderid,sellerid);
+
+        if(oneorder==null) {
+            return null;
+        }else {
+            OrderBasicDto order = updateOrderDto(oneorder);
+            return order;
+        }
 
     }
 

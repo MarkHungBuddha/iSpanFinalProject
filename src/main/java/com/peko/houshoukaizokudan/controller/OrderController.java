@@ -37,27 +37,6 @@ public class OrderController {
 	@Autowired
 	private OrderDetailService orderDetailService;
 
-
-//	@PostMapping("/orders/orderBase")
-//	public List<OrderBasicDto> orderShow(HttpSession session) {
-//		Member loginUser = (Member) session.getAttribute("loginUser");
-//
-//		if (loginUser != null) {
-//
-//			List<OrderBasic> orders = orderService.findOrderBasicBymemberOrderid(loginUser);
-//
-//			List<OrderBasicDto> dtoOrderList = orderService.getOrder(orders);
-//
-//			return dtoOrderList;
-//		} else {
-//			return null;
-//		}
-//	}
-
-
-
-
-
 	@PostMapping("/customer/api/order/checkout")
 	public ResponseEntity<checkoutOrderDto> checkout(@RequestBody List<ProductIDandQuentity> productItems, HttpSession session) {
 		Member loginUser = (Member) session.getAttribute("loginUser"); // assuming you stored user ID in session
@@ -285,6 +264,62 @@ public class OrderController {
 			return new ResponseEntity<>(order, null, HttpStatus.OK);
 		}
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+
+	}
+
+	//20231103 新增
+	// 買家找一筆訂單 (page) 有含商品內容
+	@GetMapping("/customer/api/findOneOrder")
+	public ResponseEntity<?> oneorderShow(@RequestParam Integer orderid,
+										  HttpSession session) {
+
+		Member loginUser = (Member) session.getAttribute("loginUser");
+		if (loginUser != null) {
+
+			OrderBasicDto order = orderService.getOneOrder(orderid,loginUser);
+
+			return new ResponseEntity<>(order, null, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>("使用者未授權", null, HttpStatus.UNAUTHORIZED);
+		}
+
+	}
+	//20231104 新增
+	// 賣家找訂單 by 訂單狀態 (page)
+	@GetMapping("/seller/api/sellerfindorders/Status")
+	public ResponseEntity<?> sellerOrderShowByStatus(@RequestParam(name = "p", defaultValue = "1") Integer pageNumber,
+													 HttpSession session, @RequestParam Integer statusid) {
+
+		Member loginUser = (Member) session.getAttribute("loginUser");
+
+		if (loginUser != null) {
+
+			Pageable pageable = PageRequest.of(pageNumber - 1, 10, Sort.Direction.DESC, "orderid"); // 每頁10筆訂單
+			Page<OrderBasicDto> page = orderService.getOrderByStatusAndSeller(pageable, loginUser, statusid);
+			if (page.isEmpty())
+				return new ResponseEntity<>("沒有資料", null, HttpStatus.OK);
+
+			return new ResponseEntity<>(page, null, HttpStatus.OK);
+
+		} else {
+			return new ResponseEntity<>("使用者未授權", null, HttpStatus.UNAUTHORIZED);
+		}
+	}
+
+	//20231103 新增
+	// 賣家找一筆訂單 (page) 有含商品內容
+	@GetMapping("/seller/api/sellerfindOneOrder")
+	public ResponseEntity<?> selleroneorderShow(@RequestParam Integer orderid,HttpSession session) {
+
+		Member loginUser = (Member) session.getAttribute("loginUser");
+		if (loginUser != null) {
+
+			OrderBasicDto order = orderService.getOneOrderBySeller(orderid,loginUser);
+
+			return new ResponseEntity<>(order, null, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>("使用者未授權", null, HttpStatus.UNAUTHORIZED);
+		}
 
 	}
 

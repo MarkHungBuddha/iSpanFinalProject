@@ -19,6 +19,7 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, Intege
     @Query(value = "SELECT quantity FROM OrderDetail  WHERE orderid = ?1 and productid = ?2", nativeQuery = true)
     Integer getProductQuantityFromorderDetail(Integer orederid, Integer productid);
 
-//    //OrderID跟productID找OrderDetailID
-//    Integer findIdByOrderid_IdAndProductid_Id(Integer orderid, Integer productid);
+    //找訂單明細ID by 訂單id 產品id  //20231104 新增
+    @Query(value = "SELECT * FROM OrderDetail  WHERE orderid = ?1 and productid = ?2", nativeQuery = true)
+    Integer findIdByOrderid_IdAndProductid_Id(Integer orderid, Integer productid);
 }
