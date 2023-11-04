@@ -17,7 +17,7 @@ import org.springframework.stereotype.Repository;
 
 
 public interface ProductBasicRepository extends JpaRepository<ProductBasic, Integer> {
-	
+
 	//模糊搜尋產品名稱
 
 	List<ProductBasic> findProductBasicDataByproductnameLike(String productname);
