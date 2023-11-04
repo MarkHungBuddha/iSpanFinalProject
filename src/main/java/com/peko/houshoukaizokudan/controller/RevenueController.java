@@ -27,7 +27,7 @@ public class RevenueController {
 			Integer memberIdd = loginUser.getId();
 
 			Integer ob = obService.findTotalByYear(memberIdd, year);
-
+			System.out.println(ob);
 			return ob;
 		}
 		return null;
@@ -41,9 +41,8 @@ public class RevenueController {
 		Member loginUser = (Member) session.getAttribute("loginUser");
 		if (loginUser != null) {
 			Integer memberIdd = loginUser.getId();
-
-			Integer ob = obService.findTotalByMonth(year, memberIdd, month);
-
+			Integer ob = obService.findTotalByMonth(year,month,memberIdd);
+System.out.println(ob);
 			return ob;
 		}
 		return null;
