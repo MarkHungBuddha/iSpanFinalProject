@@ -62,7 +62,7 @@ public class ProductBasicController {
 	//未給頁碼 預設第一頁
 	@GetMapping("/public/api/products")
 	public ResponseEntity<Page<ProductDto>> getProductsByPage(
-			@RequestParam(name = "productname", required = false) String productname,
+			@RequestParam(name = "productname") String productname,
 			@RequestParam(value = "minPrice", required = false, defaultValue = "0.0") Double minPrice,
 			@RequestParam(value = "maxPrice", required = false, defaultValue = "999999.99") Double maxPrice,
 			@RequestParam(name = "page", required = false,defaultValue = "1") Integer page) {
@@ -76,6 +76,7 @@ public class ProductBasicController {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 	}
+
 
 
 

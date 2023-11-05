@@ -1,6 +1,5 @@
 package com.peko.houshoukaizokudan.controller;
 
-import com.peko.houshoukaizokudan.DTO.MemberDTO;
 import com.peko.houshoukaizokudan.model.MemberType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,17 +9,19 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.peko.houshoukaizokudan.DTO.MemberDTO;
 import com.peko.houshoukaizokudan.model.Member;
 import com.peko.houshoukaizokudan.service.MemberService;
 import com.peko.houshoukaizokudan.service.ProductImageService;
+import com.peko.houshoukaizokudan.model.MemberType;
+
 
 import jakarta.servlet.http.HttpSession;
-
+import java.util.Map;
+import java.util.regex.Pattern;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
-import java.util.Map;
 import java.util.HashMap;
-import java.util.regex.Pattern;
 
 @RestController
 public class MemberController {
@@ -29,8 +30,6 @@ public class MemberController {
 	private MemberService userUservice;
 	@Autowired
 	private ProductImageService imageUservice;
-
-
 
 
 
@@ -119,6 +118,7 @@ public class MemberController {
 		return ResponseEntity.ok(response);
 	}
 
+
 	@PostMapping("/public/api/member/memberLogin")
 	public Map<String, String> checkUserLogin(
 			@RequestParam("username") String username,
@@ -150,27 +150,38 @@ public class MemberController {
 
 		return response;
 	}
+	@GetMapping("/public/api/member/{id}")
+	public MemberDTO getUserProfile(@PathVariable Integer id) {
+		Member user = userUservice.findById(id);
 
-	//確認登入狀態
-	@GetMapping("/public/api/checkLoginStatus")
-	public ResponseEntity<Map<String, Object>> checkLoginStatus(HttpSession session) {
-		Map<String, Object> response = new HashMap<>();
-		Member loggedInUser = (Member) session.getAttribute("loginUser");
+		if (user != null) {
+			MemberDTO userDTO = new MemberDTO();
+			userDTO.setId(user.getId());
+			userDTO.setMemberimgpath(user.getMemberimgpath());
+			userDTO.setUsername(user.getUsername());
+			userDTO.setFirstname(user.getFirstname());
+			userDTO.setLastname(user.getLastname());
+			userDTO.setGender(user.getGender());
+			userDTO.setBirthdate(user.getBirthdate());
+			userDTO.setPhone(user.getPhone());
+			userDTO.setEmail(user.getEmail());
+			userDTO.setMembercreationdate(user.getMembercreationdate());
+			userDTO.setCountry(user.getCountry());
+			userDTO.setCity(user.getCity());
+			userDTO.setRegion(user.getRegion());
+			userDTO.setStreet(user.getStreet());
+			userDTO.setPostalcode(user.getPostalcode());
 
-		if (loggedInUser != null) {
-			response.put("isLoggedIn", true);
-			Integer typeId = loggedInUser.getMembertypeid().getId(); // 假設MemberType有一個getId方法來獲取ID
+			// 设置 membertypeid 和相关字段
+			userDTO.setMembertypeid(user.getMembertypeid().getId());
+			userDTO.setMembertypename(user.getMembertypeid().getMembertypename());
+			userDTO.setMemberTypeDescription(user.getMembertypeid().getMemberTypeDescription());
 
-			switch (typeId) {
-				case 1 -> response.put("role", "超級管理員");
-				case 2 -> response.put("role", "賣家");
-				case 3 -> response.put("role", "買家");
-				default -> response.put("role", "未知角色");
-			}
+			return userDTO;
 		} else {
-			response.put("isLoggedIn", false);
+			// 处理找不到用户的情况，可以返回 null 或其他适当的响应
+			return null;
 		}
-		return ResponseEntity.ok(response);
 	}
 	@PutMapping("/public/api/member/update/{id}")
 	public Map<String, String> updateUserProfile(@PathVariable Integer id, @RequestBody MemberDTO updatedUser) {
@@ -187,6 +198,34 @@ public class MemberController {
 			response.put("error", "更新失敗");
 		}
 		return response;
+	}
+	@GetMapping("/public/api/checkLoginStatus")
+	public ResponseEntity<Map<String, Object>> checkLoginStatus(HttpSession session) {
+		Map<String, Object> response = new HashMap<>();
+		Member loggedInUser = (Member) session.getAttribute("loginUser");
+
+		if (loggedInUser != null) {
+			response.put("isLoggedIn", true);
+			response.put("memberId", loggedInUser.getId()); // 将用户的ID添加到响应
+			Integer typeId = loggedInUser.getMembertypeid().getId(); // 假设MemberType有一个getId方法来获取ID
+
+			switch (typeId) {
+				case 1:
+					response.put("role", "超級管理員");
+					break;
+				case 2:
+					response.put("role", "賣家");
+					break;
+				case 3:
+					response.put("role", "買家");
+					break;
+				default:
+					response.put("role", "未知角色");
+			}
+		} else {
+			response.put("isLoggedIn", false);
+		}
+		return ResponseEntity.ok(response);
 	}
 	@DeleteMapping("/member/api/member/{id}")
 	public ResponseEntity<?> deleteMember(@PathVariable Integer id) {
@@ -210,4 +249,5 @@ public class MemberController {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("未登入，請先登入");
 		}
 	}
+	// 其他控制器方法和功能
 }

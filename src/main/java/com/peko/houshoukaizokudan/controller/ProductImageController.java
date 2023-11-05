@@ -31,5 +31,17 @@ public class ProductImageController {
         }
 
     }
+
+    @GetMapping("/public/productImage/{productid}/first")
+    public ResponseEntity<String> firstImage(@PathVariable Integer productid) {
+        try
+            {
+                String firstImage = productImageService.findFirstImageByProductId(productid);
+                return ResponseEntity.ok(firstImage);
+            }catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().build();
+        }
+    }
 }
 

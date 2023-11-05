@@ -54,7 +54,14 @@ public class ProductReviewService {
     }
 
     public boolean isProductInOrder(Integer orderDetailId, Integer productId) {
-        return orderDetailRepository.existsByIdAndProductid_Id(orderDetailId, productId);
+        if(orderDetailRepository.findStatusIdByOrderDetailId(orderDetailId)==4)
+            return orderDetailRepository.existsByIdAndProductid_Id(orderDetailId, productId);
+        return false;
+    }
+
+    public boolean isOrderStatusFinish(Integer orderId){
+        Integer statusId = orderBasicRepository.findStatusId_IdByOrderId(orderId);
+        return statusId != null && statusId.equals(4);
     }
 
     @Transactional

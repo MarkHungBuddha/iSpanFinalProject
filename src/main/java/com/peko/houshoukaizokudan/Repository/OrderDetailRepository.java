@@ -14,6 +14,9 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, Intege
     @Query(value = "SELECT * FROM OrderDetail  WHERE orderid = ?1", nativeQuery = true)
     List<OrderDetail> findOrderDetailByOrderid(Integer orderid);
 
+    @Query("SELECT od.orderid.statusid.id FROM OrderDetail od WHERE od.id = :orderDetailId")
+    Integer findStatusIdByOrderDetailId(Integer orderDetailId);
+
 
     //找訂單商品的數量
     @Query(value = "SELECT quantity FROM OrderDetail  WHERE orderid = ?1 and productid = ?2", nativeQuery = true)

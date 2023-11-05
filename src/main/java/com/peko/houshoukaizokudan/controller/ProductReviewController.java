@@ -44,11 +44,36 @@ public class ProductReviewController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("这笔订单中没有这个商品");
         }
 
+        if(!productReviewService.isProductInOrder(productReviewDTO.getOrderdetailid(),productReviewDTO.getProductid()))
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("这笔订单中未完成");
         // 建立新的productreview
         productReviewService.createReview(productReviewDTO, loginUser);
 
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/customer/api/order/{orderid}/status")
+    public boolean getOrderStatus(@PathVariable Integer orderid, HttpSession session) {
+        Member loginUser = (Member) session.getAttribute("loginUser"); // 从session中获取登录用户
+        if (loginUser == null) {
+            return false;
+        }
+        return productReviewService.isOrderStatusFinish(orderid);
+    }
+
+    @GetMapping("/customer/api/status/{orderid}")
+    public boolean getReviewStatus(@PathVariable Integer orderid, HttpSession session) {
+        Member loginUser = (Member) session.getAttribute("loginUser"); // 从session中获取登录用户
+        if (loginUser == null) {
+            return false;
+        }
+        if (!productReviewService.isOrderStatusFinish(orderid)) {
+            return false;
+        }
+        return true;
+    }
+
+
 
 
     //    PUT /api/v1/reviews/:id：買家編輯商品評價(只能編輯一個月內的訂單的評論)

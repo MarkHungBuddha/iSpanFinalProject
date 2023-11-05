@@ -107,19 +107,26 @@ public class ProductController {
 
 	// 顯示所有上傳
 	@GetMapping("/seller/api/products")
-	public ResponseEntity<Page<ProductBasicDto>> showPage(
+	public ResponseEntity<?> showPage(
 			@RequestParam(name = "p", defaultValue = "1") Integer pageNumber, HttpSession session) {
 		Member loginUser = (Member) session.getAttribute("loginUser");
 		if (loginUser != null) {
 			Integer memberIdd = loginUser.getId();
 			System.out.println("Member ID: " + memberIdd);
 			Pageable pageable = PageRequest.of(pageNumber - 1, 3); // 3 items per page
-			Page<ProductBasicDto> page = prdService.getAllProductByPage(pageable, memberIdd);
-			return new ResponseEntity<>(page, HttpStatus.OK);
+			try {
+				Page<ProductBasicDto> page = prdService.getAllProductByPage(pageable, memberIdd);
+				return new ResponseEntity<>(page, HttpStatus.OK);
+			} catch (Exception e) {
+				// Log the exception and return an appropriate error response
+				System.err.println("Error retrieving products: " + e.getMessage());
+				return new ResponseEntity<>("無法檢索產品信息", HttpStatus.INTERNAL_SERVER_ERROR);
+			}
 		} else {
-			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<>("未授權訪問", HttpStatus.UNAUTHORIZED);
 		}
 	}
+
 
 	// 更新商品圖片
 	@PutMapping("/seller/api/product/{id}/{od}/editImg")

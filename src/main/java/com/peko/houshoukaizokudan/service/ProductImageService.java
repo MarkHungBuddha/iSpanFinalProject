@@ -47,6 +47,11 @@ public class ProductImageService {
         return productImageRepository.findImagePathsByProductIdOrderByOrderID(productId);
     }
 
+    public String findFirstImageByProductId(Integer productId){
+        return productImageRepository.findByProductIdAndOrderId(productId,1);
+
+    }
+
     public String uploadImage(MultipartFile file,Integer id,Integer od) throws IOException, java.io.IOException {
         RestTemplate restTemplate = new RestTemplate();
 

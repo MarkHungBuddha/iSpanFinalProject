@@ -232,6 +232,7 @@ public class ProductBasicService {
         List<ProductCategoryDto> result = productBasics.stream().map(pro -> {
                     ProductCategoryDto dto = new ProductCategoryDto();
                     dto.setCategoryid(pro.getCategoryid().getId());
+                    dto.setProductid(pro.getId());
                     dto.setProductname(pro.getProductname());
                     dto.setPrice(pro.getPrice());
                     dto.setSpecialprice(pro.getSpecialprice());
@@ -410,7 +411,13 @@ public class ProductBasicService {
             Page<ProductBasic> pageByMemberId = productBasicRepository.findProductBasicBySellermemberid(memberIdd, pageable);
 
             List<ProductBasicDto> productDtos = pageByMemberId.getContent().stream()
-                    .map(this::convertToProductBasicDto)
+                    .map(productBasic -> {
+                        ProductBasicDto dto = convertToProductBasicDto(productBasic);
+                        // Assuming you have a ProductImageRepository bean with the method findByProductIdAndOrderId
+                        String imagePath = productImageRepository.findByProductIdAndOrderId(productBasic.getId(), 1);
+                        dto.setImagePath(imagePath); // Set the imagePath in the DTO
+                        return dto;
+                    })
                     .collect(Collectors.toList());
 
             return new PageImpl<>(productDtos, pageable, pageByMemberId.getTotalElements());
