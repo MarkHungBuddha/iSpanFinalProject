@@ -205,3 +205,12 @@ iSpan EEIT71 Team1-3c shopping website
 
 @PostMapping("/public/api/reset")
 修改密碼 key: email resetToken newPassword
+
+@GetMapping("/customer/api/findOneOrder")
+買家找一筆訂單 (page) 有含商品內容
+
+@GetMapping("/seller/api/sellerfindorders/Status")
+賣家找訂單 by 訂單狀態 (page)
+
+@GetMapping("/seller/api/sellerfindOneOrder")
+賣家找一筆訂單 (page) 有含商品內容
