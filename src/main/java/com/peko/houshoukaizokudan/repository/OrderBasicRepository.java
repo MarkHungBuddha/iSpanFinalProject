@@ -16,6 +16,13 @@ public interface OrderBasicRepository extends JpaRepository<OrderBasic, Integer>
 
     boolean existsByIdAndBuyer_Id(Integer orderId, Integer memberId);
 
+//    @Query(value = "SELECT * FROM dbo.OrderBasic OB WHERE OB.memberid = ?1", nativeQuery = true)
+//    Page<OrderBasic> findOrderBasicByMemberid(Integer memberid, Pageable pageable);
+
+    @Query("SELECT ob.statusid.id FROM OrderBasic ob WHERE ob.id = :orderId")
+    Integer findStatusId_IdByOrderId(Integer orderId);
+
+
     @Query(value = "SELECT COALESCE(SUM(ob.totalamount), 0) FROM dbo.OrderBasic ob WHERE YEAR(ob.merchanttradedate) = :year AND ob.sellerid = :memberId", nativeQuery = true)
     Integer findTotalAmountByYearAndSeller(@Param("year") String yearAsString, @Param("memberId") Integer memberId);
 
