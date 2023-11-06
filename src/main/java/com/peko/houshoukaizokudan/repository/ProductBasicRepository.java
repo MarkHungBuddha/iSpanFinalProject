@@ -89,6 +89,3 @@ public interface ProductBasicRepository extends JpaRepository<ProductBasic, Inte
 	@Query(value = "UPDATE ProductBasic SET quantity = ?2 WHERE productid = ?1", nativeQuery = true)
 	void updateProductQuantity(Integer productid, int stockQuantity);
 }
-
-
-

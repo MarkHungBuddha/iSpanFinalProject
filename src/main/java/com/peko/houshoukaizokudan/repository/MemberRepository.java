@@ -2,6 +2,7 @@ package com.peko.houshoukaizokudan.Repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.peko.houshoukaizokudan.DTO.MemberDTO;
 import com.peko.houshoukaizokudan.model.Member;
 import org.springframework.data.jpa.repository.Query;
 
@@ -13,5 +14,4 @@ public interface MemberRepository extends JpaRepository<Member, Integer>{
 	Member findmemberBymemberid(Integer sellerId);
 
 	Member findByEmail(String email);
-
 }

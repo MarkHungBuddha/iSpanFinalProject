@@ -31,4 +31,3 @@ public interface ProductCategoryRepository extends JpaRepository<ProductCategory
 
 
 }
-

@@ -54,14 +54,16 @@ public class MemberService {
     }
 
     public Member checkLogin(String username, String inputPwd) {
+        // 根據用戶名查找用戶
+    	
         Member dbUser = usersRepo.findByUsername(username);
-
-        if (dbUser != null) {
-            if (pwdEncoder.matches(inputPwd, dbUser.getPasswdbcrypt())) {
-                return dbUser;
-            }
+        
+        // 如果用戶存在，且密碼匹配，則返回用戶信息
+        if (dbUser != null && pwdEncoder.matches(inputPwd, dbUser.getPasswdbcrypt())) {
+            return dbUser;
         }
 
+        // 如果用戶不存在或密碼不匹配，返回 null
         return null;
     }
 
@@ -87,7 +89,10 @@ public class MemberService {
         existingMember.setStreet(memberDTO.getStreet());
         existingMember.setBirthdate(memberDTO.getBirthdate());
         existingMember.setResetToken(memberDTO.getResetToken());
-        existingMember.setPasswdbcrypt(memberDTO.getPasswdbcrypt());
+        if (memberDTO.getPasswdbcrypt() != null && !memberDTO.getPasswdbcrypt().isEmpty()) {
+            // 不再进行加密，直接设置密码
+            existingMember.setPasswdbcrypt(memberDTO.getPasswdbcrypt());
+        }
         // 根据需要设置其他字段
 
         return usersRepo.save(existingMember);
@@ -151,6 +156,15 @@ public class MemberService {
         } catch (IOException e) {
             // 处理错误
             throw new RuntimeException("文件上傳失敗");
+        }
+    }
+    public MemberDTO findDTOByUsername(String username) {
+        Member member = usersRepo.findByUsername(username);
+        if (member != null) {
+            return convertToDTO(member);
+        } else {
+            System.out.println("User not found with username: " + username);
+            return null;
         }
     }
     public MemberDTO findDTOByEmail(String email) {
