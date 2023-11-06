@@ -371,7 +371,7 @@ public class ProductBasicService {
         if (up.getCategoryid() != null) {
             // 直接将新的categoryid设置给ProductBasic
             ed.setCategoryid(up.getCategoryid());
-            ed.setParentid(up.getParentid());
+            ed.setParentid(productCategoryRepository.findParentCategoryByProductCategoryId(up.getCategoryid().getId()));
         }
 
         if (up.getSellermemberid() != null) {
@@ -382,6 +382,7 @@ public class ProductBasicService {
             }
 
         }
+
 
         return productBasicRepository.save(ed);
     }
