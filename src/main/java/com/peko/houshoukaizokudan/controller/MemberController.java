@@ -120,22 +120,34 @@ public class MemberController {
 
 
 	@PostMapping("/public/api/member/memberLogin")
-	public Map<String, String> checkUserLogin(
+	public ResponseEntity<?> checkUserLogin(
 			@RequestParam("username") String username,
 			@RequestParam("passwdbcrypt") String password,
-			HttpSession httpsession,
-			Model model) {
-		Map<String, String> response = new HashMap<>();
-		Member result = userUservice.checkLogin(username, password);
+			HttpSession httpsession) {
+		// 嘗試登入
+		try {
+			Member result = userUservice.checkLogin(username, password);
 
-		if(result != null) {
-			httpsession.setAttribute("loginUser", result);
-			response.put("success", "登入成功");
-		} else {
-			response.put("error", "帳號密碼錯誤");
+			// 如果用戶存在，驗證密碼是否匹配
+			if (result != null) {
+				httpsession.setAttribute("loginUser", result);
+				// 返回成功登入的信息和用戶資料（視需求而定，可能僅返回部分信息）
+				return ResponseEntity.ok().body(Map.of(
+						"message", "登入成功",
+						"userId", result.getId()
+				));
+			} else {
+				// 如果用戶名不存在或密碼不匹配，返回錯誤信息
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of(
+						"error", "帳號或密碼錯誤"
+				));
+			}
+		} catch (Exception e) {
+			// 如果在登入過程中發生異常，返回一般錯誤
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+					"error", "登入過程中發生錯誤：" + e.getMessage()
+			));
 		}
-
-		return response;
 	}
 
 	@PostMapping("/customer/member/logout")
