@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -113,7 +114,11 @@ public class ShoppingCartService {
     }
 
     public void ClearCartItem(Member member,Integer transactionid) {
-        shoppingCartRepository.ClearCartItem(member.getId(),transactionid);
+
+        if(Objects.equals(shoppingCartRepository.findmemberidbytransactionid(transactionid), member.getId())){
+        shoppingCartRepository.ClearCartItem(transactionid);
+
+        }
     }
 
     public void ClearCartItembyProductId(Member member,Integer transactionid) {
@@ -126,7 +131,7 @@ public class ShoppingCartService {
 
 
     public Integer CheckCartItem(Integer transactionid) {
-        Integer result = shoppingCartRepository.CheckCartItem(transactionid);
+        Integer result = shoppingCartRepository.CheckCartItemQuantity(transactionid);
         return result;
     }
 

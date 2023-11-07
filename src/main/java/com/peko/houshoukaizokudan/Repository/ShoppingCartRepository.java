@@ -39,8 +39,10 @@ public interface ShoppingCartRepository extends JpaRepository<ShoppingCart, Inte
 
 
     @Query(value = "select quantity from ShoppingCart where transactionid = ?1",nativeQuery = true)
-    Integer CheckCartItem(Integer transactionid);
+    Integer CheckCartItemQuantity(Integer transactionid);
 
+    @Query(value = "select memberid ShoppingCart where transactionid = ?1",nativeQuery = true)
+    Integer findmemberidbytransactionid(Integer transactionid);
 
     //transactionId找productid
     @Query(value = "select productid from ShoppingCart where transactionid = :transactionid",nativeQuery = true)
@@ -64,8 +66,10 @@ public interface ShoppingCartRepository extends JpaRepository<ShoppingCart, Inte
     //用transactionid&memberid刪除購物車資料
     @Transactional
     @Modifying
-    @Query(value = "Delete ShoppingCart where memberid = ?1 and transactionid = ?2",nativeQuery = true)
-    void ClearCartItem(Integer memberid,Integer transactionid);
+    @Query(value = "Delete ShoppingCart where transactionid = ?1",nativeQuery = true)
+    void ClearCartItem(Integer transactionid);
+
+
 
 
     //productid&memberid刪除購物車資料
