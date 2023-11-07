@@ -214,3 +214,10 @@ iSpan EEIT71 Team1-3c shopping website
 
 @GetMapping("/seller/api/sellerfindOneOrder")
 賣家找一筆訂單 (page) 有含商品內容
+
+@PostMapping("/customer/api/sendPhoneVCode")
+傳送驗證簡訊   輸入手機號碼(需使用已在資料庫內的號碼) key:mobile value:手機號碼
+
+@PostMapping("/customer/api/PhoneVCode")
+驗證手機號碼 驗證成功membertype會改為2 key:mobile             value:手機號碼
+                                        verificationCode    value:驗證碼
