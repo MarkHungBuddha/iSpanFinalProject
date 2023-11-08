@@ -17,7 +17,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.peko.houshoukaizokudan.Repository.MemberRepository;
+import com.peko.houshoukaizokudan.Repository.MemberTypeRepository;
 import com.peko.houshoukaizokudan.model.Member;
+import com.peko.houshoukaizokudan.model.MemberType;
 
 import jakarta.transaction.Transactional;
 
@@ -35,6 +37,10 @@ public class MemberService {
     @Autowired
     private MemberRepository usersRepo;
 
+    @Autowired
+    private MemberTypeRepository memberTypeRepository;
+
+
     public Member addUser(Member user) {
         String encodedPwd = pwdEncoder.encode(user.getPasswdbcrypt()); // 加密
         user.setPasswdbcrypt(encodedPwd);
@@ -46,7 +52,11 @@ public class MemberService {
         return dbUser != null;
     }
 
-
+    public MemberDTO findDTOById(Integer id) {
+        Member member = usersRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("找不到 ID 為 " + id + " 的會員"));
+        return convertToDTO(member);
+    }
 
     public boolean checkIfEmailExist(String email) {
         Member dbUser = usersRepo.findByEmail(email);
@@ -83,7 +93,6 @@ public class MemberService {
         existingMember.setCity(memberDTO.getCity());
         existingMember.setCountry(memberDTO.getCountry());
         existingMember.setGender(memberDTO.getGender());
-        existingMember.setPhone(memberDTO.getPhone());
         existingMember.setPostalcode(memberDTO.getPostalcode());
         existingMember.setRegion(memberDTO.getRegion());
         existingMember.setStreet(memberDTO.getStreet());
@@ -93,9 +102,24 @@ public class MemberService {
             // 不再进行加密，直接设置密码
             existingMember.setPasswdbcrypt(memberDTO.getPasswdbcrypt());
         }
+        if (memberDTO.getPhone() != null && !memberDTO.getPhone().isEmpty()) {
+            // 不再进行加密，直接设置密码
+            existingMember.setPhone(memberDTO.getPhone());
+        }
+        if (memberDTO.getMembertypeid() != null) {
+            MemberType memberType = memberTypeRepository.findById(memberDTO.getMembertypeid())
+                    .orElseThrow(() -> new RuntimeException("找不到 ID 為 " + memberDTO.getMembertypeid() + " 的會員類型"));
+            existingMember.setMembertypeid(memberType);
+        }
         // 根据需要设置其他字段
 
         return usersRepo.save(existingMember);
+    }
+    public void updatePhone(Integer userId, String phone) {
+        Member member = usersRepo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("找不到 ID 為 " + userId + " 的會員"));
+        member.setPhone(phone);
+        usersRepo.save(member);
     }
 
     public void deleteMember(Integer memberId) {
@@ -177,6 +201,18 @@ public class MemberService {
         System.out.println("沒料");
         return null;
     }
+    public MemberDTO findDTOByPhone(String phone) {
+        // 假设 MemberRepository 有一个方法 findByPhone，它返回一个 Member 实体
+        Member memberEntity = usersRepo.findByPhone(phone);
+
+        if (memberEntity != null) {
+            // 转换 Member 实体到 MemberDTO
+            return convertToDTO(memberEntity);
+        } else {
+            // 如果没有找到 Member，可能需要返回 null 或抛出一个异常
+            return null;
+        }
+    }
     private MemberDTO convertToDTO(Member member) {
         if (member == null) {
             return null;
@@ -203,6 +239,42 @@ public class MemberService {
         userDTO.setPasswdbcrypt(member.getPasswdbcrypt());
         userDTO.setResetToken(member.getResetToken());
         return userDTO;
+    }
+    private Member convertToEntity(MemberDTO memberDTO) {
+        Member member = new Member();
+
+        // 基本屬性設置
+        member.setId(memberDTO.getId());
+        member.setUsername(memberDTO.getUsername());
+        member.setFirstname(memberDTO.getFirstname());
+        member.setLastname(memberDTO.getLastname());
+        member.setGender(memberDTO.getGender());
+        member.setBirthdate(memberDTO.getBirthdate());
+        member.setPhone(memberDTO.getPhone());
+        member.setEmail(memberDTO.getEmail());
+        member.setMembercreationdate(memberDTO.getMembercreationdate());
+        member.setCountry(memberDTO.getCountry());
+        member.setCity(memberDTO.getCity());
+        member.setRegion(memberDTO.getRegion());
+        member.setStreet(memberDTO.getStreet());
+        member.setPostalcode(memberDTO.getPostalcode());
+        member.setResetToken(memberDTO.getResetToken());
+
+        // 加密過的密碼設置（如果有的話）
+        if (memberDTO.getPasswdbcrypt() != null && !memberDTO.getPasswdbcrypt().isEmpty()) {
+            member.setPasswdbcrypt(memberDTO.getPasswdbcrypt());
+        }
+
+        // 轉換 membertypeid
+        if (memberDTO.getMembertypeid() != null) {
+            MemberType memberType = memberTypeRepository.findById(memberDTO.getMembertypeid())
+                    .orElseThrow(() -> new RuntimeException("找不到 ID 為 " + memberDTO.getMembertypeid() + " 的會員類型"));
+            member.setMembertypeid(memberType);
+        }
+
+        // 設置其他必要的屬性...
+
+        return member;
     }
     public String uploadImage(MultipartFile file, Integer memberId) throws IOException {
         if (file.isEmpty()) {
