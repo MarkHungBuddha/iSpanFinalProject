@@ -55,15 +55,17 @@ public class QandAController {
         return ResponseEntity.ok(asked);
     }
 
-    //賣家顯示問的問題
-//    @GetMapping("/customer/api/qanda/asked")
-//    public ResponseEntity<List<ProductQandADTO>> getAnswerdQuestions(HttpSession session) {
-//        Member member = (Member) session.getAttribute("loginUser");
-//        if(member == null)
-//            return ResponseEntity.badRequest().build();
-//        List<ProductQandADTO> asked = qandAService.getAskedQuestions(member.getId());
-//        return ResponseEntity.ok(asked);
-//    }
+    //賣家顯示所有問答
+    @GetMapping("/seller/api/qanda/all")
+    public ResponseEntity<List<ProductQandADTO>> getAllQuestions(HttpSession session) {
+        Member member = (Member) session.getAttribute("loginUser");
+        if(member == null)
+            return ResponseEntity.badRequest().build();
+        List<ProductQandADTO> asked = qandAService.getAllQuestions(member.getId());
+        return ResponseEntity.ok(asked);
+    }
+
+
 
     //買家刪除問題
     @DeleteMapping("/customer/api/qanda/delete/{qandaId}")

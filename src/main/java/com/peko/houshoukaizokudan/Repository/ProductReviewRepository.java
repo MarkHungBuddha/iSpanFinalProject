@@ -49,6 +49,13 @@ public interface ProductReviewRepository extends JpaRepository<ProductReview, In
     boolean hasBuyerReviewed(Integer orderDetailId, Integer memberId);
 
 
+    @Query("SELECT pr FROM ProductReview pr WHERE pr.productid.sellermemberid.id = :sellerId")
+    List<ProductReview> findByProductid_Seller_Id(Integer sellerId);
+
+    @Query("SELECT pr FROM ProductReview pr WHERE pr.memberid.id = :buyerId")
+    List<ProductReview> findByMemberid_Id(Integer buyerId);
+
+
 
 
 

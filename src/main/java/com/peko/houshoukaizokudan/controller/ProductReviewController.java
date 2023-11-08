@@ -136,6 +136,22 @@ public class ProductReviewController {
         return ResponseEntity.ok().body(productReviews);
     }
 
+    //    GET /seller/api/reviews：查看全部評價
+    @GetMapping("/seller/api/reviews")
+    public ResponseEntity<?> getSellerReviews(HttpSession session) {
+        Member loginUser = (Member) session.getAttribute("loginUser");
+        List <ProductReviewDTO> sellerReviews = productReviewService.getSellerReviews(loginUser.getId());
+        return ResponseEntity.ok().body(sellerReviews);
+    }
+
+    //    GET /customer/api/reviews：查看全部評價
+    @GetMapping("/customer/api/reviews")
+    public ResponseEntity<?> getCustomerReviews(HttpSession session) {
+        Member loginUser = (Member) session.getAttribute("loginUser");
+        List <ProductReviewDTO> customerReviews = productReviewService.getCustomerReviews(loginUser.getId());
+        return ResponseEntity.ok().body(customerReviews);
+    }
+
 
     //    GET /api/v1/reviews/seller/:sellerId/monthly：賣家查看月度評論分析
     @GetMapping("/seller/api/reviews/seller/{sellerId}/monthly")
@@ -161,6 +177,8 @@ public class ProductReviewController {
         }
 
     }
+
+
 
 
 }

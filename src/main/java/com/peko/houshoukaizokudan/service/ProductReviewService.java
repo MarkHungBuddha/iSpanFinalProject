@@ -103,6 +103,56 @@ public class ProductReviewService {
         }
     }
 
+    @Transactional
+    public List<ProductReviewDTO> getSellerReviews(Integer sellerId) {
+        List<ProductReview> sellerReviews = productReviewRepository.findByProductid_Seller_Id(sellerId);
+        List<ProductReviewDTO> sellerReviewDTOs = new ArrayList<>();
+        for(ProductReview sellerReview:sellerReviews) {
+            ProductReviewDTO sellerReviewDTO = new ProductReviewDTO();
+            sellerReviewDTO.setProductid(sellerReview.getProductid().getId());
+            sellerReviewDTO.setMemberid(sellerReview.getMemberid().getId());
+            if (sellerReview.getOrderdetail() != null) {
+                sellerReviewDTO.setOrderid(
+                        orderDetailRepository.findIdByOrderDetailId(
+                                sellerReview.getOrderdetail().getId()
+                        )
+                );
+                sellerReviewDTO.setOrderdetailid(sellerReview.getOrderdetail().getId());
+
+            }
+            sellerReviewDTO.setRating(sellerReview.getRating());
+            sellerReviewDTO.setReviewcontent(sellerReview.getReviewcontent());
+            sellerReviewDTO.setReviewtime(sellerReview.getReviewtime());
+            sellerReviewDTOs.add(sellerReviewDTO);
+        }
+        return sellerReviewDTOs;
+    }
+
+    @Transactional
+    public List<ProductReviewDTO> getCustomerReviews(Integer customerId) {
+        List<ProductReview> customerReviews = productReviewRepository.findByMemberid_Id(customerId);
+        List<ProductReviewDTO> customerReviewDTOs = new ArrayList<>();
+        for(ProductReview customerReview:customerReviews) {
+            ProductReviewDTO customerReviewDTO = new ProductReviewDTO();
+            customerReviewDTO.setProductid(customerReview.getProductid().getId());
+            customerReviewDTO.setMemberid(customerReview.getMemberid().getId());
+            if (customerReview.getOrderdetail() != null) {
+                customerReviewDTO.setOrderid(
+                        orderDetailRepository.findIdByOrderDetailId(
+                                customerReview.getOrderdetail().getId()
+                        )
+                );
+                customerReviewDTO.setOrderdetailid(customerReview.getOrderdetail().getId());
+
+            }
+            customerReviewDTO.setRating(customerReview.getRating());
+            customerReviewDTO.setReviewcontent(customerReview.getReviewcontent());
+            customerReviewDTO.setReviewtime(customerReview.getReviewtime());
+            customerReviewDTOs.add(customerReviewDTO);
+        }
+        return customerReviewDTOs;
+    }
+
     public boolean hasBuyerReviewed(Integer buyerId,Integer orderDetailid){
         System.out.println("loginUserID="+buyerId);
         System.out.println("orederDetailid:"+orderDetailid);
