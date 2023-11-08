@@ -166,6 +166,7 @@ public class ProductBasicService {
         productDTO.setSellerLastName(productBasic.getSellermemberid().getLastname());
         productDTO.setSellerFirstName(productBasic.getSellermemberid().getFirstname());
         productDTO.setSellermemberid(productBasic.getSellermemberid().getId());
+        productDTO.setImagePath(productImageRepository.findImagepathByProductid(productBasic.getId()));
 //		productDTO.setImages(productBasic.getProductImage());
 //		productDTO.setReviews(productBasic.getProductReview());
 //		productDTO.setQandAs(productBasic.getQandA());
