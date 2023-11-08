@@ -40,16 +40,32 @@ public class ProductReviewController {
         }
 
         // 检查这笔订单有没有买这个商品
-        if (!productReviewService.isProductInOrder(productReviewDTO.getOrderdetailid(), productReviewDTO.getProductid())) {
+        if (!productReviewService.isProductInOrder(
+                productReviewService.getOrderDetailIdByOrderIdAndProductId(productReviewDTO.getOrderid(), productReviewDTO.getProductid()),
+                productReviewDTO.getProductid()))
+        {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("这笔订单中没有这个商品");
         }
 
-        if(!productReviewService.isProductInOrder(productReviewDTO.getOrderdetailid(),productReviewDTO.getProductid()))
+        if(!productReviewService.isProductInOrder(
+                productReviewService.getOrderDetailIdByOrderIdAndProductId(productReviewDTO.getOrderid(),productReviewDTO.getProductid()),
+                productReviewDTO.getProductid()))
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("这笔订单中未完成");
+
+        if(productReviewService.hasBuyerReviewed(loginUser.getId(),productReviewDTO.getOrderdetailid()))
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("已經評論過這項商品");
         // 建立新的productreview
         productReviewService.createReview(productReviewDTO, loginUser);
 
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/customer/api/review/checkreviewed")
+    public boolean BuyerReviewedCheck(@RequestParam("orderDetailid")Integer orderDetailid,HttpSession session){
+        Member loginUser = (Member) session.getAttribute("loginUser"); // 从session中获取登录用户
+        System.out.println("loginUserID="+loginUser.getId());
+        System.out.println("orederDetailid:"+orderDetailid);
+        return productReviewService.hasBuyerReviewed(loginUser.getId(),orderDetailid);
     }
 
     @GetMapping("/customer/api/order/{orderid}/status")

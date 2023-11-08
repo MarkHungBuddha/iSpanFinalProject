@@ -66,7 +66,7 @@ public class ProductBasicController {
 			@RequestParam(value = "minPrice", required = false, defaultValue = "0.0") Double minPrice,
 			@RequestParam(value = "maxPrice", required = false, defaultValue = "999999.99") Double maxPrice,
 			@RequestParam(name = "page", required = false,defaultValue = "1") Integer page) {
-		Pageable pageable = PageRequest.of(page -1, 5); // 每頁 5 項
+		Pageable pageable = PageRequest.of(page -1, 20); // 每頁 5 項
 
 
 		try {

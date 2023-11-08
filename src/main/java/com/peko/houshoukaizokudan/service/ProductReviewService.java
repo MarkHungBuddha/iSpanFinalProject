@@ -3,6 +3,7 @@ package com.peko.houshoukaizokudan.service;
 import com.peko.houshoukaizokudan.DTO.ProductReviewDTO;
 import com.peko.houshoukaizokudan.Repository.OrderBasicRepository;
 import com.peko.houshoukaizokudan.Repository.OrderDetailRepository;
+import com.peko.houshoukaizokudan.Repository.ProductBasicRepository;
 import com.peko.houshoukaizokudan.Repository.ProductReviewRepository;
 import com.peko.houshoukaizokudan.model.Member;
 import com.peko.houshoukaizokudan.model.ProductReview;
@@ -28,6 +29,8 @@ public class ProductReviewService {
     OrderDetailRepository orderDetailRepository;
     @Autowired
     OrderBasicRepository orderBasicRepository;
+    @Autowired
+    private ProductBasicRepository productBasicRepository;
 
     @Transactional
     public List<ProductReviewDTO> findProductReviewByProductid(Integer productid){
@@ -53,6 +56,14 @@ public class ProductReviewService {
         return orderBasicRepository.existsByIdAndBuyer_Id(orderId, memberId);
     }
 
+    public Integer getOrderDetailIdByOrderIdAndProductId(Integer orderId, Integer productId) {
+
+        return orderDetailRepository.findIdByOrderid_IdAndProductid_Id(orderId, productId);
+
+    }
+
+
+
     public boolean isProductInOrder(Integer orderDetailId, Integer productId) {
         if(orderDetailRepository.findStatusIdByOrderDetailId(orderDetailId)==4)
             return orderDetailRepository.existsByIdAndProductid_Id(orderDetailId, productId);
@@ -71,6 +82,8 @@ public class ProductReviewService {
         productReview.setReviewcontent(productReviewDTO.getReviewcontent());
         productReview.setReviewtime(productReviewDTO.getReviewtime());
         productReview.setMemberid(loginUser);
+        productReview.setProductid(productBasicRepository.findById(productReviewDTO.getProductid()).orElse(null));
+        productReview.setOrderdetail(orderDetailRepository.findById(productReviewDTO.getOrderdetailid()).orElse(null));
         // 设置其他字段
         productReviewRepository.save(productReview);
     }
@@ -88,6 +101,13 @@ public class ProductReviewService {
             // 更新其他字段
             productReviewRepository.save(productReview);
         }
+    }
+
+    public boolean hasBuyerReviewed(Integer buyerId,Integer orderDetailid){
+        System.out.println("loginUserID="+buyerId);
+        System.out.println("orederDetailid:"+orderDetailid);
+
+    	return productReviewRepository.hasBuyerReviewed(orderDetailid,buyerId);
     }
 
     public List<ProductReview> getRecentReviewsForSeller(Integer sellerId, Integer page) {

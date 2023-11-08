@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.constraints.Null;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -53,8 +54,27 @@ public class QandAService {
     }
 
 
+    @Transactional
+    public List<ProductQandADTO> getAskedQuestions(Integer memberId) {
+        List<QandA> qandAList = qandARepository.findAllByBuyerMember_Id(memberId);
+        List<ProductQandADTO> productQandADTOList = new ArrayList<>();
+        for (QandA qandA : qandAList) {
+            System.out.println(qandA.toString());
+            ProductQandADTO productQandADTO = new ProductQandADTO();
+            productQandADTO.setProductId(qandA.getProductid().getId());
+            productQandADTO.setBuyerMemberid(qandA.getBuyerMember().getId());
+            productQandADTO.setQuestion(qandA.getQuestion());
+            productQandADTO.setQuestiontime(qandA.getQuestiontime());
+            productQandADTOList.add(productQandADTO);
 
-
+            if(qandA.getSellerMember()!= null){
+                productQandADTO.setSellerMemberid(qandA.getSellerMember().getId());
+                productQandADTO.setAnswer(qandA.getAnswer());
+                productQandADTO.setAnswertime(qandA.getAnswertime());
+            }
+        }
+    return productQandADTOList;
+    }
     //列出全部問題byProductID
     @Transactional
     public List<ProductQandADTO> findProductQandAsByProductid(Integer productId) {
@@ -145,6 +165,7 @@ public class QandAService {
         List<ProductQandADTO> dtos = new ArrayList<>();
         for (QandA qanda : qandas) {
             ProductQandADTO dto = new ProductQandADTO();
+            dto.setQandaid(qanda.getId());
             dto.setProductId(qanda.getProductid().getId());
             dto.setBuyerMemberid(qanda.getBuyerMember().getId());
             dto.setQuestion(qanda.getQuestion());

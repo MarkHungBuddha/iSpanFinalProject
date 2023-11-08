@@ -10,6 +10,7 @@ import lombok.*;
 @ToString
 @Builder
 public class ProductQandADTO {
+    private Integer qandaid;
     private Integer productId;
     private Integer buyerMemberid;
     private String question;

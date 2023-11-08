@@ -41,7 +41,7 @@ public interface ShoppingCartRepository extends JpaRepository<ShoppingCart, Inte
     @Query(value = "select quantity from ShoppingCart where transactionid = ?1",nativeQuery = true)
     Integer CheckCartItemQuantity(Integer transactionid);
 
-    @Query(value = "select memberid ShoppingCart where transactionid = ?1",nativeQuery = true)
+    @Query(value = "select memberid from ShoppingCart where transactionid = ?1",nativeQuery = true)
     Integer findmemberidbytransactionid(Integer transactionid);
 
     //transactionId找productid
