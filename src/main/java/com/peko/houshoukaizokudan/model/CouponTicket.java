@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-
+@Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor

@@ -8,7 +8,7 @@ import org.hibernate.annotations.FetchMode;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-
+@Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor

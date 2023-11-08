@@ -10,7 +10,7 @@ import org.hibernate.annotations.Nationalized;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-
+@Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
