@@ -11,11 +11,12 @@ public class SmsController {
     @Autowired
     private SmsService smsService;
 
-    // 发送验证码到指定手机
     @PostMapping("/customer/api/sendPhoneVCode")
-    public ResponseEntity<String> sendVerificationCode(@RequestParam String mobile) {
+    public ResponseEntity<String> sendVerificationCode(
+            @RequestParam String mobile,
+            @RequestParam Integer userId) { // 假设前端会提供用户ID
         try {
-            smsService.sendPhoneVCode(mobile);
+            smsService.sendPhoneVCode(mobile, userId);
             return ResponseEntity.ok("驗證碼已成功送出");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("驗證碼送出失敗: " + e.getMessage());

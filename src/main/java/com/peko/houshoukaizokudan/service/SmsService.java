@@ -35,15 +35,27 @@ public class SmsService {
     }
 
     // 发送验证码到手机
-    public void sendPhoneVCode(String mobile) {
+    public void sendPhoneVCode(String mobile, Integer userId) {
         // 查找对应的用户
-        MemberDTO userDTO = memberService.findDTOByPhone(mobile);
+        MemberDTO userDTO = memberService.findDTOById(userId);
         if (userDTO != null) {
+            // 更新用户的手机号
+            userDTO.setPhone(mobile);
+            // 保存手机号更新，因为接下来的findDTOByPhone需要查找更新后的手机号
+            memberService.updateMember(userDTO);
+
+            // 再次查找更新后的用户，以验证手机号已更新
+            userDTO = memberService.findDTOByPhone(mobile);
+            if (userDTO == null) {
+                throw new RuntimeException("用戶的手機號碼更新後無法找到");
+            }
+
             // 生成验证码
             String verificationCode = VerificationCodeGenerator.generateCode(6);
 
             // 将验证码存储为 resetToken
             userDTO.setResetToken(verificationCode);
+            // 再次保存用户信息，这次是为了保存验证码
             memberService.updateMember(userDTO);
 
             // 构建短信内容
@@ -51,6 +63,8 @@ public class SmsService {
 
             // 使用 sendSms 方法发送短信
             sendSms(mobile, message);
+        } else {
+            throw new RuntimeException("找不到 ID 為 " + userId + " 的用戶");
         }
     }
 

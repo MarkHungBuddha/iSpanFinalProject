@@ -52,7 +52,11 @@ public class MemberService {
         return dbUser != null;
     }
 
-
+    public MemberDTO findDTOById(Integer id) {
+        Member member = usersRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("找不到 ID 為 " + id + " 的會員"));
+        return convertToDTO(member);
+    }
 
     public boolean checkIfEmailExist(String email) {
         Member dbUser = usersRepo.findByEmail(email);
@@ -89,7 +93,6 @@ public class MemberService {
         existingMember.setCity(memberDTO.getCity());
         existingMember.setCountry(memberDTO.getCountry());
         existingMember.setGender(memberDTO.getGender());
-        existingMember.setPhone(memberDTO.getPhone());
         existingMember.setPostalcode(memberDTO.getPostalcode());
         existingMember.setRegion(memberDTO.getRegion());
         existingMember.setStreet(memberDTO.getStreet());
@@ -99,6 +102,10 @@ public class MemberService {
             // 不再进行加密，直接设置密码
             existingMember.setPasswdbcrypt(memberDTO.getPasswdbcrypt());
         }
+        if (memberDTO.getPhone() != null && !memberDTO.getPhone().isEmpty()) {
+        	// 不再进行加密，直接设置密码
+        	existingMember.setPhone(memberDTO.getPhone());
+        }
         if (memberDTO.getMembertypeid() != null) {
             MemberType memberType = memberTypeRepository.findById(memberDTO.getMembertypeid())
                     .orElseThrow(() -> new RuntimeException("找不到 ID 為 " + memberDTO.getMembertypeid() + " 的會員類型"));
@@ -107,6 +114,12 @@ public class MemberService {
         // 根据需要设置其他字段
 
         return usersRepo.save(existingMember);
+    }
+    public void updatePhone(Integer userId, String phone) {
+        Member member = usersRepo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("找不到 ID 為 " + userId + " 的會員"));
+        member.setPhone(phone);
+        usersRepo.save(member);
     }
 
     public void deleteMember(Integer memberId) {
