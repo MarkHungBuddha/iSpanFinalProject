@@ -48,7 +48,7 @@ public class ProductController {
 
 	//分頁顯示上傳商品(搜尋)
 	@GetMapping("/seller/api/products/search")
-	public ResponseEntity<Page<ProductDto>> getProductsByPage(
+	public ResponseEntity<Page<ProductBasicDto>> getProductsByPage(
 			@RequestParam(name = "p", defaultValue = "1") Integer pageNumber,
 			@RequestParam(name = "productname", required = false) String productname, HttpServletRequest request) {
 		HttpSession session = request.getSession();
@@ -57,8 +57,8 @@ public class ProductController {
 		if (loginUser != null) {
 			Integer memberIdd = loginUser.getId();
 			System.out.println("Member ID: " + memberIdd);
-			Pageable pageable = PageRequest.of(pageNumber - 1, 3); // 3 items per page
-			Page<ProductDto> page = prdService.getProductByPage2(pageable, productname, memberIdd);
+			Pageable pageable = PageRequest.of(pageNumber - 1, 10); // 3 items per page
+			Page<ProductBasicDto> page = prdService.getProductByPage2(pageable, productname, memberIdd);
 			return new ResponseEntity<>(page, HttpStatus.OK);
 		} else {
 			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -113,7 +113,7 @@ public class ProductController {
 		if (loginUser != null) {
 			Integer memberIdd = loginUser.getId();
 			System.out.println("Member ID: " + memberIdd);
-			Pageable pageable = PageRequest.of(pageNumber - 1, 3); // 3 items per page
+			Pageable pageable = PageRequest.of(pageNumber - 1, 10); // 3 items per page
 			try {
 				Page<ProductBasicDto> page = prdService.getAllProductByPage(pageable, memberIdd);
 				return new ResponseEntity<>(page, HttpStatus.OK);

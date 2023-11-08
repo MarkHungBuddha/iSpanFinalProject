@@ -175,13 +175,13 @@ public class ProductBasicService {
 
     // 頁碼 //1頁2筆
     @Transactional
-    public Page<ProductDto> getProductByPage2(Pageable pageable, String productname, Integer memberIdd) {
+    public Page<ProductBasicDto> getProductByPage2(Pageable pageable, String productname, Integer memberIdd) {
         if (memberIdd != null) {
             // 单次筛选：根据会员ID筛选并根据产品名称模糊搜索
             Page<ProductBasic> pageByMemberId = productBasicRepository.findProductBasicBySellermemberidAndProductnameContaining(memberIdd, productname, pageable);
 
-            List<ProductDto> productDtos = pageByMemberId.getContent().stream()
-                    .map(this::convertToProductDto)
+            List<ProductBasicDto> productDtos = pageByMemberId.getContent().stream()
+                    .map(this::convertToProductBasicDto)
                     .collect(Collectors.toList());
 
             return new PageImpl<>(productDtos, pageable, pageByMemberId.getTotalElements());
@@ -293,6 +293,8 @@ public class ProductBasicService {
         productBasicDto.setQuantity(productBasic.getQuantity());
         productBasicDto.setCategoryName(productBasic.getCategoryid().getCategoryname());
         productBasicDto.setParentCategoryName(productBasic.getParentid().getParentname());
+        String ip = productImageRepository.findImagepathByProductid(productBasic.getId());
+        productBasicDto.setImagePath(ip);
 
         return productBasicDto;
     }

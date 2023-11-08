@@ -89,7 +89,7 @@ public class ProductBasicController {
 			@RequestParam(value = "minPrice", required = false, defaultValue = "0.0") Double minPrice,
 			@RequestParam(value = "maxPrice", required = false, defaultValue = "999999.99") Double maxPrice,
 			@RequestParam(value = "page", required = false, defaultValue = "1") Integer page) {
-		Pageable pageable = PageRequest.of(page -1, 5); //第一頁是0 所以-1 ，每頁 5 項
+		Pageable pageable = PageRequest.of(page -1, 20); //第一頁是0 所以-1 ，每頁 5 項
 
 		try {
 			Page<ProductCategoryDto> result = prdService.getCategoryNameByPriceRange(categoryname, minPrice, maxPrice, pageable);
