@@ -114,7 +114,7 @@ public class MemberController {
 		// 将用户添加到数据库
 		userUservice.addUser(u1);
 
-		response.put("okMsg", "註冊成功");
+		response.put("okMsg", "註冊成功，登入後請編輯個人資料");
 		return ResponseEntity.ok(response);
 	}
 

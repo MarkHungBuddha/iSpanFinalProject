@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 public class MemberImageService {
 
 	 private final String IMGUR_UPLOAD_URL = "https://api.imgur.com/3/upload";
-	    private final String CLIENT_ID = "Bearer 95fe35e9dca4195e698ceba640b42a76eb0b56cb";
+	    private final String CLIENT_ID = "Bearer 70b29a551ba2e83d346bc604311ebf6c950c4542";
 
     @Autowired
     private MemberRepository memberRepository;

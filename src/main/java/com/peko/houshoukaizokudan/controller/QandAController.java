@@ -90,7 +90,7 @@ public class QandAController {
 
     //賣家回答問題
     @PutMapping("/seller/api/product/qanda/answer/{qandaId}")
-    public ResponseEntity<ProductQandADTO> answerQuestionBySeller(@PathVariable Integer qandaId, HttpSession session, @RequestBody String answer) {
+    public ResponseEntity<ProductQandADTO> answerQuestionBySeller(@PathVariable Integer qandaId, HttpSession session, @RequestParam("answer") String answer) {
         try {
             Member loginUser = (Member) session.getAttribute("loginUser");
             ProductQandADTO updatedAnswer = qandAService.answerQuestionBySeller(qandaId, loginUser.getId(), answer);

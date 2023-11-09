@@ -69,17 +69,26 @@ public class ShoppingCartService {
 //    }
 
     @Transactional
-    public void addProductToCart(Integer b,Integer a) {
+    public void addProductToCart(Integer memberid, Integer productid) {
 
-        ShoppingCart cartItem = new ShoppingCart();
-        Optional<Member> mb = mbRepo.findById(b);
-        Optional<ProductBasic> pb = pbRepo.findById(a);
+        if (shoppingCartRepository.existsByMemberid_IdAndProductid_Id(memberid, productid)) {
 
-        cartItem.setMemberid(mb.get());
-        cartItem.setProductid(pb.get());
-        cartItem.setQuantity(1);
-        shoppingCartRepository.save(cartItem);
-
+            shoppingCartRepository.saveProductFromShoppingCart(
+                    productid,
+                    memberid,
+                    shoppingCartRepository.findquantityByMemberid_IdAndProductid_Id(
+                            productid,
+                            memberid)+1
+            );
+            return;
+        }
+            ShoppingCart cartItem = new ShoppingCart();
+            Optional<Member> member = mbRepo.findById(memberid);
+            Optional<ProductBasic> product = pbRepo.findById(productid);
+            cartItem.setMemberid(member.get());
+            cartItem.setProductid(product.get());
+            cartItem.setQuantity(1);
+            shoppingCartRepository.save(cartItem);
     }
 
     public List<ShoppingCartDto> getCartItemsByMemberId(Integer memberid) {
@@ -105,13 +114,7 @@ public class ShoppingCartService {
     }
 
 
-    public void PlusCartItem(Member member,Integer transactionid) {
-        shoppingCartRepository.PlusCartItem(member.getId(),transactionid);
-    }
 
-    public void MinusCartItem(Member member,Integer transactionid) {
-        shoppingCartRepository.MinusCartItem(member.getId(),transactionid);
-    }
 
     public void ClearCartItem(Member member,Integer transactionid) {
 

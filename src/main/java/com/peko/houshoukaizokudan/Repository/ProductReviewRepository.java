@@ -52,7 +52,7 @@ public interface ProductReviewRepository extends JpaRepository<ProductReview, In
     @Query("SELECT pr FROM ProductReview pr WHERE pr.productid.sellermemberid.id = :sellerId")
     List<ProductReview> findByProductid_Seller_Id(Integer sellerId);
 
-    @Query("SELECT pr FROM ProductReview pr WHERE pr.memberid.id = :buyerId")
+    @Query(value = "SELECT * FROM ProductReview  WHERE memberid = ?1",nativeQuery = true)
     List<ProductReview> findByMemberid_Id(Integer buyerId);
 
 
