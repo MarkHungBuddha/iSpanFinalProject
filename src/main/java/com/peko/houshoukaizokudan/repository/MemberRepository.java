@@ -15,6 +15,10 @@ public interface MemberRepository extends JpaRepository<Member, Integer>{
 	Member findByEmail(String email);
 
 	Member findByPhone(String phone);
+	
+	@Query(value = "SELECT membertypeid FROM Member  WHERE memberid = ?1",nativeQuery = true)
+	Integer findmembertypebymemberid(Integer memberid);
+
 
 
 	@Query(value = "SELECT membertypeid FROM Member  WHERE memberid = ?1",nativeQuery = true)

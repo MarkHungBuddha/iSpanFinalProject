@@ -151,7 +151,7 @@ public class MemberController {
 		}
 	}
 
-	@PostMapping("/customer/member/logout")
+	@PostMapping("/public/member/logout")
 	public Map<String, String> logout(HttpSession httpsession) {
 		Map<String, String> response = new HashMap<>();
 
@@ -263,7 +263,7 @@ public class MemberController {
 		}
 	}
 
-	@GetMapping("/customer/api/userType")
+	@GetMapping("/public/api/userType")
 	public Integer getuserType(HttpSession session){
 		Member loggedInUser = (Member) session.getAttribute("loginUser");
 		return userUservice.finduserType(loggedInUser.getId());
