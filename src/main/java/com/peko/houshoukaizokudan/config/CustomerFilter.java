@@ -21,13 +21,13 @@ public class CustomerFilter implements Filter {
             chain.doFilter(request, response);
             return;
         }
-        boolean isAuthorized = false;
 
+        boolean isAuthorized = false;
         String requestURI = httpRequest.getRequestURI();
 
         if (session == null) {
             isAuthorized = requestURI.startsWith("/public");
-            handleAuthorization(isAuthorized, request, response, chain);
+            handleAuthorization(isAuthorized, false, request, response, chain);
             return;
         }
 
@@ -35,7 +35,7 @@ public class CustomerFilter implements Filter {
 
         if (loginUser == null) {
             isAuthorized = requestURI.startsWith("/public");
-            handleAuthorization(isAuthorized, request, response, chain);
+            handleAuthorization(isAuthorized, false, request, response, chain);
             return;
         }
 
@@ -46,18 +46,22 @@ public class CustomerFilter implements Filter {
             isAuthorized = requestURI.startsWith("/public") || requestURI.startsWith("/customer") || requestURI.startsWith("/seller");
         }
 
-        handleAuthorization(isAuthorized, request, response, chain);
+        handleAuthorization(isAuthorized, true, request, response, chain);
     }
 
-
-    private void handleAuthorization(boolean isAuthorized, ServletRequest request,
+    private void handleAuthorization(boolean isAuthorized, boolean isUserLoggedIn, ServletRequest request,
                                      ServletResponse response, FilterChain chain) throws IOException, ServletException {
         if (isAuthorized) {
             chain.doFilter(request, response);
             return;
         }
 
-        ((HttpServletResponse) response).sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        HttpServletResponse httpResponse = (HttpServletResponse) response;
+        if (!isUserLoggedIn) {
+            httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED); // 401 error for not logged in
+        } else {
+            httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN); // 403 error for logged in but unauthorized
+        }
     }
 
     @Override

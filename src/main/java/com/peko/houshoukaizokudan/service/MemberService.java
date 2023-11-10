@@ -321,4 +321,8 @@ public class MemberService {
             throw new RuntimeException("Failed to extract image URL from response.");
         }
     }
+
+    public Integer finduserType(Integer memberid){
+        return usersRepo.findmembertypebymemberid(memberid);
+    }
 }

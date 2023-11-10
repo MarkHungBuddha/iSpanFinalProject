@@ -54,11 +54,10 @@ public class WishlistController {
     }
 
     //買家查看願望清單商品
-    @GetMapping("/customer/api/wishlist")
+    @GetMapping("/public/api/wishlist")
     public ResponseEntity<List<WishlistDTO>> getWishList(HttpSession session) {
-        Member member = (Member) session.getAttribute("loginUser");
-
         try {
+        Member member = (Member) session.getAttribute("loginUser");
             List<WishlistDTO> wishList = wishListService.getWishList(member.getId());
             return ResponseEntity.ok(wishList); //回傳商品列表
         } catch (Exception e) {

@@ -119,6 +119,7 @@ public class MemberController {
 	}
 
 
+
 	@PostMapping("/public/api/member/memberLogin")
 	public ResponseEntity<?> checkUserLogin(
 			@RequestParam("username") String username,
@@ -260,6 +261,12 @@ public class MemberController {
 			// 用户未登录
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("未登入，請先登入");
 		}
+	}
+
+	@GetMapping("/customer/api/userType")
+	public Integer getuserType(HttpSession session){
+		Member loggedInUser = (Member) session.getAttribute("loginUser");
+		return userUservice.finduserType(loggedInUser.getId());
 	}
 	// 其他控制器方法和功能
 }
