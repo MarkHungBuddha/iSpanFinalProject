@@ -15,7 +15,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Builder
 public class ShoppingCartDto {
-    private Integer TransactionId;
+    private Integer transactionId;
     private Integer ProductId;
     private Integer memberid;
     private BigDecimal price;
