@@ -43,10 +43,11 @@ public class RevenueController {
 							   HttpServletRequest request) {
 		HttpSession session = request.getSession();
 		Member loginUser = (Member) session.getAttribute("loginUser");
+		System.out.println("月月"+month);
 		if (loginUser != null) {
 			Integer memberIdd = loginUser.getId();
 
-			Integer ob = obService.findTotalByMonth(year, memberIdd, month);
+			Integer ob = obService.findTotalByMonth(year, month ,memberIdd);
 
 			return ob;
 		}

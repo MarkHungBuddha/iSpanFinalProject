@@ -146,10 +146,10 @@ public class OrderBasicService {
     }
 
     public Integer findTotalByMonth(Integer year, Integer month, Integer memberIdd) {
-        String yearAsString = String.valueOf(year);
-        System.out.println(yearAsString);
-        String monthAsString = String.valueOf(month);
-        System.out.println(monthAsString);
+//        String yearAsString = String.valueOf(year);
+//        System.out.println(yearAsString);
+//        String monthAsString = String.valueOf(month);
+//        System.out.println("月"+month);
         return orderRepo.findTotalAmountByYearAndMonthAndSeller(year, month, memberIdd);
     }
 
