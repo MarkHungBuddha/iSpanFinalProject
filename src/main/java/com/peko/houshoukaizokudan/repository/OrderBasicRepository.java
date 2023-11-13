@@ -2,6 +2,7 @@ package com.peko.houshoukaizokudan.Repository;
 
 import java.util.List;
 
+import com.peko.houshoukaizokudan.DTO.RevenueDto;
 import com.peko.houshoukaizokudan.model.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -24,10 +25,9 @@ public interface OrderBasicRepository extends JpaRepository<OrderBasic, Integer>
     Integer findStatusId_IdByOrderId(Integer orderId);
 
 
-    @Query(value = "SELECT COALESCE(SUM(ob.totalamount), 0) FROM dbo.OrderBasic ob WHERE YEAR(ob.merchanttradedate) = :year AND ob.sellerid = :memberId", nativeQuery = true)
+    @Query(value = "SELECT COALESCE(SUM(ob.totalamount), 0) FROM dbo.OrderBasic ob WHERE YEAR(ob.merchanttradedate) = :year AND ob.sellerid = :memberId AND ob.statusid = 4", nativeQuery = true)
     Integer findTotalAmountByYearAndSeller(@Param("year") String yearAsString, @Param("memberId") Integer memberId);
-
-    @Query(value = "SELECT COALESCE(SUM(ob.totalamount), 0) FROM dbo.OrderBasic ob WHERE YEAR(ob.merchanttradedate) = :year AND MONTH(ob.merchanttradedate) = :month AND ob.sellerid = :memberId", nativeQuery = true)
+    @Query(value = "SELECT COALESCE(SUM(ob.totalamount), 0) FROM dbo.OrderBasic ob WHERE YEAR(ob.merchanttradedate) = :year AND MONTH(ob.merchanttradedate) = :month AND ob.sellerid = :memberId AND ob.statusid = 4", nativeQuery = true)
     Integer findTotalAmountByYearAndMonthAndSeller(@Param("year") Integer year, @Param("month") Integer month,
                                                    @Param("memberId") Integer memberId);
     //買家找訂單 By 購買人(List)
@@ -69,6 +69,8 @@ public interface OrderBasicRepository extends JpaRepository<OrderBasic, Integer>
     //賣家找一筆訂單 by orderid 與 seller
     @Query(value = "select * from OrderBasic where sellerid = ?2 and orderid = ?1",nativeQuery = true)
     OrderBasic findOrderBasicByIdandSellerid(Integer orderid, int sellerid);
+
+
 
 
 }
