@@ -21,6 +21,5 @@ public interface MemberRepository extends JpaRepository<Member, Integer>{
 
 
 
-	@Query(value = "SELECT membertypeid FROM Member  WHERE memberid = ?1",nativeQuery = true)
-	Integer findmembertypebymemberid(Integer memberid);
+
 }
