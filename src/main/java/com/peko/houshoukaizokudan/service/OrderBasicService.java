@@ -16,6 +16,7 @@ import java.util.stream.Stream;
 import com.peko.houshoukaizokudan.DTO.OrderBasicDto;
 import com.peko.houshoukaizokudan.DTO.OrderDetailDto;
 import com.peko.houshoukaizokudan.DTO.ProductIDandQuentity;
+import com.peko.houshoukaizokudan.DTO.RevenueDto;
 import com.peko.houshoukaizokudan.DTO.checkoutOrderDto;
 import com.peko.houshoukaizokudan.Repository.*;
 import com.peko.houshoukaizokudan.model.*;
@@ -146,10 +147,10 @@ public class OrderBasicService {
     }
 
     public Integer findTotalByMonth(Integer year, Integer month, Integer memberIdd) {
-        String yearAsString = String.valueOf(year);
-        System.out.println(yearAsString);
-        String monthAsString = String.valueOf(month);
-        System.out.println(monthAsString);
+//        String yearAsString = String.valueOf(year);
+//        System.out.println(yearAsString);
+//        String monthAsString = String.valueOf(month);
+//        System.out.println("月"+month);
         return orderRepo.findTotalAmountByYearAndMonthAndSeller(year, month, memberIdd);
     }
 
@@ -486,6 +487,17 @@ public class OrderBasicService {
             return order;
         }
 
+    }
+    @Transactional
+    public List<RevenueDto> findTotalAllMonth(Integer year, Integer memberId) {
+        System.out.println(year + " " + memberId);
+        List<RevenueDto> revenueDtos = new ArrayList<>();
+        for (int month = 1; month <= 12; month++) {
+            int monthlyTotal = orderRepo.findTotalAmountByYearAndMonthAndSeller(year, month, memberId);
+            RevenueDto dto = new RevenueDto(monthlyTotal);
+            revenueDtos.add(dto);
+        }
+        return revenueDtos;
     }
 
 }

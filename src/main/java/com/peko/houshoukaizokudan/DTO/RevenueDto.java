@@ -14,13 +14,5 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RevenueDto {
-    private Integer ProductId;
-    private String productName;
-    private BigDecimal price;
-    private BigDecimal specialPrice;
-    private String description;
-    private Integer quantity;
-    private String categoryName;
-    private String parentCategoryName;
-    private Member sellermemberid;
+private Integer totalamount;
 }

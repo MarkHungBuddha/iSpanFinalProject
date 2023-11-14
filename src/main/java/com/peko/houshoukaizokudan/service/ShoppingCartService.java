@@ -30,6 +30,8 @@ public class ShoppingCartService {
     private ProductBasicRepository pbRepo;
     @Autowired
     private ProductImageRepository piRepo;
+    
+    
 
     public ShoppingCartService(ShoppingCartRepository shoppingCartRepository) {
         this.shoppingCartRepository = shoppingCartRepository;
@@ -70,15 +72,16 @@ public class ShoppingCartService {
 
     @Transactional
     public void addProductToCart(Integer memberid, Integer productid) {
-
+    	Integer newquantity = shoppingCartRepository.findquantityByMemberid_IdAndProductid_Id(productid,memberid);
+    	Integer oldquantity = pbRepo.findProductByProductid(productid);
         if (shoppingCartRepository.existsByMemberid_IdAndProductid_Id(memberid, productid)) {
-
+        	if(newquantity>=oldquantity) {
+        		return; 
+        	}
             shoppingCartRepository.saveProductFromShoppingCart(
                     productid,
                     memberid,
-                    shoppingCartRepository.findquantityByMemberid_IdAndProductid_Id(
-                            productid,
-                            memberid)+1
+                    newquantity+1
             );
             return;
         }
@@ -118,10 +121,11 @@ public class ShoppingCartService {
 
     public void ClearCartItem(Member member,Integer transactionid) {
 
-        if(Objects.equals(shoppingCartRepository.findmemberidbytransactionid(transactionid), member.getId())){
+        if(shoppingCartRepository.findmemberidbytransactionid(transactionid) == member.getId()){
         shoppingCartRepository.ClearCartItem(transactionid);
 
         }
+      
     }
 
     public void ClearCartItembyProductId(Member member,Integer transactionid) {
