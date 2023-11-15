@@ -105,7 +105,7 @@ public class MemberController {
 		u1.setCity("台南市");
 		u1.setRegion("永康區");
 		u1.setStreet("南台街");
-		u1.setMemberimgpath("nnNjLVE");
+		u1.setMemberimgpath("AuoktHR");
 
 		Instant now = Instant.now();
 		String iso8601Time = DateTimeFormatter.ISO_INSTANT.format(now);
