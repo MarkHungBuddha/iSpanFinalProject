@@ -42,7 +42,7 @@ public class EmailService {
     }
     public void sendPasswordResetEmail(String to, String resetToken) {
         String subject = "重置您的密码";
-        String content = "您的密码重置码为：" + resetToken + "。请使用此码来重置您的密码。";
+        String content = "您的密碼重置認證碼：" + resetToken + "。使用此認證碼來重置密碼";
 
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
