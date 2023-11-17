@@ -40,7 +40,7 @@ public class OrderDetailService {
 		return orderDetailRepo.findOrderDetailByOrderid(orderid);
 	}
 
-	// 找訂單每個商品 (dto)
+	// 找訂單每個商品 (dto) //增加setProductid 20231104
 	@Transactional
 	public List<OrderDetailDto> getProducts(List<OrderDetail> products) {
 		List<OrderDetailDto> dtoProductList = products.stream().map(product -> {
@@ -53,6 +53,10 @@ public class OrderDetailService {
 			dto.setProductName(product.getProductid().getProductname());
 			dto.setQuantity(product.getQuantity());
 			dto.setUnitprice(product.getUnitprice().intValue());
+			dto.setProductid(productId);		//20231104新增
+			Integer detailid = orderDetailRepo.findIdByOrderid_IdAndProductid_Id(product.getOrderid().getId(),productId);
+			dto.setOrederDetailid(detailid);	//20231104新增
+
 			return dto;
 		}).collect(Collectors.toList()); // 将映射后的对象收集到列表中
 		return dtoProductList;

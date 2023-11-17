@@ -2,9 +2,7 @@ package com.peko.houshoukaizokudan.controller;
 
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -15,14 +13,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.peko.houshoukaizokudan.DTO.ProductBasicDto;
@@ -56,7 +48,7 @@ public class ProductController {
 
 	//分頁顯示上傳商品(搜尋)
 	@GetMapping("/seller/api/products/search")
-	public ResponseEntity<Page<ProductDto>> getProductsByPage(
+	public ResponseEntity<Page<ProductBasicDto>> getProductsByPage(
 			@RequestParam(name = "p", defaultValue = "1") Integer pageNumber,
 			@RequestParam(name = "productname", required = false) String productname, HttpServletRequest request) {
 		HttpSession session = request.getSession();
@@ -65,8 +57,8 @@ public class ProductController {
 		if (loginUser != null) {
 			Integer memberIdd = loginUser.getId();
 			System.out.println("Member ID: " + memberIdd);
-			Pageable pageable = PageRequest.of(pageNumber - 1, 3); // 3 items per page
-			Page<ProductDto> page = prdService.getProductByPage2(pageable, productname, memberIdd);
+			Pageable pageable = PageRequest.of(pageNumber - 1, 10); // 3 items per page
+			Page<ProductBasicDto> page = prdService.getProductByPage2(pageable, productname, memberIdd);
 			return new ResponseEntity<>(page, HttpStatus.OK);
 		} else {
 			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -74,20 +66,18 @@ public class ProductController {
 	}
 
 
-	//新增商品跟圖片(編碼ORDERID)
-	@PostMapping("/seller/api/product/{od}")
-	private ResponseEntity<Object> uploadPage(@RequestParam String productname, @RequestParam BigDecimal price,
-											  @RequestParam BigDecimal specialprice, @RequestParam Integer categoryid, @RequestParam Integer quantity,
-											  @RequestParam String description, HttpServletRequest request, @RequestPart("file") MultipartFile file,
-											  @PathVariable("od") Integer od) throws java.io.IOException {
-		// 获取 HttpSession 对象
-		HttpSession session = request.getSession();
+	// 新增商品
+	@PostMapping("/seller/api/product")
+	@Transactional
+	public ResponseEntity<Object> uploadPage(@RequestParam String productname,
+											 @RequestParam BigDecimal price, @RequestParam BigDecimal specialprice,
+											 @RequestParam Integer categoryid, @RequestParam Integer quantity,
+											 @RequestParam String description, HttpServletRequest request) throws java.io.IOException {
 
-		// 从 HttpSession 中获取存储的用户信息
+		HttpSession session = request.getSession();
 		Member loginUser = (Member) session.getAttribute("loginUser");
 
 		if (loginUser != null) {
-
 			ProductCategory pc1 = pcService.findById(categoryid);
 			ProductBasic pb1 = new ProductBasic();
 			pb1.setSellermemberid(loginUser);
@@ -100,44 +90,47 @@ public class ProductController {
 			pb1.setParentid(pb1.getCategoryid().getParentid());
 			prdService.insert(pb1);
 
-			int id = pb1.getId();
-			System.out.println("ID:" + id);
+			int productId = pb1.getId(); // 获取创建的商品ID
+			System.out.println(productId);
+			// 创建一个map来作为响应主体
+			Map<String, Object> responseBody = new HashMap<>();
+			responseBody.put("productId", productId); // 放入商品ID
+			responseBody.put("message", "Product created successfully!"); // 也可以放入其他响应信息
 
-			// 圖片s
-			String imageUrl = null;
-			try {
-				imageUrl = piService.uploadImage(file, id, od);
-			} catch (IOException e) {
-				e.printStackTrace();
-				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-			}
-			return ResponseEntity.ok().build();
+			return new ResponseEntity<>(responseBody, HttpStatus.OK);
 		} else {
-			return ResponseEntity.notFound().build();
+			Map<String, String> responseBody = new HashMap<>();
+			responseBody.put("error", "User not found or not logged in.");
+			return new ResponseEntity<>(responseBody, HttpStatus.UNAUTHORIZED);
 		}
 	}
 
 	// 顯示所有上傳
 	@GetMapping("/seller/api/products")
-	public ResponseEntity<Page<ProductBasicDto>> showPage(
+	public ResponseEntity<?> showPage(
 			@RequestParam(name = "p", defaultValue = "1") Integer pageNumber, HttpSession session) {
 		Member loginUser = (Member) session.getAttribute("loginUser");
 		if (loginUser != null) {
 			Integer memberIdd = loginUser.getId();
 			System.out.println("Member ID: " + memberIdd);
-			Pageable pageable = PageRequest.of(pageNumber - 1, 3); // 3 items per page
-			Page<ProductBasicDto> page = prdService.getAllProductByPage(pageable, memberIdd);
-			return new ResponseEntity<>(page, HttpStatus.OK);
+			Pageable pageable = PageRequest.of(pageNumber - 1, 10); // 3 items per page
+			try {
+				Page<ProductBasicDto> page = prdService.getAllProductByPage(pageable, memberIdd);
+				return new ResponseEntity<>(page, HttpStatus.OK);
+			} catch (Exception e) {
+				// Log the exception and return an appropriate error response
+				System.err.println("Error retrieving products: " + e.getMessage());
+				return new ResponseEntity<>("無法檢索產品信息", HttpStatus.INTERNAL_SERVER_ERROR);
+			}
 		} else {
-			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<>("未授權訪問", HttpStatus.UNAUTHORIZED);
 		}
 	}
 
-	//更新商品圖片
-	@PutMapping("/seller/api/product/{id}/{od}/editImg")
 
-	public ResponseEntity<Object> editImage(@RequestPart("file") MultipartFile file,
-											@PathVariable("id") Integer id,
+	// 更新商品圖片
+	@PutMapping("/seller/api/product/{id}/{od}/editImg")
+	public ResponseEntity<Object> editImage(@RequestPart("file") MultipartFile file, @PathVariable("id") Integer id,
 											@PathVariable("od") Integer od, HttpServletRequest request) throws IOException, java.io.IOException {
 		HttpSession session = request.getSession();
 		Member loginUser = (Member) session.getAttribute("loginUser");
@@ -150,9 +143,9 @@ public class ProductController {
 		}
 	}
 
-	//更新商品資料
-	@PutMapping("/seller/api/product/{od}")
-	public ResponseEntity<Object> editPage(@PathVariable("id") Integer id, @RequestPart("product") ProductBasic up,
+	// 更新商品資料
+	@PutMapping("/seller/api/product/{id}")
+	public ResponseEntity<Object> editPage(@PathVariable("id") Integer id, @RequestPart("productData") ProductBasic up,
 										   HttpServletRequest request) throws java.io.IOException {
 		HttpSession session = request.getSession();
 		Member loginUser = (Member) session.getAttribute("loginUser");
@@ -173,7 +166,7 @@ public class ProductController {
 			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 		}
 	}
-	//商品下架
+	// 商品下架
 	@PutMapping("/seller/api/{id}/remove")
 	public ResponseEntity<Object> editQuntity(@PathVariable("id") Integer id, HttpServletRequest request) {
 		HttpSession session = request.getSession();
@@ -200,18 +193,17 @@ public class ProductController {
 		return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 	}
 
-
+	//顯示單筆商品
 	@GetMapping("/seller/api/product")
-	public ResponseEntity<ProductBasicDto2> showOne(
-			@RequestParam("id") Integer id ,HttpSession session) {
+	public ResponseEntity<ProductBasicDto> showOne(@RequestParam("id") Integer id, HttpSession session) {
 		Member loginUser = (Member) session.getAttribute("loginUser");
 		if (loginUser != null) {
 			Integer memberIdd = loginUser.getId();
 			System.out.println("Member ID: " + memberIdd);
-			Optional<ProductBasicDto2> pb=prdService.findByIdAndSellerId(id,memberIdd);
+			Optional<ProductBasicDto> pb = prdService.findByIdAndSellerId(id, memberIdd);
 
-			if(pb.isPresent()) {
-				return new ResponseEntity<>(pb.get(),HttpStatus.OK);
+			if (pb.isPresent()) {
+				return new ResponseEntity<>(pb.get(), HttpStatus.OK);
 			}
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
@@ -222,7 +214,7 @@ public class ProductController {
 
 
 
-
+	//賣家csv上傳商品(尚未測試)
 	@PostMapping("/seller/api/csv")
 	public ResponseEntity<String> uploadCSV(@RequestParam("file") MultipartFile file) {
 		try {
@@ -263,6 +255,7 @@ public class ProductController {
 		}
 	}
 
+	//顯示商品資料
 	@GetMapping("/public/product/{productId}")
 	public ResponseEntity<ProductBasicDto> viewProduct(@PathVariable Integer productId) {
 		ProductBasicDto productDTO = prdService.getProductDTOById(productId).orElse(null);

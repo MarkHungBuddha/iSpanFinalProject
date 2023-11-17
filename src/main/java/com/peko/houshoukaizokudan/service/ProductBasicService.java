@@ -44,6 +44,7 @@ public class ProductBasicService {
 
     @Autowired
     private ProductCategoryRepository productCategoryRepository;
+
     @Autowired
     private MemberRepository mRepo;
 
@@ -62,9 +63,10 @@ public class ProductBasicService {
 
 
 
-    //建立商品
+    // 建立商品
     @Transactional
-    public ProductBasic addProductWithImages(ProductBasic productBasic, ProductCategory category, List<ProductImage> images) {
+    public ProductBasic addProductWithImages(ProductBasic productBasic, ProductCategory category,
+                                             List<ProductImage> images) {
         // Save the product basic information
         ProductBasic savedProduct = productBasicRepository.save(productBasic);
 
@@ -160,7 +162,11 @@ public class ProductBasicService {
         productDTO.setQuantity(productBasic.getQuantity());
         productDTO.setCategoryName(productBasic.getCategoryid().getCategoryname());
         productDTO.setParentCategoryName(productBasic.getCategoryid().getParentid().getParentname());
-//		productDTO.setSellerUsername(productBasic.getSellermemberid().getUsername());
+        productDTO.setSellerUsername(productBasic.getSellermemberid().getUsername());
+        productDTO.setSellerLastName(productBasic.getSellermemberid().getLastname());
+        productDTO.setSellerFirstName(productBasic.getSellermemberid().getFirstname());
+        productDTO.setSellermemberid(productBasic.getSellermemberid().getId());
+        productDTO.setImagePath(productImageRepository.findImagepathByProductid(productBasic.getId()));
 //		productDTO.setImages(productBasic.getProductImage());
 //		productDTO.setReviews(productBasic.getProductReview());
 //		productDTO.setQandAs(productBasic.getQandA());
@@ -170,13 +176,13 @@ public class ProductBasicService {
 
     // 頁碼 //1頁2筆
     @Transactional
-    public Page<ProductDto> getProductByPage2(Pageable pageable, String productname, Integer memberIdd) {
+    public Page<ProductBasicDto> getProductByPage2(Pageable pageable, String productname, Integer memberIdd) {
         if (memberIdd != null) {
             // 单次筛选：根据会员ID筛选并根据产品名称模糊搜索
             Page<ProductBasic> pageByMemberId = productBasicRepository.findProductBasicBySellermemberidAndProductnameContaining(memberIdd, productname, pageable);
 
-            List<ProductDto> productDtos = pageByMemberId.getContent().stream()
-                    .map(this::convertToProductDto)
+            List<ProductBasicDto> productDtos = pageByMemberId.getContent().stream()
+                    .map(this::convertToProductBasicDto)
                     .collect(Collectors.toList());
 
             return new PageImpl<>(productDtos, pageable, pageByMemberId.getTotalElements());
@@ -193,14 +199,15 @@ public class ProductBasicService {
             throw new IllegalArgumentException("無效的價格範圍");
         }
 
-        Page<ProductBasic> productBasics = productBasicRepository.findProductBasicByProductNameAndPriceRange(productname, minPrice, maxPrice, pageable);
+        Page<ProductBasic> productBasics = productBasicRepository
+                .findProductBasicByProductNameAndPriceRange(productname, minPrice, maxPrice, pageable);
         List<ProductDto> result = productBasics.getContent().stream().map(pro -> {
             ProductDto dto = new ProductDto();
-            dto.setProductid(pro.getId());
-            dto.setProductname(pro.getProductname());
+            dto.setProductId(pro.getId());
+            dto.setProductName(pro.getProductname());
             dto.setPrice(pro.getPrice());
-            dto.setSpecialprice(pro.getSpecialprice());
-            dto.setCategoryname(pro.getCategoryid().getCategoryname());
+            dto.setSpecialPrice(pro.getSpecialprice());
+            dto.setCategoryName(pro.getCategoryid().getCategoryname());
             dto.setQuantity(pro.getQuantity());
             dto.setDescription(pro.getDescription());
             // 使用 ProductImageRepository 查詢圖像路徑
@@ -226,6 +233,7 @@ public class ProductBasicService {
         List<ProductCategoryDto> result = productBasics.stream().map(pro -> {
                     ProductCategoryDto dto = new ProductCategoryDto();
                     dto.setCategoryid(pro.getCategoryid().getId());
+                    dto.setProductid(pro.getId());
                     dto.setProductname(pro.getProductname());
                     dto.setPrice(pro.getPrice());
                     dto.setSpecialprice(pro.getSpecialprice());
@@ -265,10 +273,12 @@ public class ProductBasicService {
     public ProductDto convertToProductDto(ProductBasic productBasic) {
         ProductDto productDto = new ProductDto();
         // 执行转换逻辑，将 productBasic 的属性赋值给 productDto
-        productDto.setProductid(productBasic.getId());
-        productDto.setProductname(productBasic.getProductname());
+        productDto.setProductId(productBasic.getId());
+        productDto.setProductName(productBasic.getProductname());
         productDto.setPrice(productBasic.getPrice());
-        productDto.setSpecialprice(productBasic.getSpecialprice());
+        productDto.setSpecialPrice(productBasic.getSpecialprice());
+        String ip = productImageRepository.findImagepathByProductid(productBasic.getId());
+        productDto.setImagepath(ip);
         // 其他属性的转换
         return productDto;
     }
@@ -284,6 +294,8 @@ public class ProductBasicService {
         productBasicDto.setQuantity(productBasic.getQuantity());
         productBasicDto.setCategoryName(productBasic.getCategoryid().getCategoryname());
         productBasicDto.setParentCategoryName(productBasic.getParentid().getParentname());
+        String ip = productImageRepository.findImagepathByProductid(productBasic.getId());
+        productBasicDto.setImagePath(ip);
 
         return productBasicDto;
     }
@@ -362,7 +374,7 @@ public class ProductBasicService {
         if (up.getCategoryid() != null) {
             // 直接将新的categoryid设置给ProductBasic
             ed.setCategoryid(up.getCategoryid());
-            ed.setParentid(up.getParentid());
+            ed.setParentid(productCategoryRepository.findParentCategoryByProductCategoryId(up.getCategoryid().getId()));
         }
 
         if (up.getSellermemberid() != null) {
@@ -373,6 +385,7 @@ public class ProductBasicService {
             }
 
         }
+
 
         return productBasicRepository.save(ed);
     }
@@ -402,7 +415,13 @@ public class ProductBasicService {
             Page<ProductBasic> pageByMemberId = productBasicRepository.findProductBasicBySellermemberid(memberIdd, pageable);
 
             List<ProductBasicDto> productDtos = pageByMemberId.getContent().stream()
-                    .map(this::convertToProductBasicDto)
+                    .map(productBasic -> {
+                        ProductBasicDto dto = convertToProductBasicDto(productBasic);
+                        // Assuming you have a ProductImageRepository bean with the method findByProductIdAndOrderId
+                        String imagePath = productImageRepository.findByProductIdAndOrderId(productBasic.getId(), 1);
+                        dto.setImagePath(imagePath); // Set the imagePath in the DTO
+                        return dto;
+                    })
                     .collect(Collectors.toList());
 
             return new PageImpl<>(productDtos, pageable, pageByMemberId.getTotalElements());
@@ -417,11 +436,11 @@ public class ProductBasicService {
         productBasicRepository.save(qu);
     }
 
-    public Optional<ProductBasicDto2> findByIdAndSellerId(Integer id, Integer memberIdd) {
+    public Optional<ProductBasicDto> findByIdAndSellerId(Integer id, Integer memberIdd) {
         Optional<ProductBasic> productBasic = productBasicRepository.findByIdAndSellerId(id, memberIdd);
 
         if (productBasic.isPresent()) {
-            ProductBasicDto2 productBasicDto = convertToProductBasicDto2(productBasic.get());
+            ProductBasicDto productBasicDto = convertToProductBasicDto(productBasic.get());
             return Optional.of(productBasicDto);
         } else {
             return Optional.empty();

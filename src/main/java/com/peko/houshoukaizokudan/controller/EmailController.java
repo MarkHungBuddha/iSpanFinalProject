@@ -1,18 +1,13 @@
 package com.peko.houshoukaizokudan.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.peko.houshoukaizokudan.DTO.EmailRequest;
 import com.peko.houshoukaizokudan.service.EmailService;
 import com.peko.houshoukaizokudan.service.VerificationCodeGenerator;
 
 @RestController
-@RequestMapping("/email")
 public class EmailController {
 
     @Autowired
@@ -31,8 +26,8 @@ public class EmailController {
         return "驗證碼已發送";
     }
     @PostMapping("/public/api/verifyCode")
-    public String verifyCode(@RequestParam String userInputCode) {
-        boolean isVerified = emailService.verifyVerificationCode(userInputCode);
+    public String verifyCode(@RequestParam String email, @RequestParam String userInputCode) {
+        boolean isVerified = emailService.verifyVerificationCode(email, userInputCode);
 
         if (isVerified) {
             return "驗證成功";

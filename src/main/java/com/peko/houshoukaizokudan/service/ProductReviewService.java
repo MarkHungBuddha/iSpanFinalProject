@@ -3,6 +3,7 @@ package com.peko.houshoukaizokudan.service;
 import com.peko.houshoukaizokudan.DTO.ProductReviewDTO;
 import com.peko.houshoukaizokudan.Repository.OrderBasicRepository;
 import com.peko.houshoukaizokudan.Repository.OrderDetailRepository;
+import com.peko.houshoukaizokudan.Repository.ProductBasicRepository;
 import com.peko.houshoukaizokudan.Repository.ProductReviewRepository;
 import com.peko.houshoukaizokudan.model.Member;
 import com.peko.houshoukaizokudan.model.ProductReview;
@@ -28,6 +29,8 @@ public class ProductReviewService {
     OrderDetailRepository orderDetailRepository;
     @Autowired
     OrderBasicRepository orderBasicRepository;
+    @Autowired
+    private ProductBasicRepository productBasicRepository;
 
     @Transactional
     public List<ProductReviewDTO> findProductReviewByProductid(Integer productid){
@@ -53,8 +56,23 @@ public class ProductReviewService {
         return orderBasicRepository.existsByIdAndBuyer_Id(orderId, memberId);
     }
 
+    public Integer getOrderDetailIdByOrderIdAndProductId(Integer orderId, Integer productId) {
+
+        return orderDetailRepository.findIdByOrderid_IdAndProductid_Id(orderId, productId);
+
+    }
+
+
+
     public boolean isProductInOrder(Integer orderDetailId, Integer productId) {
-        return orderDetailRepository.existsByIdAndProductid_Id(orderDetailId, productId);
+        if(orderDetailRepository.findStatusIdByOrderDetailId(orderDetailId)==4)
+            return orderDetailRepository.existsByIdAndProductid_Id(orderDetailId, productId);
+        return false;
+    }
+
+    public boolean isOrderStatusFinish(Integer orderId){
+        Integer statusId = orderBasicRepository.findStatusId_IdByOrderId(orderId);
+        return statusId != null && statusId.equals(4);
     }
 
     @Transactional
@@ -64,6 +82,8 @@ public class ProductReviewService {
         productReview.setReviewcontent(productReviewDTO.getReviewcontent());
         productReview.setReviewtime(productReviewDTO.getReviewtime());
         productReview.setMemberid(loginUser);
+        productReview.setProductid(productBasicRepository.findById(productReviewDTO.getProductid()).orElse(null));
+        productReview.setOrderdetail(orderDetailRepository.findById(productReviewDTO.getOrderdetailid()).orElse(null));
         // 设置其他字段
         productReviewRepository.save(productReview);
     }
@@ -81,6 +101,63 @@ public class ProductReviewService {
             // 更新其他字段
             productReviewRepository.save(productReview);
         }
+    }
+
+    @Transactional
+    public List<ProductReviewDTO> getSellerReviews(Integer sellerId) {
+        List<ProductReview> sellerReviews = productReviewRepository.findByProductid_Seller_Id(sellerId);
+        List<ProductReviewDTO> sellerReviewDTOs = new ArrayList<>();
+        for(ProductReview sellerReview:sellerReviews) {
+            ProductReviewDTO sellerReviewDTO = new ProductReviewDTO();
+            sellerReviewDTO.setProductid(sellerReview.getProductid().getId());
+            sellerReviewDTO.setMemberid(sellerReview.getMemberid().getId());
+            if (sellerReview.getOrderdetail() != null) {
+                sellerReviewDTO.setOrderid(
+                        orderDetailRepository.findIdByOrderDetailId(
+                                sellerReview.getOrderdetail().getId()
+                        )
+                );
+                sellerReviewDTO.setOrderdetailid(sellerReview.getOrderdetail().getId());
+
+            }
+            sellerReviewDTO.setRating(sellerReview.getRating());
+            sellerReviewDTO.setReviewcontent(sellerReview.getReviewcontent());
+            sellerReviewDTO.setReviewtime(sellerReview.getReviewtime());
+            sellerReviewDTOs.add(sellerReviewDTO);
+        }
+        return sellerReviewDTOs;
+    }
+
+    @Transactional
+    public List<ProductReviewDTO> getCustomerReviews(Integer customerId) {
+        List<ProductReview> customerReviews = productReviewRepository.findByMemberid_Id(customerId);
+        List<ProductReviewDTO> customerReviewDTOs = new ArrayList<>();
+        for(ProductReview customerReview:customerReviews) {
+            ProductReviewDTO customerReviewDTO = new ProductReviewDTO();
+            customerReviewDTO.setProductid(customerReview.getProductid().getId());
+            customerReviewDTO.setMemberid(customerReview.getMemberid().getId());
+            if (customerReview.getOrderdetail() != null) {
+                customerReviewDTO.setOrderid(
+                        orderDetailRepository.findIdByOrderDetailId(
+                                customerReview.getOrderdetail().getId()
+                        )
+                );
+                customerReviewDTO.setOrderdetailid(customerReview.getOrderdetail().getId());
+
+            }
+            customerReviewDTO.setRating(customerReview.getRating());
+            customerReviewDTO.setReviewcontent(customerReview.getReviewcontent());
+            customerReviewDTO.setReviewtime(customerReview.getReviewtime());
+            customerReviewDTOs.add(customerReviewDTO);
+        }
+        return customerReviewDTOs;
+    }
+
+    public boolean hasBuyerReviewed(Integer buyerId,Integer orderDetailid){
+        System.out.println("loginUserID="+buyerId);
+        System.out.println("orederDetailid:"+orderDetailid);
+
+    	return productReviewRepository.hasBuyerReviewed(orderDetailid,buyerId);
     }
 
     public List<ProductReview> getRecentReviewsForSeller(Integer sellerId, Integer page) {

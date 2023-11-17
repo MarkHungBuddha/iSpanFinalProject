@@ -16,7 +16,6 @@ import java.util.Set;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
 @Entity
 @Table(name = "Member", schema = "dbo")
 public class Member {

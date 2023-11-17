@@ -17,13 +17,7 @@ import java.util.Set;
 @ToString
 @Builder
 public class checkoutOrderDto {
-
-
     private Integer memberID;
     private Set<ProductIDandQuentity> productIDandQuentities; // 一個列表，包含多個商品和相關的資訊
     private BigDecimal totalPrice; // 總價
-
-
-
-
 }

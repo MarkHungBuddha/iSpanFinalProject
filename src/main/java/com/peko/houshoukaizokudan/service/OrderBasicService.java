@@ -16,6 +16,7 @@ import java.util.stream.Stream;
 import com.peko.houshoukaizokudan.DTO.OrderBasicDto;
 import com.peko.houshoukaizokudan.DTO.OrderDetailDto;
 import com.peko.houshoukaizokudan.DTO.ProductIDandQuentity;
+import com.peko.houshoukaizokudan.DTO.RevenueDto;
 import com.peko.houshoukaizokudan.DTO.checkoutOrderDto;
 import com.peko.houshoukaizokudan.Repository.*;
 import com.peko.houshoukaizokudan.model.*;
@@ -38,20 +39,20 @@ public class OrderBasicService {
     @Autowired
     private ShoppingCartRepository shoppingCartRepo;
 
-
     @Autowired
     private OrderDetailRepository orderDetailRepo;
 
     @Autowired
     private ProductImageRepository productImageRepo;
+
     @Autowired
     private ProductBasicRepository productBasicRepo;
+
     @Autowired
     private MemberRepository memberRepo;
+
     @Autowired
     private OrderStatusRepository orderStatusRepo;
-
-
 
 
     @Transactional
@@ -138,16 +139,19 @@ public class OrderBasicService {
         return orderDto;
     }
 
-    public Integer findTotalByYear(Integer memberIdd, Integer year) {
-        Integer obb=orderRepo.findTotalAmountByYearAndSeller(memberIdd, year);
-
-        return obb;
+    public Integer findTotalByYear(Integer memberId, Integer year) {
+        String yearAsString = String.valueOf(year);
+        System.out.println(yearAsString);
+        System.out.println(memberId);
+        return orderRepo.findTotalAmountByYearAndSeller(yearAsString, memberId);
     }
 
-    public Integer findTotalByMonth(Integer memberIdd, Integer month, Integer year) {
-        Integer obb=orderRepo.findTotalAmountByYearAndMonthAndSeller(year,memberIdd, month);
-
-        return obb;
+    public Integer findTotalByMonth(Integer year, Integer month, Integer memberIdd) {
+//        String yearAsString = String.valueOf(year);
+//        System.out.println(yearAsString);
+//        String monthAsString = String.valueOf(month);
+//        System.out.println("月"+month);
+        return orderRepo.findTotalAmountByYearAndMonthAndSeller(year, month, memberIdd);
     }
 
     // 修改訂單dto (重複使用)
@@ -160,6 +164,7 @@ public class OrderBasicService {
         dto.setTotalamount(order.getTotalamount());
         dto.setStatusname(order.getStatusid().getStatusname());
         dto.setOrderaddess(order.getOrderaddress());
+        dto.setStatusid(order.getStatusid().getId());
         // 存商品內容
         Integer orderid = order.getId();
         List<OrderDetail> products = orderDetailRepo.findOrderDetailByOrderid(orderid);
@@ -181,7 +186,7 @@ public class OrderBasicService {
         return orders;
     }
 
-    // 商品 dto (重複使用)
+    // 商品 dto (重複使用) 20231104新增setProductid
     private OrderDetailDto convertToProductDto(OrderDetail product) {
         OrderDetailDto productDto = new OrderDetailDto();
 
@@ -193,6 +198,11 @@ public class OrderBasicService {
         productDto.setProductName(product.getProductid().getProductname());
         productDto.setQuantity(product.getQuantity()); // 買的商品數量
         productDto.setUnitprice(product.getUnitprice().intValue()); // 單價
+        productDto.setProductid(productId);
+
+        Integer detailid = orderDetailRepo.findIdByOrderid_IdAndProductid_Id(product.getOrderid().getId(), productId);
+        productDto.setOrederDetailid(detailid);
+
         return productDto;
     }
 
@@ -430,6 +440,64 @@ public class OrderBasicService {
 
         return orderBasicDto;
 
+    }
+
+    //20231103 新增
+    //買家找一筆訂單 (page) 有含商品內容
+    @Transactional
+    public OrderBasicDto getOneOrder(Integer orderid, Member loginUser) {
+        Integer memberid = loginUser.getId();
+        OrderBasic oneorder = orderRepo.findOrderBasicByIdandMemberid(orderid, memberid);
+
+        if (oneorder == null) {
+            return null;
+        } else {
+            OrderBasicDto order = updateOrderDto(oneorder);
+            return order;
+        }
+
+    }
+
+    //20231104 新增
+    // 賣家找訂單 by 訂單狀態 (page)
+    @Transactional
+    public Page<OrderBasicDto> getOrderByStatusAndSeller(Pageable pageable, Member loginUser, Integer statusid) {
+
+        Integer sellerid = loginUser.getId();
+        Page<OrderBasic> page = orderRepo.findOrderBasicByStatusAndSeller(sellerid, statusid, pageable);
+
+        List<OrderBasicDto> dtoOrderList = page.getContent().stream().map(order -> {
+            OrderBasicDto dto = updateOrderDto(order);
+            return dto;
+        }).collect(Collectors.toList());
+        return new PageImpl<>(dtoOrderList, pageable, page.getTotalElements());
+    }
+
+    //20231103 新增
+    //賣家找一筆訂單 (page) 有含商品內容
+    @Transactional
+    public OrderBasicDto getOneOrderBySeller(Integer orderid, Member loginUser) {
+        Integer sellerid = loginUser.getId();
+        OrderBasic oneorder = orderRepo.findOrderBasicByIdandSellerid(orderid, sellerid);
+
+        if (oneorder == null) {
+            return null;
+        } else {
+            OrderBasicDto order = updateOrderDto(oneorder);
+            return order;
+        }
+
+    }
+    @Transactional
+    public List<RevenueDto> findTotalAllMonth(Integer year, Integer memberId) {
+        System.out.println(year + " " + memberId);
+        List<RevenueDto> revenueDtos = new ArrayList<>();
+        for (int month = 1; month <= 12; month++) {
+            int monthlyTotal = orderRepo.findTotalAmountByYearAndMonthAndSeller(year, month, memberId);
+            RevenueDto dto = new RevenueDto(monthlyTotal);
+            revenueDtos.add(dto);
+        }
+        return revenueDtos;
     }
 
 }

@@ -1,4 +1,5 @@
 package com.peko.houshoukaizokudan.controller;
+
 import com.peko.houshoukaizokudan.DTO.ShoppingCartDto;
 import com.peko.houshoukaizokudan.model.Member;
 import com.peko.houshoukaizokudan.service.ProductBasicService;
@@ -15,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/cart")
 public class ShoppingCartController {
 
     private final ShoppingCartService shoppingCartService;
@@ -27,7 +27,6 @@ public class ShoppingCartController {
 
     @Autowired
     private ProductBasicService productBasicService;
-
 
 
 //    @PostMapping("/customer/api/addProduct")
@@ -66,42 +65,46 @@ public class ShoppingCartController {
 //        return ResponseEntity.ok(products);
 //    }
 
+    //買家查看購物車
     @GetMapping("/customer/api/shoppingCart")
     public List<ShoppingCartDto> getShoppingCart(HttpSession session) {
         Member loginUser = (Member) session.getAttribute("loginUser");
         if (loginUser != null) {
             Integer memberId = loginUser.getId();
-            List<ShoppingCartDto> cartItems = shoppingCartService.GetCartItem(memberId);
+            List<ShoppingCartDto> cartItems = shoppingCartService.getCartItemsByMemberId(memberId);
             return cartItems;
         } else {
             return new ArrayList<>();
         }
     }
 
+
+    //買家新增商品到購物車
     @PostMapping("/customer/api/shoppingCart")
     public ResponseEntity<String> addProductToCart(@RequestParam("productId") Integer productId, HttpSession session) {
         Member loginUser = (Member) session.getAttribute("loginUser");
         try {
-            if (loginUser != null) {
-                ProductBasic product = productBasicService.findById(productId);
-                if (product.getQuantity()<1) {
-                    return ResponseEntity.badRequest().body("庫存不足！");
-                } else {
-                    int a = product.getId();
-                    int b = loginUser.getId();
-                    shoppingCartService.addProductToCart(b,a);
-                    return ResponseEntity.ok(loginUser.getId() + " 已新增 " + productId + " 商品");
-                }
-            } else {
+            if (loginUser == null) {
                 return ResponseEntity.badRequest().body("尚未登入");
             }
+            if (productBasicService.findById(productId).getQuantity() < 1) {
+                return ResponseEntity.badRequest().body("庫存不足！");
+            }
+
+            shoppingCartService.addProductToCart(
+                    loginUser.getId(),
+                    productBasicService.findById(productId).getId());
+            return ResponseEntity.ok(loginUser.getId() + " 已新增 " + productId + " 商品");
+
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().body(null);
 
         }
-    }
 
+}
+
+    //買家移除商品
     @DeleteMapping("/customer/api/shoppingCart")
     public ResponseEntity<String> removeProductFromCart(@RequestParam("transactionId") Integer transactionId,
                                                         HttpSession session) {
@@ -114,6 +117,8 @@ public class ShoppingCartController {
         }
     }
 
+
+    //買家更改商品數量
     @PutMapping("/customer/api/change")
     public ResponseEntity<ShoppingCartDto> changeQuantity(
             @RequestParam("quantity") Integer quantity,
@@ -122,14 +127,14 @@ public class ShoppingCartController {
             throws Exception {
         Member loginUser = (Member) session.getAttribute("loginUser");
 
-        System.out.println("transactionId:"+productid);
-        System.out.println("quantity"+quantity);
+        System.out.println("transactionId:" + productid);
+        System.out.println("quantity" + quantity);
         if (loginUser != null) {
             if (quantity == 0) {
                 shoppingCartService.ClearCartItembyProductId(loginUser, productid);
             }
             int memberid = loginUser.getId();
-            System.out.println("loginUser.getId"+memberid);
+            System.out.println("loginUser.getId" + memberid);
 
             ShoppingCartDto updatedCart = shoppingCartService.changeQuantity(memberid, productid,
                     quantity);

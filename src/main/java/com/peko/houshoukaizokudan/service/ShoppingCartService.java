@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -29,6 +30,8 @@ public class ShoppingCartService {
     private ProductBasicRepository pbRepo;
     @Autowired
     private ProductImageRepository piRepo;
+    
+    
 
     public ShoppingCartService(ShoppingCartRepository shoppingCartRepository) {
         this.shoppingCartRepository = shoppingCartRepository;
@@ -68,50 +71,61 @@ public class ShoppingCartService {
 //    }
 
     @Transactional
-    public void addProductToCart(Integer b,Integer a) {
-
-        ShoppingCart cartItem = new ShoppingCart();
-        Optional<Member> mb = mbRepo.findById(b);
-        Optional<ProductBasic> pb = pbRepo.findById(a);
-
-        cartItem.setMemberid(mb.get());
-        cartItem.setProductid(pb.get());
-        cartItem.setQuantity(1);
-        shoppingCartRepository.save(cartItem);
-
+    public void addProductToCart(Integer memberid, Integer productid) {
+    	Integer newquantity = shoppingCartRepository.findquantityByMemberid_IdAndProductid_Id(productid,memberid);
+    	Integer oldquantity = pbRepo.findProductByProductid(productid);
+        if (shoppingCartRepository.existsByMemberid_IdAndProductid_Id(memberid, productid)) {
+        	if(newquantity>=oldquantity) {
+        		return; 
+        	}
+            shoppingCartRepository.saveProductFromShoppingCart(
+                    productid,
+                    memberid,
+                    newquantity+1
+            );
+            return;
+        }
+            ShoppingCart cartItem = new ShoppingCart();
+            Optional<Member> member = mbRepo.findById(memberid);
+            Optional<ProductBasic> product = pbRepo.findById(productid);
+            cartItem.setMemberid(member.get());
+            cartItem.setProductid(product.get());
+            cartItem.setQuantity(1);
+            shoppingCartRepository.save(cartItem);
     }
 
-    public List<ShoppingCartDto> GetCartItem(Integer memberid) {
-        List<Object[]> results = shoppingCartRepository.GetCartItem(memberid);
+    public List<ShoppingCartDto> getCartItemsByMemberId(Integer memberid) {
+        List<ShoppingCart> shoppingCarts = shoppingCartRepository.getCartItemsByMemberId(memberid);
 
         List<ShoppingCartDto> cartItems = new ArrayList<>();
-        for (Object[] result : results) {
+        for (ShoppingCart cart : shoppingCarts) {
             ShoppingCartDto cartItem = new ShoppingCartDto();
-            cartItem.setTransactionId((Integer) result[0]);
-            cartItem.setProductId((Integer) result[1]);
-            cartItem.setMemberid((Integer) result[2]);
-            cartItem.setProductname((String) result[3]);
-            cartItem.setQuantity((Integer) result[4]);
-            cartItem.setPrice((BigDecimal) result[5]);
-            String a = piRepo.findImagepathByProductid((Integer) result[1]);
-            cartItem.setImagepath(a);
+            cartItem.setTransactionId(cart.getId());
+            cartItem.setProductId(cart.getProductid().getId());
+            cartItem.setMemberid(cart.getMemberid().getId());
+            cartItem.setProductname(cart.getProductid().getProductname());
+            cartItem.setQuantity(cart.getQuantity());
+            cartItem.setPrice(cart.getProductid().getPrice());
+            cartItem.setSpecialprice(cart.getProductid().getSpecialprice());
+            // Note: You have to fetch 'specialprice' similarly from ProductBasic if it exists.
+            String imagePath = piRepo.findImagepathByProductid(cart.getProductid().getId());
+            cartItem.setImagepath(imagePath);
 
             cartItems.add(cartItem);
         }
-
         return cartItems;
     }
 
-    public void PlusCartItem(Member member,Integer transactionid) {
-        shoppingCartRepository.PlusCartItem(member.getId(),transactionid);
-    }
 
-    public void MinusCartItem(Member member,Integer transactionid) {
-        shoppingCartRepository.MinusCartItem(member.getId(),transactionid);
-    }
+
 
     public void ClearCartItem(Member member,Integer transactionid) {
-        shoppingCartRepository.ClearCartItem(member.getId(),transactionid);
+
+        if(shoppingCartRepository.findmemberidbytransactionid(transactionid) == member.getId()){
+        shoppingCartRepository.ClearCartItem(transactionid);
+
+        }
+      
     }
 
     public void ClearCartItembyProductId(Member member,Integer transactionid) {
@@ -124,7 +138,7 @@ public class ShoppingCartService {
 
 
     public Integer CheckCartItem(Integer transactionid) {
-        Integer result = shoppingCartRepository.CheckCartItem(transactionid);
+        Integer result = shoppingCartRepository.CheckCartItemQuantity(transactionid);
         return result;
     }
 

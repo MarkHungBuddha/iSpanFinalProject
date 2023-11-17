@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.constraints.Null;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -40,6 +41,7 @@ public class QandAService {
                 .questiontime(iso8601Time)
                 .productId(productId)
                 .buyerMemberid(buyerMemberId)
+                .sellerMemberid(productBasicRepository.findProductBasicSellerIdByproductId(productId))
                 .build();
 
         QandA qandA = new QandA();
@@ -47,28 +49,94 @@ public class QandAService {
         qandA.setBuyerMember(memberRepository.findById(buyerMemberId).orElse(null));
         qandA.setQuestion(question);
         qandA.setQuestiontime(iso8601Time);
+        qandA.setSellerMember(memberRepository.findById(productBasicRepository.findProductBasicSellerIdByproductId(productId)).orElse(null));
         qandARepository.save(qandA);
 
         return productQandADTO;
     }
 
 
-
-
-    //列出全部問題byProductID
     @Transactional
-    public List<ProductQandADTO> findProductQandAsByProductid(Integer productId) {
-        List<QandA> qandAList=qandARepository.findByProductid_Id(productId);
-        List<ProductQandADTO> productQandADTOList=new ArrayList<>();
-        for (QandA qandA:qandAList){
+    public List<ProductQandADTO> getAskedQuestions(Integer memberId) {
+        List<QandA> qandAList = qandARepository.findAllByBuyerMember_Id(memberId);
+        List<ProductQandADTO> productQandADTOList = new ArrayList<>();
+        for (QandA qandA : qandAList) {
+            System.out.println(qandA.toString());
             ProductQandADTO productQandADTO = new ProductQandADTO();
             productQandADTO.setProductId(qandA.getProductid().getId());
             productQandADTO.setBuyerMemberid(qandA.getBuyerMember().getId());
             productQandADTO.setQuestion(qandA.getQuestion());
             productQandADTO.setQuestiontime(qandA.getQuestiontime());
             productQandADTO.setSellerMemberid(qandA.getSellerMember().getId());
-            productQandADTO.setAnswer(qandA.getAnswer());
-            productQandADTO.setAnswertime(qandA.getAnswertime());
+
+            if (qandA.getAnswer() != null) {
+                productQandADTO.setAnswer(qandA.getAnswer());
+                productQandADTO.setAnswertime(qandA.getAnswertime());
+            }
+            productQandADTOList.add(productQandADTO);
+        }
+        return productQandADTOList;
+    }
+
+    @Transactional
+    public List<ProductQandADTO> getAllQuestions(Integer memberId) {
+        List<QandA> qandAList = qandARepository.findAllBySellerMember_Id(memberId);
+        List<ProductQandADTO> productQandADTOList = new ArrayList<>();
+        for (QandA qandA : qandAList) {
+            System.out.println(qandA.toString());
+            ProductQandADTO productQandADTO = new ProductQandADTO();
+            productQandADTO.setQandaid(qandA.getId());
+            productQandADTO.setProductId(qandA.getProductid().getId());
+            productQandADTO.setBuyerMemberid(qandA.getBuyerMember().getId());
+            productQandADTO.setQuestion(qandA.getQuestion());
+            productQandADTO.setQuestiontime(qandA.getQuestiontime());
+            productQandADTO.setSellerMemberid(qandA.getSellerMember().getId());
+
+            if (qandA.getSellerMember() != null) {
+                productQandADTO.setAnswer(qandA.getAnswer());
+                productQandADTO.setAnswertime(qandA.getAnswertime());
+
+            }
+            productQandADTOList.add(productQandADTO);
+        }
+        return productQandADTOList;
+
+    }
+
+    //列出全部問題byProductID
+    @Transactional
+    public List<ProductQandADTO> findProductQandAsByProductid(Integer productId) {
+        List<QandA> qandAList = qandARepository.findByProductid_Id(productId);
+        List<ProductQandADTO> productQandADTOList = new ArrayList<>();
+        for (QandA qandA : qandAList) {
+            ProductQandADTO productQandADTO = new ProductQandADTO();
+            productQandADTO.setProductId(qandA.getProductid().getId());
+            productQandADTO.setBuyerMemberid(qandA.getBuyerMember().getId());
+            productQandADTO.setQuestion(qandA.getQuestion());
+            productQandADTO.setQuestiontime(qandA.getQuestiontime());
+            // 檢查賣家會員是否為 null
+            if (qandA.getSellerMember() != null) {
+                productQandADTO.setSellerMemberid(qandA.getSellerMember().getId());
+            } else {
+                // 賣家會員為 null 的處理
+                productQandADTO.setSellerMemberid(null); // 或設置為預設值
+            }
+
+            // 檢查回答是否為 null
+            if (qandA.getAnswer() != null) {
+                productQandADTO.setAnswer(qandA.getAnswer());
+            } else {
+                // 回答為 null 的處理
+                productQandADTO.setAnswer(null); // 或設置為預設值
+            }
+
+            // 檢查回答時間是否為 null
+            if (qandA.getAnswertime() != null) {
+                productQandADTO.setAnswertime(qandA.getAnswertime());
+            } else {
+                // 回答時間為 null 的處理
+                productQandADTO.setAnswertime(null); // 或設置為預設值
+            }
 
             productQandADTOList.add(productQandADTO);
         }
@@ -84,7 +152,7 @@ public class QandAService {
     @Transactional
     public void deleteQuestion(Integer qandaId, Integer memberId) {
         QandA qanda = qandARepository.findById(qandaId).orElse(null);
-        if(qanda != null && qanda.getBuyerMember().getId().equals(memberId)) {
+        if (qanda != null && qanda.getBuyerMember().getId().equals(memberId)) {
             qandARepository.deleteById(qandaId);
         } else {
             throw new RuntimeException("Unauthorized or Question not found");
@@ -119,12 +187,12 @@ public class QandAService {
     }
 
 
-
     private List<ProductQandADTO> convertToDTO(List<QandA> qandas) {
         // Convert QandA entities to DTOs
         List<ProductQandADTO> dtos = new ArrayList<>();
         for (QandA qanda : qandas) {
             ProductQandADTO dto = new ProductQandADTO();
+            dto.setQandaid(qanda.getId());
             dto.setProductId(qanda.getProductid().getId());
             dto.setBuyerMemberid(qanda.getBuyerMember().getId());
             dto.setQuestion(qanda.getQuestion());
@@ -148,8 +216,6 @@ public class QandAService {
         dto.setAnswertime(qanda.getAnswertime());
         return dto;
     }
-
-
 
 
 }

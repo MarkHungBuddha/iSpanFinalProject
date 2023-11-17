@@ -15,10 +15,11 @@ import java.util.Set;
 @NoArgsConstructor
 @Builder
 public class ShoppingCartDto {
-    private Integer TransactionId;
+    private Integer transactionId;
     private Integer ProductId;
     private Integer memberid;
     private BigDecimal price;
+    private BigDecimal specialprice;
     private String productname;
     private Integer quantity;
     private String imagepath;

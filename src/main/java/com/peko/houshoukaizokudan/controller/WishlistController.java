@@ -24,7 +24,7 @@ public class WishlistController {
     @Autowired
     private ProductBasicService ProductBasicService;
 
-    // Add Product API
+    //買家新增商品進願望清單
     @PostMapping("/customer/api/wishlist/{productId}")
     public ResponseEntity<WishlistDTO> addProduct(HttpSession session, @PathVariable Integer productId) {
         try {
@@ -40,7 +40,7 @@ public class WishlistController {
         }
     }
 
-    // Remove Product API
+    //買家從願望清單刪除商品
     @DeleteMapping("/customer/api/wishlist/{productId}")
     public ResponseEntity<WishlistDTO> removeProduct(HttpSession session, @PathVariable Integer productId) {
         Member member = (Member) session.getAttribute("loginUser");
@@ -53,12 +53,11 @@ public class WishlistController {
         }
     }
 
-    //使用者id找商品
-    @GetMapping("/customer/api/wishlist")
+    //買家查看願望清單商品
+    @GetMapping("/public/api/wishlist")
     public ResponseEntity<List<WishlistDTO>> getWishList(HttpSession session) {
-        Member member = (Member) session.getAttribute("loginUser");
-
         try {
+        Member member = (Member) session.getAttribute("loginUser");
             List<WishlistDTO> wishList = wishListService.getWishList(member.getId());
             return ResponseEntity.ok(wishList); //回傳商品列表
         } catch (Exception e) {

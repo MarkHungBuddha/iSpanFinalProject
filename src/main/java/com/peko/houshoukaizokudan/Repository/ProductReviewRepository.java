@@ -37,6 +37,26 @@ public interface ProductReviewRepository extends JpaRepository<ProductReview, In
     @Query(value = "SELECT * FROM product_review WHERE productid IN ?2", nativeQuery = true)
     List<ProductReview> findProductReviewsByProductid(Integer productid);
 
+    @Query(value = "SELECT CASE " +
+            "WHEN EXISTS (" +
+            "SELECT 1 " +
+            "FROM dbo.ProductReview AS pr " +
+            "WHERE pr.orderdetailid = ?1 AND pr.memberid = ?2" +
+            ") " +
+            "THEN CAST(1 AS BIT) " +
+            "ELSE CAST(0 AS BIT) " +
+            "END", nativeQuery = true)
+    boolean hasBuyerReviewed(Integer orderDetailId, Integer memberId);
+
+
+    @Query("SELECT pr FROM ProductReview pr WHERE pr.productid.sellermemberid.id = :sellerId")
+    List<ProductReview> findByProductid_Seller_Id(Integer sellerId);
+
+    @Query(value = "SELECT * FROM ProductReview  WHERE memberid = ?1",nativeQuery = true)
+    List<ProductReview> findByMemberid_Id(Integer buyerId);
+
+
+
 
 
 

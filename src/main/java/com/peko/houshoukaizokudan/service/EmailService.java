@@ -4,13 +4,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.Map;
+
 @Service
 public class EmailService {
 
     @Autowired
     private JavaMailSender javaMailSender;
 
-    private String storedVerificationCode;
+    private Map<String, String> verificationCodes = new ConcurrentHashMap<>();
 
     public void sendVerificationEmail(String to, String verificationCode) {
         String subject = "驗證您的信箱";
@@ -20,30 +23,32 @@ public class EmailService {
         message.setTo(to);
         message.setSubject(subject);
         message.setText(content);
+
         javaMailSender.send(message);
 
-        storedVerificationCode = verificationCode;
+        // Store the code associated with the email address
+        verificationCodes.put(to, verificationCode);
     }
 
+    public boolean verifyVerificationCode(String email, String receivedCode) {
+        String storedCode = verificationCodes.get(email);
+        // Verify that the received code matches the stored code
+        return receivedCode != null && receivedCode.equals(storedCode);
+    }
+
+    // Optional: Clear the code after verification or timeout
+    public void clearVerificationCode(String email) {
+        verificationCodes.remove(email);
+    }
     public void sendPasswordResetEmail(String to, String resetToken) {
-        String subject = "重設密碼";
-        String content = "您的密碼重設令牌是：" + resetToken;
+        String subject = "重置您的密码";
+        String content = "您的密碼重置認證碼：" + resetToken + "。使用此認證碼來重置密碼";
 
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
         message.setSubject(subject);
         message.setText(content);
+
         javaMailSender.send(message);
-    }
-
-    public boolean verifyVerificationCode(String receivedCode) {
-        if (receivedCode != null && receivedCode.equals(storedVerificationCode)) {
-            return true;
-        }
-        return false;
-    }
-
-    public String getStoredVerificationCode() {
-        return storedVerificationCode;
     }
 }

@@ -33,4 +33,9 @@ public class ProductCategory {
     @OneToMany(mappedBy = "categoryid")
     private Set<ProductBasic> productBasic ;
 
+    public ProductCategory(Integer id) {
+        super();
+        this.id = id;
+    }
+
 }
