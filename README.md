@@ -32,5 +32,5 @@
 ## 與我聯絡
 如有任何問題，請與我聯絡 1909kram@gmail.com
 
-小組前端專案連結：https://github.com/YenYasir/EIPulse_Vue_SpringBoot
-小組後端專案連結: https://github.com/MarkHungBuddha/ispanfinalprojectfrontend
+小組前端專案連結：https://github.com/MarkHungBuddha/ispanfinalprojectfrontend
+小組後端專案連結: https://github.com/MarkHungBuddha/iSpanFinalProject
